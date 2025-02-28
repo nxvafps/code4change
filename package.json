@@ -1,0 +1,22 @@
+{
+  "name": "code4change",
+  "version": "1.0.0",
+  "description": "This project consists of a client-side Next.js application and potentially a server-side component.",
+  "main": "index.js",
+  "scripts": {
+    "install:client": "cd client && npm i",
+    "install:server": "cd server && npm i",
+    "install:all": "npm i && npm run install:client && npm run install:server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nxvafps/code4change.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nxvafps/code4change/issues"
+  },
+  "homepage": "https://github.com/nxvafps/code4change#readme"
+}
