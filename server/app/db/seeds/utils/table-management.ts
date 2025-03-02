@@ -1,6 +1,6 @@
 //insert functons for dropping and creating tables in the seed function here
 import pool from "../../index";
-const createTables = async () => {
+export const createTables = async () => {
   const client = await pool.connect();
 
   try {
@@ -126,7 +126,7 @@ const createTables = async () => {
     client.release();
   }
 };
-interface User {
+export interface User {
   id?: number;
   github_username: string;
   email: string;
@@ -138,21 +138,21 @@ interface User {
   updated_at?: Date;
 }
 
-interface Category {
+export interface Category {
   id?: number;
   category_name: string;
   created_at?: Date;
   updated_at?: Date;
 }
 
-interface Skill {
+export interface Skill {
   id?: number;
   name: string;
   created_at?: Date;
   updated_at?: Date;
 }
 
-interface Level {
+export interface Level {
   id?: number;
   level: number;
   name: string;
@@ -161,7 +161,7 @@ interface Level {
   updated_at?: Date;
 }
 
-interface Project {
+export interface Project {
   id?: number;
   name: string;
   description?: string;
@@ -173,21 +173,21 @@ interface Project {
   updated_at?: Date;
 }
 
-interface UserCategory {
+export interface UserCategory {
   id?: number;
   user_id: number;
   category_id: number;
   created_at?: Date;
 }
 
-interface UserSkill {
+export interface UserSkill {
   id?: number;
   user_id: number;
   skill_id: number;
   created_at?: Date;
 }
 
-interface Issue {
+export interface Issue {
   id?: number;
   project_id: number;
   title: string;
@@ -199,7 +199,7 @@ interface Issue {
   updated_at?: Date;
 }
 
-interface Contribution {
+export interface Contribution {
   id?: number;
   user_id: number;
   project_id: number;
