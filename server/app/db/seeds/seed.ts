@@ -1,12 +1,7 @@
 import pool from "../";
 import { createTables } from "./utils/table-management";
 //create a drop tables func in the above file and import it in, so we can drop the tables first
-import {
-  insertUsers,
-  insertSkills, // there's a typo here that should be fixed to insertSkills
-  insertCategories,
-  insertLevels,
-} from "./utils/insert-data";
+import { insertUsers, insertSkills, insertLevels } from "./utils/insert-data";
 
 import { SeedData } from "../../types/table-data-types";
 
