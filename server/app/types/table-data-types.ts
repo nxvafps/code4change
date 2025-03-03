@@ -43,10 +43,10 @@ export interface Level {
 export interface Project {
   id?: number;
   name: string;
+  owner_id: number;
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
-  owner_id: number;
   status: string;
   created_at?: Date;
   updated_at?: Date;
@@ -80,8 +80,8 @@ export interface Issue {
 
 export interface Contribution {
   id?: number;
-  user_id: number;
-  project_id: number;
+  user_id?: number;
+  project_id?: number;
   pull_request_url: string;
   additions: number;
   deletions: number;
@@ -103,4 +103,9 @@ export interface UserLevel {
   user_id: number;
   level_id: number;
   achieved_at?: Date;
+}
+
+export interface ProjectRelation {
+  owner_username: string;
+  project: Project;
 }
