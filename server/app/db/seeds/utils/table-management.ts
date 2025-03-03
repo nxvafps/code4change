@@ -64,6 +64,25 @@ export const createTables = async () => {
           FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
         );
       `);
+    await client.query(`CREATE TABLE IF NOT EXISTS user_levels (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    level_id INT NOT NULL,
+    achieved_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (level_id) REFERENCES levels(id) ON DELETE CASCADE
+);
+`);
+    await client.query(`CREATE TABLE IF NOT EXISTS project_skills (
+    id SERIAL PRIMARY KEY,
+    project_id INT NOT NULL,
+    skill_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE,
+    UNIQUE(project_id, skill_id)
+);
+`);
     await client.query(`
         CREATE TABLE IF NOT EXISTS user_categories (
           id SERIAL PRIMARY KEY,
@@ -129,91 +148,3 @@ export const createTables = async () => {
     client.release();
   }
 };
-export interface User {
-  id?: number;
-  github_id?: string;
-  github_username: string;
-  email: string;
-  password_hash?: string;
-  profile_picture?: string;
-  role: string;
-  xp: number;
-  access_token?: string;
-  refresh_token?: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface Category {
-  id?: number;
-  category_name: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface Skill {
-  id?: number;
-  name: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface Level {
-  id?: number;
-  level: number;
-  name: string;
-  xp_required: number;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface Project {
-  id?: number;
-  name: string;
-  description?: string;
-  github_repo_url: string;
-  project_image_url?: string;
-  owner_id: number;
-  status: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface UserCategory {
-  id?: number;
-  user_id: number;
-  category_id: number;
-  created_at?: Date;
-}
-
-export interface UserSkill {
-  id?: number;
-  user_id: number;
-  skill_id: number;
-  created_at?: Date;
-}
-
-export interface Issue {
-  id?: number;
-  project_id: number;
-  title: string;
-  description?: string;
-  status: string;
-  created_by: number;
-  assigned_to?: number;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface Contribution {
-  id?: number;
-  user_id: number;
-  project_id: number;
-  pull_request_url: string;
-  additions: number;
-  deletions: number;
-  total_changes: number;
-  status: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
