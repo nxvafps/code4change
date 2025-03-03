@@ -46,7 +46,6 @@ export interface Project {
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
-  owner_id: number;
   status: string;
   created_at?: Date;
   updated_at?: Date;
@@ -103,4 +102,9 @@ export interface UserLevel {
   user_id: number;
   level_id: number;
   achieved_at?: Date;
+}
+
+export interface ProjectRelation {
+  owner_username: string;
+  project: Project;
 }
