@@ -52,6 +52,17 @@ export const insertUsers = async () => {
             )
           )
         );
+        const levelingsystem = levels
+          .sort((a, b) => b.xp_required - a.xp_required)
+          .find((level) => user.xp >= level.xp_required);
+        if (levelingsystem) {
+          await client.query(
+            `INSERT INTO user_levels (user_id, level_id)
+               VALUES ($1, $2)
+               ON CONFLICT (user_id) DO NOTHING`,
+            [user_id, levelingsystem.id]
+          );
+        }
       })
     );
     await client.query("COMMIT");
@@ -114,7 +125,7 @@ export const insertLevels = async () => {
   try {
     await client.query("BEGIN");
     await Promise.all(
-      levels.map(async (level) => {
+      levels.map(async (level: Level) => {
         await client.query(
           `INSERT INTO levels (level, name, xp_required) 
           VALUES ($1, $2, $3)`,

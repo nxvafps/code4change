@@ -1,3 +1,10 @@
+import Footer from "../components/Footer";
+
 export default function Register() {
-  return <p>This is the Register Page</p>;
+  return (
+    <div>
+      <p>This is the Register Page</p>
+      <Footer />
+    </div>
+  );
 }

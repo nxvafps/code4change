@@ -5,7 +5,7 @@ import path from "path";
 const ENV = process.env.NODE_ENV || "development";
 
 config({
-  path: path.resolve(__dirname, `../.env.${ENV}`),
+  path: path.resolve(__dirname, `../../.env.${ENV}`),
 });
 
 if (!process.env.PGDATABASE) {
