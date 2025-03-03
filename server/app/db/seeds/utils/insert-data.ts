@@ -7,11 +7,13 @@ import {
   Category,
   Level,
   Contribution,
+  Issue,
 } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
 import contributionRelations from "../../data/test-data/contributions";
+import issueRelations from "../../data/test-data/issues";
 
 export const insertUsers = async () => {
   const client = await pool.connect();
@@ -196,6 +198,69 @@ export const insertContirbution = async () => {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error inserting contirbution", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertIssues = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      issueRelations.map(
+        async ({
+          project_name,
+          created_by_username,
+          assigned_to_username,
+          issue,
+        }: {
+          project_name: String;
+          created_by_username: String;
+          assigned_to_username: String | null;
+          issue: Issue;
+        }) => {
+          const projectNameQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectNameQuery.rows[0]?.id;
+
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [created_by_username]
+          );
+          const created_by = userNameQuery.rows[0]?.id;
+
+          const assignedNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [assigned_to_username]
+          );
+          const assigned_to = assignedNameQuery.rows[0]?.id || null;
+
+          await client.query(
+            `INSERT INTO issues (project_id, title, description, status, created_by, assigned_to) 
+                 VALUES ($1, $2, $3, $4, $5, $6) 
+                 RETURNING id`,
+            [
+              project_id,
+              issue.title,
+              issue.description,
+              issue.status,
+              created_by,
+              assigned_to,
+            ]
+          );
+        }
+      )
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting issues", err);
     throw err;
   } finally {
     client.release();
