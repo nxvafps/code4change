@@ -64,9 +64,9 @@ npm run setup-db
 
 This will create three databases:
 
-- db_name_dev (Development)
-- db_name_test (Testing)
-- db_name_prod (Production)
+- code4change_dev (Development)
+- code4change_test (Testing)
+- code4change_prod (Production)
 
 ### Environment Configuration
 
@@ -75,19 +75,48 @@ Create three environment files in the `server/app` directory:
 1. `.env.development`:
 
 ```
-PGDATABASE=db_name_dev
+PGDATABASE=code4change_dev
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
+SESSION_SECRET=your_session_secret
 ```
 
 2. `.env.test`:
 
 ```
-PGDATABASE=db_name_test
+PGDATABASE=code4change_test
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
+SESSION_SECRET=your_session_secret
 ```
 
 3. `.env.production`:
 
 ```
-PGDATABASE=db_name_prod
+PGDATABASE=code4change_prod
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
+SESSION_SECRET=your_session_secret
+```
+
+### GitHub OAuth Setup
+
+To enable GitHub authentication:
+
+1. Go to your [GitHub Developer Settings](https://github.com/settings/developers)
+2. Create a new OAuth App
+3. Set the Homepage URL to `http://localhost:3000`
+4. Set the Authorization callback URL to `http://localhost:3001/api/auth/github/callback`
+5. Create the app and get your Client ID and Client Secret
+6. Add these credentials to your environment files as shown above
+
+The `SESSION_SECRET` should be a long, random string to secure user sessions. You can generate one with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 ### Running the Server
