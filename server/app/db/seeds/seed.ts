@@ -1,9 +1,49 @@
 import pool from "../";
-//import functions from insert-data.ts and table-management.ts
+import { createTables } from "./utils/table-management";
+//create a drop tables func in the above file and import it in, so we can drop the tables first
+import {
+  insertUsers,
+  insertSkills, // there's a typo here that should be fixed to insertSkills
+  insertCategories,
+  insertLevels,
+} from "./utils/insert-data";
 
-const seed = async ({}) => {
+import { SeedData } from "../../types/table-data-types";
+
+const seed = async ({
+  users,
+  skills,
+  categories,
+  userSkillsRelations,
+  userCategoriesRelations,
+  userLevelRelations,
+  levels,
+  projectRelations,
+  projectSkillRelations,
+  issueRelations,
+  contributionRelations,
+}: SeedData) => {
   console.log(`Seeding on ${process.env.PGDATABASE}`);
-  //seeding logic goes here (ie functions from insert-data.ts and table-management.ts)
+
+  try {
+    // await dropTables();
+
+    await createTables();
+
+    //these functions should ideally take a parameter, as the data we want to seed is chosen in run-seed.ts
+    // await inserSkills(skills);
+    // await insertCategories(categories);
+    // await insertLevels(levels);
+    // await insertUsers(users);
+    // await insertProject(projectRelations);
+
+    // additional data insertion functions here
+
+    console.log("Database seeded successfully");
+  } catch (error) {
+    console.error("Error seeding database:", error);
+    throw error;
+  }
 };
 
 export default seed;
