@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Image from "next/image";
 import coverImage from "../public/Code4Change.webp";
 import { LoginButton, RegisterButton } from "./components/button";
+import Link from "next/link";
 
 const LandingPageContainer = styled.div`
   display: flex;
@@ -20,7 +21,8 @@ const ImageContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 30vh;
+  height: 35vh;
+  padding-bottom: 15px;
 `;
 
 const BannerImage = styled(Image)`
@@ -30,15 +32,18 @@ const BannerImage = styled(Image)`
 `;
 
 const ButtonContainer = styled.div`
-display: flex;
-justify-content: center
-align-items: center;
-border: 1px
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5vh;
+  width: 100%;
+  gap: 20px;
+  padding: 10px;
 `;
 
 const MissionStatementContainer = styled.div`
   width: 100%;
+  height: 20vh;
   max-width: 54rem;
   align-items: center;
   justify-content: center;
@@ -58,12 +63,29 @@ const MissionStatement = styled.p`
   }
 `;
 
+const ProjectsCarouselContainer = styled.div`
+  border: solid 1px red;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 25vh;
+  width: 100%;
+`;
+
 export default function Home() {
   return (
     <LandingPageContainer>
       <ImageContainer>
         <BannerImage src={coverImage} alt="image of the world" />
       </ImageContainer>
+      <ButtonContainer>
+        <Link href="/login">
+          <LoginButton />
+        </Link>
+        <Link href="/register">
+          <RegisterButton />
+        </Link>
+      </ButtonContainer>
       <MissionStatementContainer>
         <MissionStatement>
           Join a global community of developers using their skills to drive
@@ -73,6 +95,7 @@ export default function Home() {
           commit at a time.
         </MissionStatement>
       </MissionStatementContainer>
+      <ProjectsCarouselContainer>Project Carousel</ProjectsCarouselContainer>
 
       <Footer />
     </LandingPageContainer>
