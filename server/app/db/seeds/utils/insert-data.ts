@@ -1,10 +1,17 @@
 //insert functons for adding data in the seed function here
 import pool from "../../index";
 import users from "../../data/test-data/users";
-import { User, Skill, Category, Level } from "../../../types/table-data-types";
+import {
+  User,
+  Skill,
+  Category,
+  Level,
+  Contribution,
+} from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
+import contributionRelations from "../../data/test-data/contributions";
 
 export const insertUsers = async () => {
   const client = await pool.connect();
@@ -135,7 +142,52 @@ export const insertLevels = async () => {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting categories", err);
+    console.error("Error inserting levels", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertContirbution = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await Promise.all(
+      contributionRelations.map(
+        async ({ contribution, user_github_username, project_name }) => {
+          const projectNameQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectNameQuery.rows[0]?.id;
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [user_github_username]
+          );
+          const user_id = userNameQuery.rows[0]?.id;
+          await client.query(
+            `INSERT INTO contributions (user_id, project_id, pull_request_url, additions, deletions, total_changes, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 ON CONFLICT (pull_request_url) DO NOTHING`,
+            [
+              user_id,
+              project_id,
+              contribution.pull_request_url,
+              contribution.additions,
+              contribution.deletions,
+              contribution.total_changes,
+              contribution.status,
+            ]
+          );
+        }
+      )
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting levels", err);
     throw err;
   } finally {
     client.release();
