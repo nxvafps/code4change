@@ -1,5 +1,6 @@
 export interface User {
   id?: number;
+  github_id: string;
   github_username: string;
   email: string;
   password_hash: string;
@@ -8,6 +9,10 @@ export interface User {
   xp: number;
   created_at?: Date;
   updated_at?: Date;
+  access_token: string;
+  refresh_token: string;
+  skills: string[];
+  categories: string[];
   projectSkills?: ProjectSkill[];
   userLevels?: UserLevel[];
 }
