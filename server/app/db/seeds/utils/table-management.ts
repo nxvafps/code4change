@@ -139,7 +139,7 @@ export const createTables = async () => {
       `);
 
     await client.query("COMMIT");
-    console.log("Tables created successfully");
+    console.log("Tables created");
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Tables creation failed", err);

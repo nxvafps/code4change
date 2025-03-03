@@ -1,9 +1,11 @@
 //insert functons for adding data in the seed function here
 import pool from "../../index";
 import users from "../../data/test-data/users";
-import { User, Skill, Category } from "../../../types/table-data-types";
+import { User, Skill, Category, Level } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
+import levels from "../../data/test-data/levels";
+
 export const insertUsers = async () => {
   const client = await pool.connect();
   try {
@@ -52,7 +54,6 @@ export const insertUsers = async () => {
       })
     );
     await client.query("COMMIT");
-    console.log("Users have been inserted");
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error inserting user", err);
@@ -74,7 +75,6 @@ export const inserSkills = async () => {
       })
     );
     await client.query("COMMIT");
-    console.log("Skills have been inserted");
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error inserting Skills", err);
@@ -98,7 +98,30 @@ export const insertCategories = async () => {
       })
     );
     await client.query("COMMIT");
-    console.log("categories have been inserted");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting categories", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertLevels = async () => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    await Promise.all(
+      levels.map(async (level) => {
+        await client.query(
+          `INSERT INTO levels (level, name, xp_required) 
+          VALUES ($1, $2, $3)`,
+          [level.level, level.name, level.xp_required]
+        );
+      })
+    );
+    await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error inserting categories", err);
