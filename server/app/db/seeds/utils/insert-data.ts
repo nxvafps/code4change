@@ -80,7 +80,7 @@ export const insertUsers = async () => {
     client.release();
   }
 };
-export const inserSkills = async () => {
+export const insertSkills = async () => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
