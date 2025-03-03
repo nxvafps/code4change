@@ -61,6 +61,25 @@ const createTables = async () => {
           FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
         );
       `);
+    await client.query(`CREATE TABLE IF NOT EXISTS user_levels (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    level_id INT NOT NULL,
+    achieved_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (level_id) REFERENCES levels(id) ON DELETE CASCADE
+);
+`);
+    await client.query(`CREATE TABLE IF NOT EXISTS project_skills (
+    id SERIAL PRIMARY KEY,
+    project_id INT NOT NULL,
+    skill_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE,
+    UNIQUE(project_id, skill_id)
+);
+`);
     await client.query(`
         CREATE TABLE IF NOT EXISTS user_categories (
           id SERIAL PRIMARY KEY,
@@ -136,6 +155,8 @@ interface User {
   xp: number;
   created_at?: Date;
   updated_at?: Date;
+  projectSkills?: ProjectSkill[];
+  userLevels?: UserLevel[];
 }
 
 interface Category {
@@ -210,4 +231,17 @@ interface Contribution {
   status: string;
   created_at?: Date;
   updated_at?: Date;
+}
+interface ProjectSkill {
+  id?: number;
+  project_id: number;
+  skill_id: number;
+  created_at?: Date;
+}
+
+interface UserLevel {
+  id?: number;
+  user_id: number;
+  level_id: number;
+  achieved_at?: Date;
 }
