@@ -155,7 +155,15 @@ export const insertContirbution = async () => {
     await client.query("BEGIN");
     await Promise.all(
       contributionRelations.map(
-        async ({ contribution, user_github_username, project_name }) => {
+        async ({
+          user_github_username,
+          project_name,
+          contribution,
+        }: {
+          user_github_username: String;
+          project_name: String;
+          contribution: Contribution;
+        }) => {
           const projectNameQuery = await client.query(
             `SELECT id FROM projects WHERE name = $1`,
             [project_name]
