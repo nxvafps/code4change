@@ -187,7 +187,7 @@ export const insertContirbution = async () => {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting levels", err);
+    console.error("Error inserting contirbution", err);
     throw err;
   } finally {
     client.release();
