@@ -1,3 +1,4 @@
+import Footer from "../components/Footer";
 import NavBar from "../components/Navbar";
 
 export default function Leaderboard() {
@@ -5,6 +6,7 @@ export default function Leaderboard() {
     <div>
       <NavBar />
       <p>This is the leaderboard page</p>
+      <Footer />
     </div>
   );
 }

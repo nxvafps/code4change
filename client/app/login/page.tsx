@@ -1,3 +1,10 @@
+import Footer from "../components/Footer";
+
 export default function Login() {
-  return <p>This is the login page</p>;
+  return (
+    <div>
+      <p>This is the login page</p>
+      <Footer />
+    </div>
+  );
 }
