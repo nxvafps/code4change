@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { User } from "../../seeds/utils/table-management";
+import { User } from "../../../types/table-data-types";
 
 const saltRounds = 10;
 const hashPassword = (password: string) =>

@@ -1,4 +1,4 @@
-import { UserSkill } from "../../seeds/utils/table-management";
+import { UserSkill } from "../../../types/table-data-types";
 
 const userSkillsRelations = [
   {

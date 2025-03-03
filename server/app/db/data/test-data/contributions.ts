@@ -1,4 +1,4 @@
-import { Contribution } from "../../seeds/utils/table-management";
+import { Contribution } from "../../../types/table-data-types";
 
 const contributionRelations = [
   {

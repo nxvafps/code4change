@@ -1,4 +1,4 @@
-import { Level } from "../../seeds/utils/table-management";
+import { Level } from "../../../types/table-data-types";
 
 const levels: Level[] = [
   { level: 1, name: "Beginner", xp_required: 0 },
