@@ -6,12 +6,12 @@ import {
   Skill,
   Category,
   Level,
-  ProjectRelation,
+  Contribution,
 } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
-import projectsRelations from "../../data/test-data/projects";
+import contributionRelations from "../../data/test-data/contributions";
 
 export const insertUsers = async () => {
   const client = await pool.connect();
@@ -80,7 +80,7 @@ export const insertUsers = async () => {
     client.release();
   }
 };
-export const inserSkills = async () => {
+export const insertSkills = async () => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -142,47 +142,60 @@ export const insertLevels = async () => {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting categories", err);
+    console.error("Error inserting levels", err);
     throw err;
   } finally {
     client.release();
   }
 };
 
-export const insertProject = async () => {
+export const insertContirbution = async () => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     await Promise.all(
-      projectsRelations.map(async (projectRelation: ProjectRelation) => {
-        const userResult = await client.query(
-          `SELECT id FROM users WHERE github_username = $1`,
-          [projectRelation.owner_username]
-        );
-        if (userResult.rows.length === 0) {
-          console.warn(`User ${projectRelation.owner_username} not found`);
-          return;
+      contributionRelations.map(
+        async ({
+          user_github_username,
+          project_name,
+          contribution,
+        }: {
+          user_github_username: String;
+          project_name: String;
+          contribution: Contribution;
+        }) => {
+          const projectNameQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectNameQuery.rows[0]?.id;
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [user_github_username]
+          );
+          const user_id = userNameQuery.rows[0]?.id;
+          await client.query(
+            `INSERT INTO contributions (user_id, project_id, pull_request_url, additions, deletions, total_changes, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 ON CONFLICT (pull_request_url) DO NOTHING`,
+            [
+              user_id,
+              project_id,
+              contribution.pull_request_url,
+              contribution.additions,
+              contribution.deletions,
+              contribution.total_changes,
+              contribution.status,
+            ]
+          );
         }
-        const owner_id = userResult.rows[0].id;
-        const projectResult = await client.query(
-          `INSERT INTO projects (name, description, github_repo_url, project_image_url, 
-          status, owner_id) 
-           VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (github_repo_url) DO NOTHING RETURNING id`,
-          [
-            projectRelation.project.name,
-            projectRelation.project.description,
-            projectRelation.project.github_repo_url,
-            projectRelation.project.project_image_url,
-            projectRelation.project.status,
-            owner_id,
-          ]
-        );
-      })
+      )
     );
+
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting projects", err);
+    console.error("Error inserting contirbution", err);
     throw err;
   } finally {
     client.release();
