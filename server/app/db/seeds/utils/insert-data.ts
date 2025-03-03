@@ -1,7 +1,13 @@
 //insert functons for adding data in the seed function here
 import pool from "../../index";
 import users from "../../data/test-data/users";
-import { User, Skill, Category, Level } from "../../../types/table-data-types";
+import {
+  User,
+  Skill,
+  Category,
+  Level,
+  ProjectRelation,
+} from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
@@ -145,29 +151,29 @@ export const insertLevels = async () => {
 
 export const insertProject = async () => {
   const client = await pool.connect();
-
   try {
     await client.query("BEGIN");
     await Promise.all(
-      projectsRelations.map(async (project, owner_username) => {
+      projectsRelations.map(async (projectRelation: ProjectRelation) => {
         const userResult = await client.query(
           `SELECT id FROM users WHERE github_username = $1`,
-          [owner_username]
+          [projectRelation.owner_username]
         );
         if (userResult.rows.length === 0) {
-          console.warn(`User ${owner_username} not found`);
+          console.warn(`User ${projectRelation.owner_username} not found`);
           return;
         }
         const owner_id = userResult.rows[0].id;
         const projectResult = await client.query(
           `INSERT INTO projects (name, description, github_repo_url, project_image_url, 
-          owner_id, status) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (github_repo_url) DO NOTHING RETURNING id`,
+          status, owner_id) 
+           VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (github_repo_url) DO NOTHING RETURNING id`,
           [
-            project.project.name,
-            project.project.description,
-            project.project.github_repo_url,
-            project.project.project_image_url,
-            project.project.status,
+            projectRelation.project.name,
+            projectRelation.project.description,
+            projectRelation.project.github_repo_url,
+            projectRelation.project.project_image_url,
+            projectRelation.project.status,
             owner_id,
           ]
         );
@@ -176,7 +182,7 @@ export const insertProject = async () => {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting categories", err);
+    console.error("Error inserting projects", err);
     throw err;
   } finally {
     client.release();
