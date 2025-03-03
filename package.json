@@ -6,7 +6,8 @@
   "scripts": {
     "install:client": "cd client && npm i",
     "install:server": "cd server && npm i",
-    "install:all": "npm i && npm run install:client && npm run install:server"
+    "install:all": "npm i && npm run install:client && npm run install:server",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/nxvafps/code4change/issues"
   },
-  "homepage": "https://github.com/nxvafps/code4change#readme"
+  "homepage": "https://github.com/nxvafps/code4change#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/supertest": "^6.0.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "supertest": "^7.0.0"
+  }
 }

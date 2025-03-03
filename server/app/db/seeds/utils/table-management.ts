@@ -1,6 +1,6 @@
 //insert functons for dropping and creating tables in the seed function here
 import pool from "../../index";
-const createTables = async () => {
+export const createTables = async () => {
   const client = await pool.connect();
 
   try {
@@ -145,3 +145,4 @@ const createTables = async () => {
     client.release();
   }
 };
+
