@@ -1,4 +1,4 @@
-import { Issue } from "../../seeds/utils/table-management";
+import { Issue } from "../../../types/table-data-types";
 
 const issueRelations = [
   {

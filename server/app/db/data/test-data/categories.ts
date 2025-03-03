@@ -1,4 +1,4 @@
-import { Category } from "../../seeds/utils/table-management";
+import { Category } from "../../../types/table-data-types";
 
 const categories: Category[] = [
   { category_name: "climateChange" },

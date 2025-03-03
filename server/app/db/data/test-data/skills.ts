@@ -1,4 +1,4 @@
-import { Skill } from "../../seeds/utils/table-management";
+import { Skill } from "../../../types/table-data-types";
 
 const skills: Skill[] = [
   { name: "javascript" },

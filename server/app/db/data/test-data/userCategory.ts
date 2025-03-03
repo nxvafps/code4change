@@ -1,4 +1,4 @@
-import { UserCategory } from "../../seeds/utils/table-management";
+import { UserCategory } from "../../../types/table-data-types";
 
 const userCategoriesRelations = [
   {

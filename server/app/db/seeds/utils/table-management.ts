@@ -7,18 +7,21 @@ export const createTables = async () => {
     await client.query("BEGIN");
 
     await client.query(`
-        CREATE TABLE IF NOT EXISTS users (
-          id SERIAL PRIMARY KEY,
-          github_username VARCHAR(255) UNIQUE NOT NULL,
-          email VARCHAR(255) UNIQUE NOT NULL,
-          password_hash VARCHAR(255) NOT NULL,
-          profile_picture VARCHAR(255),
-          role VARCHAR(50) NOT NULL,
-          xp INTEGER DEFAULT 0,
-          created_at TIMESTAMP DEFAULT NOW(),
-          updated_at TIMESTAMP DEFAULT NOW()
-        );
-      `);
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        github_id VARCHAR(255) UNIQUE,
+        github_username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255),
+        profile_picture VARCHAR(255),
+        role VARCHAR(50) NOT NULL,
+        xp INTEGER DEFAULT 0,
+        access_token VARCHAR(255),
+        refresh_token VARCHAR(255),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
     await client.query(`
         CREATE TABLE IF NOT EXISTS categories (
           id SERIAL PRIMARY KEY,
@@ -145,4 +148,3 @@ export const createTables = async () => {
     client.release();
   }
 };
-

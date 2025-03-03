@@ -1,4 +1,4 @@
-import { Project } from "../../seeds/utils/table-management";
+import { Project } from "../../../types/table-data-types";
 
 const projectRelations = [
   {
