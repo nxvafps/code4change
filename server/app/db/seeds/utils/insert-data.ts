@@ -5,6 +5,7 @@ import { User, Skill, Category, Level } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
+import projectsRelations from "../../data/test-data/projects";
 
 export const insertUsers = async () => {
   const client = await pool.connect();
@@ -118,6 +119,46 @@ export const insertLevels = async () => {
           `INSERT INTO levels (level, name, xp_required) 
           VALUES ($1, $2, $3)`,
           [level.level, level.name, level.xp_required]
+        );
+      })
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting categories", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertProject = async () => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    await Promise.all(
+      projectsRelations.map(async (project, owner_username) => {
+        const userResult = await client.query(
+          `SELECT id FROM users WHERE github_username = $1`,
+          [owner_username]
+        );
+        if (userResult.rows.length === 0) {
+          console.warn(`User ${owner_username} not found`);
+          return;
+        }
+        const owner_id = userResult.rows[0].id;
+        const projectResult = await client.query(
+          `INSERT INTO projects (name, description, github_repo_url, project_image_url, 
+          owner_id, status) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (github_repo_url) DO NOTHING RETURNING id`,
+          [
+            project.project.name,
+            project.project.description,
+            project.project.github_repo_url,
+            project.project.project_image_url,
+            project.project.status,
+            owner_id,
+          ]
         );
       })
     );
