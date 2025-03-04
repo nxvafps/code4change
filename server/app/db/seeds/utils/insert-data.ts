@@ -8,12 +8,17 @@ import {
   Level,
   Contribution,
   Issue,
+  ProjectSkillRelation,
+  ProjectRelation,
 } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
 import contributionRelations from "../../data/test-data/contributions";
+
 import issueRelations from "../../data/test-data/issues";
+import projectSkillRelations from "../../data/test-data/projectSkills";
+import projectRelations from "../../data/test-data/projects";
 
 export const insertUsers = async () => {
   const client = await pool.connect();
@@ -257,6 +262,91 @@ export const insertIssues = async () => {
       )
     );
 
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting issues", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertProjectSkills = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      projectSkillRelations.map(
+        async ({ project_name, skill_names }: ProjectSkillRelation) => {
+          const projectNameQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectNameQuery.rows[0]?.id;
+
+          await Promise.all(
+            skill_names.map(async (skill_name) => {
+              const skillNameQuery = await client.query(
+                `SELECT id FROM skills WHERE name = $1`,
+                [skill_name]
+              );
+              const skill_id = skillNameQuery.rows[0]?.id;
+
+              await client.query(
+                `INSERT INTO project_skills (project_id, skill_id)
+               VALUES ($1, $2)
+               ON CONFLICT (project_id, skill_id) DO NOTHING`,
+                [project_id, skill_id]
+              );
+            })
+          );
+        }
+      )
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting issues", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertProject = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      projectRelations.map(
+        async ({ owner_username, project }: ProjectRelation) => {
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [owner_username]
+          );
+          const owner_id = userNameQuery.rows[0]?.id;
+
+          await client.query(
+            `INSERT INTO projects (name, description, github_repo_url, project_image_url, 
+  status, owner_id) 
+   VALUES ($1, $2, $3, $4, $5, $6) 
+   ON CONFLICT (github_repo_url) DO NOTHING 
+   RETURNING id`,
+            [
+              project.name,
+              project.description,
+              project.github_repo_url,
+              project.project_image_url,
+              project.status,
+              owner_id,
+            ]
+          );
+        }
+      )
+    );
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
