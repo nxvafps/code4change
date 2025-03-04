@@ -168,7 +168,6 @@ export const dropTables = async () => {
     await client.query("DROP TABLE IF EXISTS users CASCADE");
 
     await client.query("COMMIT");
-    console.log("Tables dropped successfully");
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error dropping tables", err);
