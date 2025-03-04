@@ -70,7 +70,7 @@ This will create three databases:
 
 ### Environment Configuration
 
-Create three environment files in the `server/app` directory:
+Create three environment files in the `server/` directory:
 
 1. `.env.development`:
 
