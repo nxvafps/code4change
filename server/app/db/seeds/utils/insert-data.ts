@@ -103,30 +103,29 @@ export const insertUserLevels = async (userLevel: UserLevelRelation[]) => {
     await client.query("BEGIN");
 
     await Promise.all(
-      userLevel.map(
-        async ({ user_github_username, level }: UserLevelRelation) => {
-          const userNameQuery = await client.query(
-            `SELECT id, xp FROM users WHERE github_username = $1`,
-            [user_github_username]
-          );
-          const user_id = userNameQuery.rows[0]?.id;
-          const user_xp = userNameQuery.rows[0]?.xp;
+      userLevel.map(async ({ user_github_username }: UserLevelRelation) => {
+        const userNameQuery = await client.query(
+          `SELECT id, xp FROM users WHERE github_username = $1`,
+          [user_github_username]
+        );
+        const user_id = userNameQuery.rows[0]?.id;
+        const user_xp = userNameQuery.rows[0]?.xp;
 
-          if (!user_id || user_xp === undefined) return;
-          const userLevelQuery = await client.query(
-            `SELECT id FROM levels WHERE level = $1`,
-            [level]
-          );
-          const level_id = userLevelQuery.rows[0]?.id;
-
-          await client.query(
-            `INSERT INTO user_levels (user_id, level_id)
+        if (!user_id || user_xp === undefined) return;
+        const allLevelsQuery = await client.query(
+          `SELECT id, level, xp_required FROM levels ORDER BY xp_required DESC`
+        );
+        const levels = allLevelsQuery.rows;
+        const highestLevelSystem = levels.find(
+          (level) => user_xp >= level.xp_required
+        );
+        await client.query(
+          `INSERT INTO user_levels (user_id, level_id)
              VALUES ($1, $2)
              ON CONFLICT (user_id) DO UPDATE SET level_id = EXCLUDED.level_id`,
-            [user_id, level_id]
-          );
-        }
-      )
+          [user_id, highestLevelSystem.id]
+        );
+      })
     );
     await client.query("COMMIT");
   } catch (err) {
