@@ -16,15 +16,6 @@ import {
   IssueRelation,
   UserLevelRelation,
 } from "../../../types/table-data-types";
-import skills from "../../data/test-data/skills";
-import categories from "../../data/test-data/categories";
-import levels from "../../data/test-data/levels";
-import contributionRelations from "../../data/test-data/contributions";
-import userCategoriesRelations from "../../data/test-data/userCategory";
-import issueRelations from "../../data/test-data/issues";
-import projectSkillRelations from "../../data/test-data/projectSkills";
-import projectRelations from "../../data/test-data/projects";
-import userSkillsRelations from "../../data/test-data/userSkills";
 
 export const insertUsers = async (users: User[]) => {
   const client = await pool.connect();
@@ -74,12 +65,30 @@ export const insertUserSkills = async (userSkills: UserSkillsRelation[]) => {
 
           const user_id = userNameQuery.rows[0]?.id;
 
+          if (!user_id) {
+            console.warn(
+              `User "${user_github_username}" not found, skipping skill relations`
+            );
+            return;
+          }
           await Promise.all(
             skill_names.map(async (skill_name) => {
+              const skillCheck = await client.query(
+                `SELECT id FROM skills WHERE name = $1`,
+                [skill_name]
+              );
+
+              if (!skillCheck.rows.length) {
+                console.warn(
+                  `Skill "${skill_name}" not found, skipping relation for user "${user_github_username}"`
+                );
+                return;
+              }
+
               await client.query(
                 `INSERT INTO user_skills (user_id, skill_id)
-               SELECT $1, id FROM skills WHERE name = $2
-               ON CONFLICT DO NOTHING`,
+                 SELECT $1, id FROM skills WHERE name = $2
+                 ON CONFLICT (user_id, skill_id) DO NOTHING`,
                 [user_id, skill_name]
               );
             })
@@ -119,12 +128,29 @@ export const insertUserLevels = async (userLevel: UserLevelRelation[]) => {
         const highestLevelSystem = levels.find(
           (level) => user_xp >= level.xp_required
         );
-        await client.query(
-          `INSERT INTO user_levels (user_id, level_id)
-             VALUES ($1, $2)
-             ON CONFLICT (user_id) DO UPDATE SET level_id = EXCLUDED.level_id`,
-          [user_id, highestLevelSystem.id]
+        if (!highestLevelSystem) {
+          console.warn(
+            `No suitable level found for user ${user_github_username} with XP ${user_xp}`
+          );
+          return;
+        }
+
+        const existingLevelQuery = await client.query(
+          `SELECT id FROM user_levels WHERE user_id = $1`,
+          [user_id]
         );
+
+        if (existingLevelQuery.rows.length > 0) {
+          await client.query(
+            `UPDATE user_levels SET level_id = $1 WHERE user_id = $2`,
+            [highestLevelSystem.id, user_id]
+          );
+        } else {
+          await client.query(
+            `INSERT INTO user_levels (user_id, level_id) VALUES ($1, $2)`,
+            [user_id, highestLevelSystem.id]
+          );
+        }
       })
     );
     await client.query("COMMIT");
@@ -156,12 +182,31 @@ export const insertUserCategories = async (
           );
           const user_id = userNameQuery.rows[0]?.id;
 
+          if (!user_id) {
+            console.warn(
+              `User "${user_github_username}" not found, skipping category relations`
+            );
+            return;
+          }
+
           await Promise.all(
             category_names.map(async (category_name) => {
+              const categoryCheck = await client.query(
+                `SELECT id FROM categories WHERE category_name = $1`,
+                [category_name]
+              );
+
+              if (!categoryCheck.rows.length) {
+                console.warn(
+                  `Category "${category_name}" not found, skipping relation for user "${user_github_username}"`
+                );
+                return;
+              }
+
               await client.query(
                 `INSERT INTO user_categories (user_id, category_id)
                  SELECT $1, id FROM categories WHERE category_name = $2
-                 ON CONFLICT DO NOTHING`,
+                 ON CONFLICT (user_id, category_id) DO NOTHING`,
                 [user_id, category_name]
               );
             })
@@ -249,7 +294,7 @@ export const insertLevels = async (levels: Level[]) => {
   }
 };
 
-export const insertContirbution = async (
+export const insertContribution = async (
   contributionRelations: ContributionRelation[]
 ) => {
   const client = await pool.connect();
@@ -373,7 +418,12 @@ export const insertProjectSkills = async (
             [project_name]
           );
           const project_id = projectNameQuery.rows[0]?.id;
-
+          if (!project_id) {
+            console.warn(
+              `Project named "${project_name}" not found, skipping relation`
+            );
+            return;
+          }
           await Promise.all(
             skill_names.map(async (skill_name) => {
               const skillNameQuery = await client.query(
@@ -438,7 +488,7 @@ export const insertProject = async (projectRelations: ProjectRelation[]) => {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting issues", err);
+    console.error("Error inserting projects", err);
     throw err;
   } finally {
     client.release();

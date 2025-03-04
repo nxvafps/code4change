@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "setup-db": "psql -f ./app/db/setup.sql",
-    "seed": "ts-node ./app/db/seeds/run-seed.ts",
+    "seed": "NODE_ENV=development ts-node ./app/db/seeds/run-seed.ts",
     "dev": "NODE_ENV=development nodemon ./app/listen.ts",
     "start": "NODE_ENV=production ts-node ./app/listen.ts",
     "test": "NODE_ENV=test jest"
