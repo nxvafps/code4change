@@ -83,6 +83,8 @@ const ContributionInfoText = styled.p`
   font-size: 1rem;
   margin: 0.5rem 0;
   color: #333;
+  border: solid 1px purple;
+  border-radius: 20px;
 `;
 
 const ContributionLink = styled.a`
@@ -131,9 +133,7 @@ export default function UserPage() {
     <PageContainer>
       <NavBar />
       <UsersPageContainer>
-        <Link href={`/users/${user.github_id}`}>
-          <Title>{user.github_username}</Title>
-        </Link>
+        <Title>{user.github_username}</Title>
         <Section>
           <ImageContainer>
             <ProfileImage
@@ -141,6 +141,11 @@ export default function UserPage() {
               alt={`Profile of ${user.github_username}`}
             />
           </ImageContainer>
+          <Link href={`https://github.com/${user.github_id}`}>
+            <InfoText>
+              <strong>{`https://github.com/${user.github_id}`}</strong>
+            </InfoText>
+          </Link>
           <InfoText>
             <strong>Email: </strong>
             {user.email}
