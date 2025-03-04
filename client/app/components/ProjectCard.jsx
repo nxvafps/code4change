@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Link from "react";
+import Link from "next/link";
 
 export default function ProjectCard({
   project_id,
@@ -11,15 +11,17 @@ export default function ProjectCard({
   status,
 }) {
   return (
-    <Card>
-      <ProjectImage src={project_image} />
-      <MetaContainer>
-        <MetaBox>{name}</MetaBox>
-        <MetaBox>{owner}</MetaBox>
-        <MetaBox>Category</MetaBox>
-        <MetaBox>{status}</MetaBox>
-      </MetaContainer>
-    </Card>
+    <Link href={`projects/${project_id}`}>
+      <Card>
+        <ProjectImage src={project_image} />
+        <MetaContainer>
+          <MetaBox>{name}</MetaBox>
+          <MetaBox>{owner}</MetaBox>
+          <MetaBox>Category</MetaBox>
+          <MetaBox>{status}</MetaBox>
+        </MetaContainer>
+      </Card>
+    </Link>
   );
 }
 
@@ -29,7 +31,8 @@ const Card = styled.div`
   border: 1px solid;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 90%;
+  width: 100%;
+  max-width: 800px;
   padding: 10px;
   gap: 10px;
 `;
@@ -42,6 +45,7 @@ const ProjectImage = styled.img`
 const MetaContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  width: 100%;
   text-align: center;
   padding: 10px;
   gap: 10px;
@@ -52,4 +56,5 @@ const MetaBox = styled.div`
   border-radius: 10px;
   padding: 10px;
   min-width: 120px;
+  flex-grow: 1;
 `;
