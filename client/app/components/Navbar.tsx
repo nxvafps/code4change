@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "../../public/logo2.png";
+import logo from "../../public/logo.svg";
 
 const NavbarContainer = styled.nav`
   display: flex;
