@@ -10,17 +10,23 @@ import {
   Issue,
   ProjectSkillRelation,
   ProjectRelation,
+  UserCategoriesRelation,
+  UserSkillsRelation,
+  ContributionRelation,
+  IssueRelation,
+  UserLevelRelation,
 } from "../../../types/table-data-types";
 import skills from "../../data/test-data/skills";
 import categories from "../../data/test-data/categories";
 import levels from "../../data/test-data/levels";
 import contributionRelations from "../../data/test-data/contributions";
-
+import userCategoriesRelations from "../../data/test-data/userCategory";
 import issueRelations from "../../data/test-data/issues";
 import projectSkillRelations from "../../data/test-data/projectSkills";
 import projectRelations from "../../data/test-data/projects";
+import userSkillsRelations from "../../data/test-data/userSkills";
 
-export const insertUsers = async () => {
+export const insertUsers = async (users: User[]) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -29,8 +35,7 @@ export const insertUsers = async () => {
         const usersTable = await client.query(
           `INSERT INTO users (github_id, github_username, email, password_hash, role, xp, profile_picture, access_token, refresh_token)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           ON CONFLICT (github_id) DO NOTHING
-           RETURNING id`,
+           ON CONFLICT (github_id) DO NOTHING`,
           [
             user.github_id,
             user.github_username,
@@ -43,39 +48,6 @@ export const insertUsers = async () => {
             user.refresh_token,
           ]
         );
-
-        const user_id = usersTable.rows[0]?.id;
-        await Promise.all(
-          user.categories.map((category) =>
-            client.query(
-              `INSERT INTO user_categories (user_id, category_id)
-                 SELECT $1, id FROM categories WHERE category_name = $2
-                 ON CONFLICT DO NOTHING`,
-              [user_id, category]
-            )
-          )
-        );
-        await Promise.all(
-          user.skills.map((skill) =>
-            client.query(
-              `INSERT INTO user_skills (user_id, skill_id)
-                 SELECT $1, id FROM skills WHERE name = $2
-                 ON CONFLICT DO NOTHING`,
-              [user_id, skill]
-            )
-          )
-        );
-        const levelingsystem = levels
-          .sort((a, b) => b.xp_required - a.xp_required)
-          .find((level) => user.xp >= level.xp_required);
-        if (levelingsystem) {
-          await client.query(
-            `INSERT INTO user_levels (user_id, level_id)
-               VALUES ($1, $2)
-               ON CONFLICT (user_id) DO NOTHING`,
-            [user_id, levelingsystem.id]
-          );
-        }
       })
     );
     await client.query("COMMIT");
@@ -87,7 +59,129 @@ export const insertUsers = async () => {
     client.release();
   }
 };
-export const insertSkills = async () => {
+export const insertUserSkills = async (userSkills: UserSkillsRelation[]) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      userSkills.map(
+        async ({ user_github_username, skill_names }: UserSkillsRelation) => {
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [user_github_username]
+          );
+
+          const user_id = userNameQuery.rows[0]?.id;
+
+          await Promise.all(
+            skill_names.map(async (skill_name) => {
+              await client.query(
+                `INSERT INTO user_skills (user_id, skill_id)
+               SELECT $1, id FROM skills WHERE name = $2
+               ON CONFLICT DO NOTHING`,
+                [user_id, skill_name]
+              );
+            })
+          );
+        }
+      )
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting user skills", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+export const insertUserLevels = async (userLevel: UserLevelRelation[]) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      userLevel.map(
+        async ({ user_github_username, level }: UserLevelRelation) => {
+          const userNameQuery = await client.query(
+            `SELECT id, xp FROM users WHERE github_username = $1`,
+            [user_github_username]
+          );
+          const user_id = userNameQuery.rows[0]?.id;
+          const user_xp = userNameQuery.rows[0]?.xp;
+
+          if (!user_id || user_xp === undefined) return;
+          const userLevelQuery = await client.query(
+            `SELECT id FROM levels WHERE level = $1`,
+            [level]
+          );
+          const level_id = userLevelQuery.rows[0]?.id;
+
+          await client.query(
+            `INSERT INTO user_levels (user_id, level_id)
+             VALUES ($1, $2)
+             ON CONFLICT (user_id) DO UPDATE SET level_id = EXCLUDED.level_id`,
+            [user_id, level_id]
+          );
+        }
+      )
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting user levels", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertUserCategories = async (
+  userCategories: UserCategoriesRelation[]
+) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      userCategories.map(
+        async ({
+          user_github_username,
+          category_names,
+        }: UserCategoriesRelation) => {
+          const userNameQuery = await client.query(
+            `SELECT id FROM users WHERE github_username = $1`,
+            [user_github_username]
+          );
+          const user_id = userNameQuery.rows[0]?.id;
+
+          await Promise.all(
+            category_names.map(async (category_name) => {
+              await client.query(
+                `INSERT INTO user_categories (user_id, category_id)
+                 SELECT $1, id FROM categories WHERE category_name = $2
+                 ON CONFLICT DO NOTHING`,
+                [user_id, category_name]
+              );
+            })
+          );
+        }
+      )
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting user categories", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+export const insertSkills = async (skills: Skill[]) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -109,7 +203,7 @@ export const insertSkills = async () => {
   }
 };
 
-export const insertCategories = async () => {
+export const insertCategories = async (categories: Category[]) => {
   const client = await pool.connect();
 
   try {
@@ -132,7 +226,7 @@ export const insertCategories = async () => {
   }
 };
 
-export const insertLevels = async () => {
+export const insertLevels = async (levels: Level[]) => {
   const client = await pool.connect();
 
   try {
@@ -156,7 +250,9 @@ export const insertLevels = async () => {
   }
 };
 
-export const insertContirbution = async () => {
+export const insertContirbution = async (
+  contributionRelations: ContributionRelation[]
+) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -166,11 +262,7 @@ export const insertContirbution = async () => {
           user_github_username,
           project_name,
           contribution,
-        }: {
-          user_github_username: String;
-          project_name: String;
-          contribution: Contribution;
-        }) => {
+        }: ContributionRelation) => {
           const projectNameQuery = await client.query(
             `SELECT id FROM projects WHERE name = $1`,
             [project_name]
@@ -209,7 +301,7 @@ export const insertContirbution = async () => {
   }
 };
 
-export const insertIssues = async () => {
+export const insertIssues = async (issueRelations: IssueRelation[]) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -221,12 +313,7 @@ export const insertIssues = async () => {
           created_by_username,
           assigned_to_username,
           issue,
-        }: {
-          project_name: String;
-          created_by_username: String;
-          assigned_to_username: String | null;
-          issue: Issue;
-        }) => {
+        }: IssueRelation) => {
           const projectNameQuery = await client.query(
             `SELECT id FROM projects WHERE name = $1`,
             [project_name]
@@ -272,13 +359,15 @@ export const insertIssues = async () => {
   }
 };
 
-export const insertProjectSkills = async () => {
+export const insertProjectSkills = async (
+  projectSkills: ProjectSkillRelation[]
+) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
     await Promise.all(
-      projectSkillRelations.map(
+      projectSkills.map(
         async ({ project_name, skill_names }: ProjectSkillRelation) => {
           const projectNameQuery = await client.query(
             `SELECT id FROM projects WHERE name = $1`,
@@ -315,7 +404,7 @@ export const insertProjectSkills = async () => {
   }
 };
 
-export const insertProject = async () => {
+export const insertProject = async (projectRelations: ProjectRelation[]) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
