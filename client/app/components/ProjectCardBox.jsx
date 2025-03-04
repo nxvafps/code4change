@@ -7,6 +7,7 @@ import ProjectCard from "./ProjectCard";
 export default function ProjectCardBox() {
   const [projects, setProjects] = useState([
     {
+      project_id: 1,
       owner_username: "nxvafps",
       project: {
         name: "EcoTracker",
@@ -17,6 +18,7 @@ export default function ProjectCardBox() {
       },
     },
     {
+      project_id: 2,
       owner_username: "projectowner",
       project: {
         name: "AccessibilityHelper",
@@ -27,6 +29,7 @@ export default function ProjectCardBox() {
       },
     },
     {
+      project_id: 3,
       owner_username: "projectowner",
       project: {
         name: "RefugeeConnect",
@@ -44,7 +47,7 @@ export default function ProjectCardBox() {
       {projects.map((project, index) => (
         <ProjectCard
           key={index}
-          project_id={project.id}
+          project_id={project.project_id}
           owner={project.owner_username}
           name={project.project.name}
           description={project.project.description}
@@ -61,7 +64,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   gap: 10px;
   width: 100vw;
   padding: 20px;

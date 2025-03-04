@@ -2,7 +2,7 @@ import { UserLevel } from "../../../types/table-data-types";
 
 const userLevelRelations = [
   {
-    user_github_username: "nxvafps",
+    user_github_username: "user1",
     level: 2,
   },
   {

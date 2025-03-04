@@ -2,7 +2,7 @@ import { ProjectRelation } from "../../../types/table-data-types";
 
 const projectRelations: ProjectRelation[] = [
   {
-    owner_username: "nxvafps",
+    owner_username: "user1",
     project: {
       name: "EcoTracker",
       description: "An app to track and reduce your carbon footprint",
