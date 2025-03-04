@@ -1,11 +1,12 @@
 import Footer from "../components/Footer";
 import NavBar from "../components/Navbar";
+import ProjectCardBox from "../components/ProjectCardBox";
 
 export default function Projects() {
   return (
     <div>
       <NavBar />
-      <p>This is the Projects Page</p>
+      <ProjectCardBox />
       <Footer />
     </div>
   );
