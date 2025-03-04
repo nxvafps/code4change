@@ -1,6 +1,6 @@
-import { Project } from "../../../types/table-data-types";
+import { ProjectRelation } from "../../../types/table-data-types";
 
-const projectRelations = [
+const projectRelations: ProjectRelation[] = [
   {
     owner_username: "nxvafps",
     project: {
@@ -9,6 +9,7 @@ const projectRelations = [
       github_repo_url: "https://github.com/nxvafps/EcoTracker",
       project_image_url: "https://example.com/images/ecotracker.jpg",
       status: "active",
+      categories: ["climateChange", "education"],
     },
   },
   {
@@ -19,6 +20,7 @@ const projectRelations = [
       github_repo_url: "https://github.com/projectowner/AccessibilityHelper",
       project_image_url: "https://example.com/images/accessibility.jpg",
       status: "active",
+      categories: ["accessibility", "education"],
     },
   },
   {
@@ -30,6 +32,7 @@ const projectRelations = [
       github_repo_url: "https://github.com/projectowner/RefugeeConnect",
       project_image_url: "https://example.com/images/refugee-connect.jpg",
       status: "planning",
+      categories: ["worldConflict", "disasterRelief"],
     },
   },
 ];
