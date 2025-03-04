@@ -43,10 +43,10 @@ export interface Level {
 export interface Project {
   id?: number;
   name: string;
-  owner_id: number;
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
+  owner_id?: number;
   status: string;
   created_at?: Date;
   updated_at?: Date;
