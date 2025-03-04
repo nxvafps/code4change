@@ -1,6 +1,5 @@
 import pool from "../";
-import { createTables } from "./utils/table-management";
-//create a drop tables func in the above file and import it in, so we can drop the tables first
+import { createTables, dropTables } from "./utils/table-management";
 import { insertUsers, insertSkills, insertLevels } from "./utils/insert-data";
 
 import { SeedData } from "../../types/table-data-types";
@@ -21,7 +20,7 @@ const seed = async ({
   console.log(`Seeding on ${process.env.PGDATABASE}`);
 
   try {
-    // await dropTables();
+    await dropTables();
 
     await createTables();
 
@@ -30,7 +29,13 @@ const seed = async ({
     // await insertCategories(categories);
     // await insertLevels(levels);
     // await insertUsers(users);
+    // insertUserSkills(userSkillsRelations);
+    // insertUserCategories(userCategoriesRelations);
+    // insertUserLevels(userLevelRelations)
     // await insertProject(projectRelations);
+    // insertProjectSkills(projectSkillRelations)
+    // insertIssues(issueRelations)
+    // insertContributions(contributionRelations)
 
     // additional data insertion functions here
 
