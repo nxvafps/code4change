@@ -32,7 +32,7 @@ router.get("/logout", (req, res) => {
     if (err) {
       return res.status(500).send({ message: "Error during logout" });
     }
-    res.redirect("https://localhost:3000/login");
+    res.status(200).send({ message: "Logged out successfully" });
   });
 });
 

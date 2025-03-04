@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.svg";
+import { useAuth } from "../context/AuthContext";
 
 const NavbarContainer = styled.nav`
   display: flex;
@@ -30,7 +31,32 @@ const StyledLink = styled(Link)`
   }
 `;
 
+const LogoutButton = styled.button`
+  text-decoration: none;
+  color: inherit;
+  padding: 5px;
+  text-align: center;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: #0070f3;
+  }
+`;
+
 export default function NavBar() {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <NavbarContainer>
       <Image src={logo} alt="code4change logo" width={60} height={60} />
@@ -40,7 +66,7 @@ export default function NavBar() {
         <StyledLink href="/projects">Projects</StyledLink>
         <StyledLink href="/add_project">Add Project</StyledLink>
         <StyledLink href="/leaderboard">Leaderboard</StyledLink>
-        <StyledLink href="/">Log Out</StyledLink>
+        <LogoutButton onClick={handleLogout}>Log Out</LogoutButton>
       </LinkContainer>
     </NavbarContainer>
   );
