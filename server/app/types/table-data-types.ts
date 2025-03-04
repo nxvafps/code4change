@@ -104,8 +104,70 @@ export interface UserLevel {
   level_id: number;
   achieved_at?: Date;
 }
+export interface UserSkillsRelation {
+  user_github_username: string;
+  skill_names: string[];
+}
+
+export interface UserCategoriesRelation {
+  user_github_username: string;
+  category_names: string[];
+}
+
+export interface UserLevelRelation {
+  user_github_username: string;
+  level: number;
+}
 
 export interface ProjectRelation {
   owner_username: string;
-  project: Project;
+  project: {
+    name: string;
+    description?: string;
+    github_repo_url: string;
+    project_image_url?: string;
+    status: string;
+  };
+}
+
+export interface ProjectSkillRelation {
+  project_name: string;
+  skill_names: string[];
+}
+
+export interface ContributionRelation {
+  user_github_username: string;
+  project_name: string;
+  contribution: {
+    pull_request_url: string;
+    additions: number;
+    deletions: number;
+    total_changes: number;
+    status: string;
+  };
+}
+
+export interface IssueRelation {
+  project_name: string;
+  created_by_username: string;
+  assigned_to_username: string | null;
+  issue: {
+    title: string;
+    description: string;
+    status: string;
+  };
+}
+
+export interface SeedData {
+  users: User[];
+  skills: Skill[];
+  categories: Category[];
+  userSkillsRelations: UserSkillsRelation[];
+  userCategoriesRelations: UserCategoriesRelation[];
+  userLevelRelations: UserLevelRelation[];
+  levels: Level[];
+  projectRelations: ProjectRelation[];
+  projectSkillRelations: ProjectSkillRelation[];
+  issueRelations: IssueRelation[];
+  contributionRelations: ContributionRelation[];
 }

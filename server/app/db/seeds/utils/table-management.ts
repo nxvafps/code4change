@@ -147,3 +147,33 @@ export const createTables = async () => {
     client.release();
   }
 };
+
+export const dropTables = async () => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Drop tables in reverse order of dependencies to avoid foreign key conflicts
+    await client.query("DROP TABLE IF EXISTS contributions CASCADE");
+    await client.query("DROP TABLE IF EXISTS issues CASCADE");
+    await client.query("DROP TABLE IF EXISTS user_skills CASCADE");
+    await client.query("DROP TABLE IF EXISTS user_categories CASCADE");
+    await client.query("DROP TABLE IF EXISTS project_skills CASCADE");
+    await client.query("DROP TABLE IF EXISTS user_levels CASCADE");
+    await client.query("DROP TABLE IF EXISTS projects CASCADE");
+    await client.query("DROP TABLE IF EXISTS levels CASCADE");
+    await client.query("DROP TABLE IF EXISTS skills CASCADE");
+    await client.query("DROP TABLE IF EXISTS categories CASCADE");
+    await client.query("DROP TABLE IF EXISTS users CASCADE");
+
+    await client.query("COMMIT");
+    console.log("Tables dropped successfully");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error dropping tables", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
