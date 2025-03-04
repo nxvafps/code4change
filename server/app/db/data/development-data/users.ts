@@ -8,8 +8,8 @@ const hashPassword = (password: string) =>
 const users = [
   {
     github_id: "12345678",
-    github_username: "nxvafps",
-    email: "oliverquirk11@gmail.com",
+    github_username: "user1",
+    email: "user1@gmail.com",
     xp: 27,
     password_hash: hashPassword("password123"),
     role: "maintainer",
@@ -57,6 +57,19 @@ const users = [
     refresh_token: "ghr_newbie_refresh123456789",
     skills: ["html", "css", "javascript"],
     categories: ["education", "mentalHealth"],
+  },
+  {
+    github_id: "56789012",
+    github_username: "genericuser1",
+    email: "genericuser1@example.com",
+    xp: 50,
+    password_hash: hashPassword("generic123"),
+    role: "developer",
+    profile_picture: "https://randomuser.me/api/portraits/men/33.jpg",
+    access_token: "gho_genericuser_token123456789",
+    refresh_token: "ghr_genericuser_refresh123456789",
+    skills: ["html", "css", "javascript", "python"],
+    categories: ["education", "healthcare"],
   },
 ];
 

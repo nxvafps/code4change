@@ -11,7 +11,7 @@ import {
   insertProject,
   insertProjectSkills,
   insertIssues,
-  insertContirbution,
+  insertContribution,
 } from "./utils/insert-data";
 
 import { SeedData } from "../../types/table-data-types";
@@ -49,7 +49,7 @@ const seed = async ({
     await insertProject(projectRelations);
     await insertProjectSkills(projectSkillRelations);
     await insertIssues(issueRelations);
-    await insertContirbution(contributionRelations);
+    await insertContribution(contributionRelations);
 
     console.log("Database seeded successfully");
     await client.query("COMMIT");
