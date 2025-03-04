@@ -29,13 +29,13 @@ const seed = async ({
     // await insertCategories(categories);
     // await insertLevels(levels);
     // await insertUsers(users);
-    // insertUserSkills(userSkillsRelations);
-    // insertUserCategories(userCategoriesRelations);
-    // insertUserLevels(userLevelRelations)
-    // await insertProject(projectRelations);
-    // insertProjectSkills(projectSkillRelations)
-    // insertIssues(issueRelations)
-    // insertContributions(contributionRelations)
+    // await insertUserSkills(userSkillsRelations);
+    // await insertUserCategories(userCategoriesRelations);
+    // await insertUserLevels(userLevelRelations)
+    // await await insertProject(projectRelations);
+    // await insertProjectSkills(projectSkillRelations)
+    // await insertIssues(issueRelations)
+    // await insertContributions(contributionRelations)
 
     // additional data insertion functions here
 
