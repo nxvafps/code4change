@@ -1,39 +1,46 @@
 "use client";
 import styled from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "../../public/logo2.png";
 
 const NavbarContainer = styled.nav`
   display: flex;
+  align-items: center;
   border: solid 1px;
-`;
-
-const Logo = styled.img`
-  height: 60px;
+  padding: 10px;
 `;
 
 const LinkContainer = styled.div`
   display: grid;
-  grid-template-columns; repeat(3, fr);
-  width: 100%;
-  gap: 5px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   padding: 5px;
+  width: 100%;
 `;
 
-const NavLink = styled.a`
+const StyledLink = styled(Link)`
   text-decoration: none;
+  color: inherit;
+  padding: 5px;
+  text-align: center;
+
+  &:hover {
+    color: #0070f3;
+  }
 `;
 
 export default function NavBar() {
   return (
     <NavbarContainer>
-      <Logo src="/logo.svg" alt="code4change logo" />
+      <Image src={logo} alt="code4change logo" width={60} height={60} />
       <LinkContainer>
-        <Link href="/home">Home</Link>
-        <Link href="/">My Profile</Link>
-        <Link href="/projects">Projects</Link>
-        <Link href="/add_project">Add Project</Link>
-        <Link href="/leaderboard">Leaderboard</Link>
-        <Link href="/">Log Out</Link>
+        <StyledLink href="/home">Home</StyledLink>
+        <StyledLink href="/">My Profile</StyledLink>
+        <StyledLink href="/projects">Projects</StyledLink>
+        <StyledLink href="/add_project">Add Project</StyledLink>
+        <StyledLink href="/leaderboard">Leaderboard</StyledLink>
+        <StyledLink href="/">Log Out</StyledLink>
       </LinkContainer>
     </NavbarContainer>
   );
