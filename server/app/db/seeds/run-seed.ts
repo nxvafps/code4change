@@ -2,8 +2,10 @@ import seed from "./seed";
 import { devData } from "../data/development-data";
 import { testData } from "../data/test-data";
 import pool from "../";
+import { SeedData } from "../../types/table-data-types";
 
-const data = process.env.NODE_ENV === "development" ? devData : testData;
+const data: SeedData =
+  process.env.NODE_ENV === "development" ? devData : testData;
 
 const runSeed = async () => {
   try {
