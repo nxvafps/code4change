@@ -43,7 +43,6 @@ export interface Level {
 export interface Project {
   id?: number;
   name: string;
-  owner_id: number;
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
@@ -69,11 +68,11 @@ export interface UserSkill {
 
 export interface Issue {
   id?: number;
-  project_id: number;
+  project_id?: number;
   title: string;
   description?: string;
   status: string;
-  created_by: number;
+  created_by?: number;
   assigned_to?: number;
   created_at?: Date;
   updated_at?: Date;
