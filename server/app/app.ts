@@ -10,7 +10,7 @@ import projectRouter from "./routes/project-routes";
 import categoriesRoutes from "./routes/categories-routes";
 import skillsRoutes from "./routes/skills-routes";
 import contributionRoutes from "./routes/contributions-routes";
-
+import issuesRouter from "./routes/issues-routes";
 
 const app = express();
 
@@ -48,7 +48,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/issues", issuesRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/skills", skillsRoutes);
