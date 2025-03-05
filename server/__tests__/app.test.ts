@@ -12,9 +12,9 @@ describe("User Routes - End to End Tests", () => {
     await runSeed();
   });
 
-  afterAll(async () => {
-    await pool.end();
-  });
+  // afterAll(async () => {
+  //   await pool.end();
+  // });
 
   describe("GET /api/users", () => {
     it("should return all users", async () => {
@@ -226,7 +226,7 @@ describe("Issues Routes - End to End Tests", () => {});
 describe("Contributions Routes - End to End Tests", () => {});
 describe("Skills Routes - End to End Tests", () => {});
 
-describe.only("Categories Routes - End to End Tests", () => {
+describe("Categories Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
