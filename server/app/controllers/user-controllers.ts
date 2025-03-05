@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from "express";
+import { Request, Response } from "express";
 import * as UserModel from "../models/user-models";
 
 export const getUserByUsername = async (
@@ -50,6 +50,26 @@ export const getUserProfile = async (
     res.status(200).json({ user: userProfile });
   } catch (error) {
     console.error("Error in getUserProfile controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUserProjects = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const username = req.params.username;
+    const projects = await UserModel.getUserProjects(username);
+
+    if (projects === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json({ projects });
+  } catch (error) {
+    console.error("Error in getUserProjects controller:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

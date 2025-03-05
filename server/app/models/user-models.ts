@@ -1,5 +1,5 @@
 import pool from "../db";
-import { User } from "../types/table-data-types";
+import { User, Project } from "../types/table-data-types";
 
 export const getUserByUsername = async (
   username: string
@@ -93,6 +93,60 @@ export const getUserWithSkillsAndCategories = async (
     }
   } catch (error) {
     console.error("Error fetching user with related data:", error);
+    throw error;
+  }
+};
+
+export const getUserProjects = async (
+  username: string
+): Promise<Project[] | null> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await client.query(
+        "SELECT id FROM users WHERE github_username = $1",
+        [username]
+      );
+
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const projectsResult = await client.query(
+        `SELECT p.*, u.github_username as owner_username,
+        (
+          SELECT COALESCE(
+            array_agg(s.name),
+            ARRAY[]::text[]
+          )
+          FROM skills s
+          JOIN project_skills ps ON s.id = ps.skill_id
+          WHERE ps.project_id = p.id
+        ) as skills,
+        (
+          SELECT COALESCE(
+            array_agg(c.category_name),
+            ARRAY[]::text[]
+          )
+          FROM categories c
+          WHERE c.id IN (
+            SELECT uc.category_id
+            FROM user_categories uc
+            WHERE uc.user_id = p.owner_id
+          )
+        ) as categories
+        FROM projects p
+        JOIN users u ON p.owner_id = u.id
+        WHERE p.owner_id = $1
+        ORDER BY p.created_at DESC
+        `,
+        [user_id]
+      );
+      return projectsResult.rows;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error fetching user projects:", error);
     throw error;
   }
 };

@@ -96,6 +96,61 @@ describe("User Routes - End to End Tests", () => {
       expect(response.body).toHaveProperty("message", "User not found");
     });
   });
+
+  describe("GET /api/users/:username/projects", () => {
+    it("should return all projects for a user", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const response = await request(app)
+        .get(`/api/users/${testUser}/projects`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty("projects");
+      expect(Array.isArray(response.body.projects)).toBe(true);
+
+      if (response.body.projects.length > 0) {
+        const project = response.body.projects[0];
+        expect(project).toHaveProperty("id");
+        expect(project).toHaveProperty("name");
+        expect(project).toHaveProperty("description");
+        expect(project).toHaveProperty("github_repo_url");
+        expect(project).toHaveProperty("project_image_url");
+        expect(project).toHaveProperty("owner_id");
+        expect(project).toHaveProperty("status");
+        expect(project).toHaveProperty("created_at");
+        expect(project).toHaveProperty("updated_at");
+        expect(project).toHaveProperty("owner_username");
+        expect(project.owner_username).toBe(testUser);
+        expect(project).toHaveProperty("skills");
+        expect(Array.isArray(project.skills)).toBe(true);
+        expect(project).toHaveProperty("categories");
+        expect(Array.isArray(project.categories)).toBe(true);
+      }
+    });
+
+    it("Should return an empty project array if the user has no projects", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser =
+        allUsersResponse.body.users[allUsersResponse.body.users.length - 1]
+          .github_username;
+
+      const response = await request(app)
+        .get(`/api/users/${testUser}/projects`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty("projects");
+      expect(Array.isArray(response.body.projects)).toBe(true);
+    });
+
+    it("Should return a 404 when the username is not found", async () => {
+      const nonExistentUser = "this_user_definitely_doesnt_exist" + Date.now();
+      const response = await request(app)
+        .get(`/api/users/${nonExistentUser}/projects`)
+        .expect(404);
+      expect(response.body).toHaveProperty("message", "User not found");
+    });
+  });
 });
 describe("Project Routes - End to End Tests", () => {});
 describe("Issues Routes - End to End Tests", () => {});
