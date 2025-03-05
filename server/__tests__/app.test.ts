@@ -97,3 +97,9 @@ describe("User Routes - End to End Tests", () => {
     });
   });
 });
+describe("Project Routes - End to End Tests", () => {});
+describe("Issues Routes - End to End Tests", () => {});
+describe("Contributions Routes - End to End Tests", () => {});
+describe("Skills Routes - End to End Tests", () => {});
+describe("Categories Routes - End to End Tests", () => {});
+describe("Leaderboard Routes - End to End Tests", () => {});
