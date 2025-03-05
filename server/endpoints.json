@@ -1,0 +1,213 @@
+{
+  "GET /api": {
+    "description": "serves up a json representation of all the available endpoints on this api"
+  },
+  "GET api/users": {
+    "description": "serves up an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "id": 1,
+          "github_id": "12345678",
+          "github_username": "user1",
+          "email": "user1@gmail.com",
+          "password_hash": "$2b$10$RyBOqd44GIC.02fOqs384uS3ZAEG.QbyyUnd99dvKIsqvp4K4iTQe",
+          "profile_picture": "https://imgur.com/a/QS8CY9X",
+          "role": "maintainer",
+          "xp": 27,
+          "access_token": "gho_exampleaccesstoken123456789",
+          "refresh_token": "ghr_examplerefreshtoken123456789",
+          "created_at": "2025-03-05T16:31:36.634Z",
+          "updated_at": "2025-03-05T16:31:36.634Z"
+        }
+      ]
+    }
+  },
+  "GET api/users/:username": {
+    "description": "serves the user object requested by username",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "id": 5,
+        "github_id": "56789012",
+        "github_username": "genericuser1",
+        "email": "genericuser1@gmail.com",
+        "password_hash": "$2b$10$nfoSWyTcIwH0XWezUG/g7eiTNLAaXnnCK.iUqQ6Q31S3q",
+        "profile_picture": "https://imgur.com/a/QS8CY9X",
+        "role": "maintainer",
+        "xp": 27,
+        "access_token": "gho_genericuser_token123456789",
+        "created_at": "2025-03-04T16:28:06.482Z",
+        "updated_at": "2025-03-04T16:28:06.482Z"
+      }
+    }
+  },
+  "GET api/users/:username/profile": {
+    "description": "serves the user object requested by username with additional information",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "id": 5,
+        "github_id": "56789012",
+        "github_username": "genericuser1",
+        "email": "genericuser1@gmail.com",
+        "password_hash": "$2b$10$nfoSWyTcIwH0XWezUG/g7eiTNLAaXnnCK.iUqQ6Q31S3q",
+        "profile_picture": "https://imgur.com/a/QS8CY9X",
+        "role": "maintainer",
+        "xp": 27,
+        "access_token": "gho_genericuser_token123456789",
+        "created_at": "2025-03-04T16:28:06.482Z",
+        "updated_at": "2025-03-04T16:28:06.482Z",
+        "skills": [
+          "javascript",
+          "typescript",
+          "postgresql",
+          "reactjs",
+          "nextjs"
+        ]
+      },
+      "categories": ["healthcare", "worldConflict", "disasterRelief"],
+      "level": {
+        "id": 3,
+        "level": 3,
+        "name": "Developer",
+        "xp_required": 50,
+        "created_at": "2025-03-04T16:28:06.482Z",
+        "updated_at": "2025-03-04T16:28:06.482Z"
+      },
+      "contributions": [
+        {
+          "id": 1,
+          "user_id": 5,
+          "project_id": 1,
+          "pull_request_url": "https://github.com/nxvafps/EcoTracker/pull/12",
+          "additions": 156,
+          "deletions": 24,
+          "total_changes": 180,
+          "status": "merged",
+          "created_at": "2025-03-04T16:28:06.482Z",
+          "updated_at": "2025-03-04T16:28:06.482Z",
+          "project_name": "EcoTracker"
+        }
+      ]
+    }
+  },
+  "GET api/users/:username/projects": {
+    "description": "serves an array of all project by requested user",
+    "queries": [],
+    "exampleResponse": {
+      "projects": [
+        {
+          "id": 1,
+          "name": "EcoTracker",
+          "description": "An app to track and reduce your carbon footprint",
+          "github_repo_url": "https://github.com/nxvafps/EcoTracker",
+          "project_image_url": "https://example.com/images/ecotracker.jpg",
+          "owner_id": 1,
+          "status": "active",
+          "created_at": "2025-03-05T16:31:36.659Z",
+          "updated_at": "2025-03-05T16:31:36.659Z",
+          "owner_username": "user1",
+          "skills": ["javascript", "postgresql", "reactjs", "nodejs"],
+          "categories": ["climateChange", "education", "lgbtqia"]
+        }
+      ]
+    }
+  },
+  "GET api/users/:username/projects/:project_id": {
+    "description": "serves an object of the requested project for the requested user",
+    "queries": [],
+    "exampleResponse": {
+      "projects": [
+        {
+          "id": 2,
+          "name": "AccessibilityHelper",
+          "description": "A toolkit for making websites more accessible",
+          "github_repo_url": "https://github.com/projectowner/AccessibilityHelper",
+          "project_image_url": "https://example.com/images/accessibility.jpg",
+          "owner_id": 3,
+          "status": "active",
+          "created_at": "2025-03-05T16:31:36.659Z",
+          "updated_at": "2025-03-05T16:31:36.659Z",
+          "owner_username": "projectowner",
+          "skills": ["javascript", "typescript", "reactjs", "html", "css"],
+          "categories": ["climateChange", "animalWelfare"]
+        }
+      ]
+    }
+  },
+  "GET api/projects": {
+    "description": "serves up an array of all projects",
+    "queries": [],
+    "exampleResponse": {
+      "projects": [
+        {
+          "id": 1,
+          "name": "EcoTracker",
+          "description": "An app to track and reduce your carbon footprint",
+          "github_repo_url": "https://github.com/genericuser1/EcoTracker",
+          "project_image_url": "https://example.com/images/ecotracker.jpg",
+          "status": "active"
+        }
+      ]
+    }
+  },
+  "GET api/projects/:project_id": {
+    "description": "serves the project object requested",
+    "queries": [],
+    "exampleResponse": {
+      "project": {
+        "id": 3,
+        "name": "RefugeeConnect",
+        "description": "Platform connecting volunteers with refugee support initiatives",
+        "github_repo_url": "https://github.com/projectowner/RefugeeConnect",
+        "project_image_url": "https://example.com/images/refugee-connect.jpg",
+        "owner_id": 3,
+        "status": "planning",
+        "created_at": "2025-03-05T16:31:36.659Z",
+        "updated_at": "2025-03-05T16:31:36.659Z"
+      }
+    }
+  },
+  "GET api/skills": {
+    "description": "serves up an array of all skills",
+    "queries": [],
+    "exampleResponse": {
+      "skills": [
+        {
+          "id": 1,
+          "name": "javascript",
+          "created_at": "2025-03-05T16:31:36.623Z",
+          "updated_at": "2025-03-05T16:31:36.623Z"
+        },
+        {
+          "id": 2,
+          "name": "dart",
+          "created_at": "2025-03-05T16:31:36.623Z",
+          "updated_at": "2025-03-05T16:31:36.623Z"
+        }
+      ]
+    }
+  },
+  "GET api/categories": {
+    "description": "serves up an array of all categories",
+    "queries": [],
+    "exampleResponse": {
+      "categories": [
+        {
+          "id": 1,
+          "category_name": "climateChange",
+          "created_at": "2025-03-05T16:31:36.630Z",
+          "updated_at": "2025-03-05T16:31:36.630Z"
+        },
+        {
+          "id": 2,
+          "category_name": "education",
+          "created_at": "2025-03-05T16:31:36.630Z",
+          "updated_at": "2025-03-05T16:31:36.630Z"
+        }
+      ]
+    }
+  }
+}
