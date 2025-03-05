@@ -8,5 +8,8 @@ export const getCategories = async (
   try {
     const categories = await selectCategories();
     res.status(200).json({ categories });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error in getCategories controller", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
