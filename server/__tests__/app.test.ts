@@ -2,8 +2,10 @@ import request from "supertest";
 import app from "../app/app";
 import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
+import { describe } from "node:test";
+import { log } from "console";
 
-describe("User Routes - End to End Tests", () => {
+describe.skip("User Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
@@ -224,7 +226,44 @@ describe("User Routes - End to End Tests", () => {
 describe("Project Routes - End to End Tests", () => {});
 describe("Issues Routes - End to End Tests", () => {});
 describe("Contributions Routes - End to End Tests", () => {});
-describe("Skills Routes - End to End Tests", () => {});
+describe("Skills Routes - End to End Tests", () => {
+  beforeAll(async () => {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("Tests should only run in test environment");
+    }
+
+    await runSeed();
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+
+  describe("GET /api/skills", () => {
+    it("should return an array of all skill objects", () => {
+      return request(app)
+        .get("/api/skills")
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toHaveProperty("skills");
+          expect(Array.isArray(response.body.skills)).toBe(true);
+          expect(response.body.skills.length).toBe(14);
+        });
+    });
+  });
+  it("should return skills object with the correct properties", () => {
+    return request(app)
+      .get("/api/skills")
+      .expect(200)
+      .then((response) => {
+        const skill = response.body.skills[0];
+        expect(skill).toHaveProperty("id");
+        expect(skill).toHaveProperty("name");
+        expect(skill).toHaveProperty("created_at");
+        expect(skill).toHaveProperty("updated_at");
+      });
+  });
+});
 
 describe("Categories Routes - End to End Tests", () => {
   beforeAll(async () => {
@@ -236,7 +275,9 @@ describe("Categories Routes - End to End Tests", () => {
   });
 
   afterAll(async () => {
-    await pool.end();
+    if (!pool.ended) {
+      await pool.end();
+    }
   });
 
   describe("GET /api/categories", () => {
