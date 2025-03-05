@@ -2,10 +2,8 @@ import request from "supertest";
 import app from "../app/app";
 import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
-import { describe } from "node:test";
-import { log } from "console";
 
-describe.skip("User Routes - End to End Tests", () => {
+describe("User Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
@@ -14,9 +12,9 @@ describe.skip("User Routes - End to End Tests", () => {
     await runSeed();
   });
 
-  // afterAll(async () => {
-  //   await pool.end();
-  // });
+  afterAll(async () => {
+    await pool.end();
+  });
 
   describe("GET /api/users", () => {
     it("should return all users", async () => {
@@ -225,7 +223,43 @@ describe.skip("User Routes - End to End Tests", () => {
 });
 describe("Project Routes - End to End Tests", () => {});
 describe("Issues Routes - End to End Tests", () => {});
-describe("Contributions Routes - End to End Tests", () => {});
+
+describe("Contributions Routes - End to End Tests", () => {
+  beforeAll(async () => {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("Tests should only run in test environment");
+    }
+
+    await runSeed();
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+  describe("GET /contributions", () => {
+    it("should return an array of all contributions", async () => {
+      const result = await request(app).get("/contributions").expect(200);
+      expect(result.body).toHaveProperty("contributions");
+      expect(result.body.contributions.length).toBe(3);
+      expect(Array.isArray(result.body.contributions)).toBe(true);
+    });
+    it("should return an array of contribution objects with the following properties", async () => {
+      const result = await request(app).get("/contributions").expect(200);
+      const contribution = result.body.contributions[0];
+      expect(contribution).toHaveProperty("id");
+      expect(contribution).toHaveProperty("user_id");
+      expect(contribution).toHaveProperty("project_id");
+      expect(contribution).toHaveProperty("pull_request_url");
+      expect(contribution).toHaveProperty("additions");
+      expect(contribution).toHaveProperty("deletions");
+      expect(contribution).toHaveProperty("total_changes");
+      expect(contribution).toHaveProperty("status");
+      expect(contribution).toHaveProperty("created_at");
+      expect(contribution).toHaveProperty("updated_at");
+    });
+  });
+});
+
 describe("Skills Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
@@ -238,7 +272,6 @@ describe("Skills Routes - End to End Tests", () => {
   afterAll(async () => {
     await pool.end();
   });
-
   describe("GET /api/skills", () => {
     it("should return an array of all skill objects", () => {
       return request(app)
@@ -250,22 +283,22 @@ describe("Skills Routes - End to End Tests", () => {
           expect(response.body.skills.length).toBe(14);
         });
     });
-  });
-  it("should return skills object with the correct properties", () => {
-    return request(app)
-      .get("/api/skills")
-      .expect(200)
-      .then((response) => {
-        const skill = response.body.skills[0];
-        expect(skill).toHaveProperty("id");
-        expect(skill).toHaveProperty("name");
-        expect(skill).toHaveProperty("created_at");
-        expect(skill).toHaveProperty("updated_at");
-      });
+    it("should return skills object with the correct properties", () => {
+      return request(app)
+        .get("/api/skills")
+        .expect(200)
+        .then((response) => {
+          const skill = response.body.skills[0];
+          expect(skill).toHaveProperty("id");
+          expect(skill).toHaveProperty("name");
+          expect(skill).toHaveProperty("created_at");
+          expect(skill).toHaveProperty("updated_at");
+        });
+    });
   });
 });
 
-describe("Categories Routes - End to End Tests", () => {
+describe.only("Categories Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
@@ -275,11 +308,8 @@ describe("Categories Routes - End to End Tests", () => {
   });
 
   afterAll(async () => {
-    if (!pool.ended) {
-      await pool.end();
-    }
+    await pool.end();
   });
-
   describe("GET /api/categories", () => {
     it("should return an array of all category objects", async () => {
       const response = await request(app).get("/api/categories").expect(200);
