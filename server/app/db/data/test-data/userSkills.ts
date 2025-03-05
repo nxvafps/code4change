@@ -2,7 +2,7 @@ import { UserSkill } from "../../../types/table-data-types";
 
 const userSkillsRelations = [
   {
-    user_github_username: "nxvafps",
+    user_github_username: "genericuser1",
     skill_names: [
       "javascript",
       "dart",

@@ -3,7 +3,7 @@ import { Issue } from "../../../types/table-data-types";
 const issueRelations = [
   {
     project_name: "EcoTracker",
-    created_by_username: "nxvafps",
+    created_by_username: "genericuser1",
     assigned_to_username: "genericuser1",
     issue: {
       title: "Carbon calculation bug",
@@ -14,7 +14,7 @@ const issueRelations = [
   },
   {
     project_name: "EcoTracker",
-    created_by_username: "nxvafps",
+    created_by_username: "genericuser1",
     assigned_to_username: "devcontributor",
     issue: {
       title: "Add cycling tracking feature",

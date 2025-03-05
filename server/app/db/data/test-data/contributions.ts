@@ -5,7 +5,7 @@ const contributionRelations = [
     user_github_username: "genericuser1",
     project_name: "EcoTracker",
     contribution: {
-      pull_request_url: "https://github.com/nxvafps/EcoTracker/pull/12",
+      pull_request_url: "https://github.com/genericuser1/EcoTracker/pull/12",
       additions: 156,
       deletions: 24,
       total_changes: 180,

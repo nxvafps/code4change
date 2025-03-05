@@ -13,6 +13,8 @@ const skills: Skill[] = [
   { name: "nodejs" },
   { name: "express" },
   { name: "mongodb" },
+  { name: "html" },
+  { name: "css" },
 ];
 
 export default skills;
