@@ -4,24 +4,18 @@ import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
 
 describe("End to End Tests", () => {
-  // beforeAll(async () => {
-  //   if (process.env.NODE_ENV !== "test") {
-  //     throw new Error("Tests should only run in test environment");
-  //   }
+  beforeAll(async () => {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("Tests should only run in test environment");
+    }
+    await runSeed();
+  });
 
-  describe.skip("User Routes - End to End Tests", () => {
-    beforeAll(async () => {
-      if (process.env.NODE_ENV !== "test") {
-        throw new Error("Tests should only run in test environment");
-      }
+  afterAll(async () => {
+    await pool.end();
+  });
 
-      await runSeed();
-    });
-
-    // afterAll(async () => {
-    //   await pool.end();
-    // });
-
+  describe("User Routes", () => {
     describe("GET /api/users", () => {
       it("should return all users", async () => {
         const response = await request(app).get("/api/users").expect(200);
@@ -230,20 +224,114 @@ describe("End to End Tests", () => {
         );
       });
     });
+
+    describe("GET /api/users/:username/projects/:project_id/contributions", () => {
+      it("should return an array of contributions for a specific project", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const projectsResponse = await request(app)
+          .get(`/api/users/${testUser}/projects`)
+          .expect(200);
+
+        if (projectsResponse.body.projects.length > 0) {
+          const testProject = projectsResponse.body.projects[0];
+
+          const response = await request(app)
+            .get(
+              `/api/users/${testUser}/projects/${testProject.id}/contributions`
+            )
+            .expect(200);
+
+          expect(response.body).toHaveProperty("contributions");
+          expect(Array.isArray(response.body.contributions)).toBe(true);
+
+          if (response.body.contributions.length > 0) {
+            const contribution = response.body.contributions[0];
+            expect(contribution).toHaveProperty("id");
+            expect(contribution).toHaveProperty("user_id");
+            expect(contribution).toHaveProperty("project_id");
+            expect(contribution).toHaveProperty("pull_request_url");
+            expect(contribution).toHaveProperty("additions");
+            expect(contribution).toHaveProperty("deletions");
+            expect(contribution).toHaveProperty("total_changes");
+            expect(contribution).toHaveProperty("status");
+            expect(contribution).toHaveProperty("created_at");
+            expect(contribution).toHaveProperty("updated_at");
+            expect(contribution).toHaveProperty("user_github_username");
+          }
+        }
+      });
+
+      it("should return an empty array if project exists but has no contributions", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const projectsResponse = await request(app)
+          .get(`/api/users/${testUser}/projects`)
+          .expect(200);
+
+        if (projectsResponse.body.projects.length > 0) {
+          const testProject =
+            projectsResponse.body.projects[
+              projectsResponse.body.projects.length - 1
+            ];
+
+          const response = await request(app)
+            .get(
+              `/api/users/${testUser}/projects/${testProject.id}/contributions`
+            )
+            .expect(200);
+
+          expect(response.body).toHaveProperty("contributions");
+          expect(Array.isArray(response.body.contributions)).toBe(true);
+        }
+      });
+
+      it("should return 404 when project is not found for user", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const nonExistentProjectId = 99999;
+        const response = await request(app)
+          .get(
+            `/api/users/${testUser}/projects/${nonExistentProjectId}/contributions`
+          )
+          .expect(404);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Project not found for this user"
+        );
+      });
+
+      it("should return 404 when user is not found", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist" + Date.now();
+        const response = await request(app)
+          .get(`/api/users/${nonExistentUser}/projects/1/contributions`)
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when project_id is not a number", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .get(`/api/users/${testUser}/projects/not-a-number/contributions`)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid project ID format"
+        );
+      });
+    });
   });
 
-  describe("Project Routes - End to End Tests", () => {
-    beforeAll(async () => {
-      if (process.env.NODE_ENV !== "test") {
-        throw new Error("Tests should only run in test environment");
-      }
-
-      await runSeed();
-    });
-
-    afterAll(async () => {
-      await pool.end();
-    });
+  describe("Project Routes", () => {
     describe("GET /api/projects", () => {
       it("should return all projects", async () => {
         const response = await request(app).get("/api/projects").expect(200);
@@ -364,20 +452,9 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe("Issues Routes - End to End Tests", () => {});
+  describe("Issues Routes", () => {});
 
-  describe("Contributions Routes - End to End Tests", () => {
-    beforeAll(async () => {
-      if (process.env.NODE_ENV !== "test") {
-        throw new Error("Tests should only run in test environment");
-      }
-
-      await runSeed();
-    });
-
-    afterAll(async () => {
-      await pool.end();
-    });
+  describe("Contributions Routes", () => {
     describe("GET /contributions", () => {
       it("should return an array of all contributions", async () => {
         const result = await request(app).get("/contributions").expect(200);
@@ -402,18 +479,7 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe("Skills Routes - End to End Tests", () => {
-    beforeAll(async () => {
-      if (process.env.NODE_ENV !== "test") {
-        throw new Error("Tests should only run in test environment");
-      }
-
-      await runSeed();
-    });
-
-    afterAll(async () => {
-      await pool.end();
-    });
+  describe("Skills Routes", () => {
     describe("GET /api/skills", () => {
       it("should return an array of all skill objects", () => {
         return request(app)
@@ -440,18 +506,7 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe.only("Categories Routes - End to End Tests", () => {
-    beforeAll(async () => {
-      if (process.env.NODE_ENV !== "test") {
-        throw new Error("Tests should only run in test environment");
-      }
-
-      await runSeed();
-    });
-
-    afterAll(async () => {
-      await pool.end();
-    });
+  describe("Categories Routes", () => {
     describe("GET /api/categories", () => {
       it("should return an array of all category objects", async () => {
         const response = await request(app).get("/api/categories").expect(200);
@@ -466,5 +521,5 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe("Leaderboard Routes - End to End Tests", () => {});
+  describe("Leaderboard Routes", () => {});
 });
