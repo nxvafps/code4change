@@ -9,6 +9,7 @@ import userRoutes from "./routes/user-routes";
 import projectRouter from "./routes/project-routes";
 import categoriesRoutes from "./routes/categories-routes";
 import skillsRoutes from "./routes/skills-routes";
+import contributionRoutes from "./routes/contributions-routes";
 
 
 const app = express();
@@ -51,6 +52,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/skills", skillsRoutes);
+app.use("/contributions", contributionRoutes);
 
 // 404 route
 app.all("*", (req, res) => {
