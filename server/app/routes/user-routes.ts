@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/", UserController.getAllUsers);
 router.get("/:username/profile", UserController.getUserProfile);
+router.get("/:username/projects", UserController.getUserProjects);
 router.get("/:username", UserController.getUserByUsername);
 
 export default router;
