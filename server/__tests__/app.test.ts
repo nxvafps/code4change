@@ -102,7 +102,7 @@ describe("Issues Routes - End to End Tests", () => {});
 describe("Contributions Routes - End to End Tests", () => {});
 describe("Skills Routes - End to End Tests", () => {});
 
-describe("Categories Routes - End to End Tests", () => {
+describe.only("Categories Routes - End to End Tests", () => {
   beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
