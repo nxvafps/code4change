@@ -247,3 +247,38 @@ export const getUserProjectContributions = async (
     throw error;
   }
 };
+
+export const getUserContributions = async (
+  username: string
+): Promise<Contribution[] | null> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await pool.query(
+        "SELECT id FROM users WHERE github_username = $1",
+        [username]
+      );
+
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const contributionResult = await client.query(
+        `SELECT c.*, p.name as project_name, u.github_username as user_github_username
+        FROM contributions c
+        JOIN projects p ON c.project_id = p.id
+        JOIN users u ON c.user_id = u.id
+        WHERE c.user_id = $1
+        ORDER BY c.created_at DESC`,
+        [user_id]
+      );
+      return contributionResult.rows;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error fetching user contributions", error);
+    throw error;
+  }
+};
+
+// {getUserByUsername, getAllUsers}

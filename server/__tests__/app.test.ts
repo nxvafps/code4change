@@ -329,6 +329,45 @@ describe("End to End Tests", () => {
         );
       });
     });
+
+    describe("GET /api/users/:username/contributions", () => {
+      it("should return all contributions for a user", async () => {
+        const allUserResponse = await request(app).get("/api/users");
+        const testUser = allUserResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .get(`/api/users/${testUser}/contributions`)
+          .expect(200);
+
+        expect(response.body).toHaveProperty("contributions");
+        expect(Array.isArray(response.body.contributions)).toBe(true);
+
+        if (response.body.contributions.length > 0) {
+          const contribution = response.body.contributions[0];
+          expect(contribution).toHaveProperty("id");
+          expect(contribution).toHaveProperty("user_id");
+          expect(contribution).toHaveProperty("project_id");
+          expect(contribution).toHaveProperty("pull_request_url");
+          expect(contribution).toHaveProperty("additions");
+          expect(contribution).toHaveProperty("deletions");
+          expect(contribution).toHaveProperty("total_changes");
+          expect(contribution).toHaveProperty("status");
+          expect(contribution).toHaveProperty("created_at");
+          expect(contribution).toHaveProperty("user_github_username");
+          expect(contribution).toHaveProperty("project_name");
+        }
+      });
+
+      it("it should return 404 when user is not found", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist" + Date.now();
+        const response = await request(app)
+          .get(`/api/users/${nonExistentUser}/contributions`)
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+    });
   });
 
   describe("Project Routes", () => {
@@ -452,7 +491,166 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe("Issues Routes", () => {});
+  describe("Issues Routes", () => {
+    describe("GET /api/issues", () => {
+      it("should return an array of all issue objects", async () => {
+        const response = await request(app).get("/api/issues").expect(200);
+
+        expect(response.body).toHaveProperty("issues");
+        expect(Array.isArray(response.body.issues)).toBe(true);
+        expect(response.body.issues.length).toBeGreaterThan(0);
+
+        const issue = response.body.issues[0];
+        expect(issue).toHaveProperty("id");
+        expect(issue).toHaveProperty("project_id");
+        expect(issue).toHaveProperty("title");
+        expect(issue).toHaveProperty("description");
+        expect(issue).toHaveProperty("status");
+        expect(issue).toHaveProperty("created_by");
+        expect(issue).toHaveProperty("created_at");
+        expect(issue).toHaveProperty("updated_at");
+      });
+
+      it("should return an empty array when there are no issues", async () => {
+        const response = await request(app).get("/api/issues").expect(200);
+
+        expect(response.body).toHaveProperty("issues");
+        expect(Array.isArray(response.body.issues)).toBe(true);
+        if (response.body.issues.length === 0) {
+          expect(response.body.issues.length).toBe(0);
+        }
+      });
+    });
+    describe("Issues Routes", () => {
+      describe("GET /api/issues/:id", () => {
+        it("should return a single issue when a valid ID is provided", async () => {
+          const allIssuesResponse = await request(app)
+            .get("/api/issues")
+            .expect(200);
+          const testIssue = allIssuesResponse.body.issues[0];
+
+          const response = await request(app)
+            .get(`/api/issues/${testIssue.id}`)
+            .expect(200);
+
+          expect(response.body).toHaveProperty("issue");
+          expect(response.body.issue).toHaveProperty("id", testIssue.id);
+          expect(response.body.issue).toHaveProperty(
+            "project_id",
+            testIssue.project_id
+          );
+          expect(response.body.issue).toHaveProperty("title", testIssue.title);
+          expect(response.body.issue).toHaveProperty(
+            "description",
+            testIssue.description
+          );
+          expect(response.body.issue).toHaveProperty(
+            "status",
+            testIssue.status
+          );
+          expect(response.body.issue).toHaveProperty(
+            "created_by",
+            testIssue.created_by
+          );
+          expect(response.body.issue).toHaveProperty("created_at");
+          expect(response.body.issue).toHaveProperty("updated_at");
+        });
+
+        it("should return 404 when issue ID does not exist", async () => {
+          const nonExistentId = 999999;
+
+          const response = await request(app)
+            .get(`/api/issues/${nonExistentId}`)
+            .expect(404);
+
+          expect(response.body).toHaveProperty("message", "Issue not found");
+        });
+
+        it("should return 400 when an invalid issue ID is provided", async () => {
+          const invalidId = "abc";
+
+          const response = await request(app)
+            .get(`/api/issues/${invalidId}`)
+            .expect(400);
+
+          expect(response.body).toHaveProperty("message", "Invalid issue ID");
+        });
+      });
+    });
+    describe("POST /api/issues", () => {
+      it("should create a new issue and return 201", async () => {
+        const newIssue = {
+          project_id: 1,
+          title: "Fix login bug",
+          description: "Users cannot log in with valid credentials.",
+          status: "open",
+          created_by: 1,
+          assigned_to: 2,
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(newIssue)
+          .expect(201);
+
+        expect(response.body).toHaveProperty("issue");
+        expect(response.body.issue).toHaveProperty("id");
+        expect(response.body.issue.title).toBe(newIssue.title);
+        expect(response.body.issue.status).toBe(newIssue.status);
+      });
+
+      it("should return 400 when missing required fields", async () => {
+        const incompleteIssue = {
+          title: "Incomplete issue",
+          description: "This issue is missing required fields",
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(incompleteIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Missing required fields"
+        );
+      });
+
+      it("should return 400 when project_id is not a number", async () => {
+        const invalidIssue = {
+          project_id: "invalid_id",
+          title: "Invalid ID test",
+          description: "Testing with a non-numeric project_id",
+          status: "open",
+          created_by: 1,
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(invalidIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty("message", "Invalid project_id");
+      });
+
+      it("should return 400 when created_by is not a number", async () => {
+        const invalidIssue = {
+          project_id: 1,
+          title: "Invalid creator ID test",
+          description: "Testing with a non-numeric created_by",
+          status: "open",
+          created_by: "not_a_number",
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(invalidIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty("message", "Invalid created_by");
+      });
+    });
+  });
 
   describe("Contributions Routes", () => {
     describe("GET /contributions", () => {

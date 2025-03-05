@@ -144,3 +144,26 @@ export const getUserProjectContributions = async (
     }
   }
 };
+
+export const getUserContributions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username } = req.params;
+
+    const userContributions = await UserModel.getUserContributions(username);
+
+    if (userContributions === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json({ contributions: userContributions });
+  } catch (error) {
+    console.error("Error in getUserContributions controller:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+};
