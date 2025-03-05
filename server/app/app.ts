@@ -5,6 +5,7 @@ import passport from "./config/passport";
 import cors from "cors";
 import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
+import categoriesRoutes from "./routes/categories-routes";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoriesRoutes);
 
 // 404 route
 app.all("*", (req, res) => {
