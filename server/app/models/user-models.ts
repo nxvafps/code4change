@@ -150,3 +150,59 @@ export const getUserProjects = async (
     throw error;
   }
 };
+
+export const getUserProjectById = async (
+  username: string,
+  project_id: number
+): Promise<Project | null | false> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await client.query(
+        "SELECT id FROM users WHERE github_username = $1",
+        [username]
+      );
+
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const projectResult = await client.query(
+        `SELECT p.*, u.github_username as owner_username,
+        (
+          SELECT COALESCE(
+            array_agg(s.name),
+            ARRAY[]::text[]
+          )
+          FROM skills s
+          JOIN project_skills ps ON s.id = ps.skill_id
+          WHERE ps.project_id = p.id
+        ) as skills,
+        (
+          SELECT COALESCE(
+            array_agg(c.category_name),
+            ARRAY[]::text[]
+          )
+          FROM categories c
+          WHERE c.id IN (
+            SELECT uc.category_id
+            FROM user_categories uc
+            WHERE uc.user_id = p.owner_id
+          )
+        ) as categories
+        FROM projects p
+        JOIN users u ON p.owner_id = u.id
+        WHERE p.owner_id = $1 AND p.id = $2`,
+        [user_id, project_id]
+      );
+
+      if (projectResult.rows.length === 0) return false;
+
+      return projectResult.rows[0];
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error fetching user project by ID:", error);
+    throw error;
+  }
+};

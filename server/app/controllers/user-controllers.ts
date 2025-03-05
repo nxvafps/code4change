@@ -73,3 +73,38 @@ export const getUserProjects = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getUserProjectById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username, project_id } = req.params;
+
+    if (isNaN(parseInt(project_id))) {
+      res.status(400).json({ message: "Invalid project ID format" });
+      return;
+    }
+
+    const project = await UserModel.getUserProjectById(
+      username,
+      parseInt(project_id)
+    );
+
+    if (project === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    if (!project) {
+      res.status(404).json({ message: "Project not found for this user" });
+    }
+
+    res.status(200).json({ project });
+  } catch (error) {
+    console.error("Error in getUserProjectById controller:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+};
