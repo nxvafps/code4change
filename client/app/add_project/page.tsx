@@ -5,10 +5,10 @@ import styled from "styled-components";
 
 const FormContainer = styled.div`
   width: 100%;
-
-  height: 40vh;
-  display: flex;
+  height: auto;
   max-width: 54rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 1rem;
@@ -22,7 +22,6 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 5vh;
   width: 100%;
   gap: 20px;
   padding: 10px;
@@ -35,7 +34,7 @@ const StyledButton = styled.button`
   border-radius: 0.375rem;
   cursor: pointer;
   width: 150px;
-  height: 30px;
+  height: 40px;
   &:hover {
     background-color: #7e839c;
   }
@@ -44,45 +43,120 @@ const StyledButton = styled.button`
 const LandingPageContainer = styled.div`
   display: flex;
   position: absolute;
-  top: 40%;
-  left: 40%;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  height: 10vh;
+  height: auto;
   padding: 1rem;
   background-color: var(--background);
 `;
 
+const Title = styled.h1`
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`;
+
+const FormField = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  width: 100%;
+`;
+
+const Label = styled.label`
+  font-size: 1rem;
+  margin-right: 1rem;
+  width: 150px;
+  text-align: right;
+`;
+
+const InputField = styled.input`
+  padding: 0.8rem;
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid #ccc;
+`;
+
 export default function AddProject() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <div>
       <NavBar />
       <LandingPageContainer>
+        <Title>Share your amazing project with the community below!</Title>
         <FormContainer>
-          <form>
-            <br></br>
-            <input type="text" name="name" placeholder="Project name" />
-            <br></br>
-            <br></br>
-            <input type="text" name="name" placeholder="GitHub Url" />
-            <br></br>
-            <br></br>
-            <input type="text" name="name" placeholder="Project description" />
-            <br></br>
-            <br></br>
-            <input type="text" name="name" placeholder="Category" />
-            <br></br>
-            <br></br>
-            <input type="text" name="name" placeholder="Project_img url" />
-            <br></br>
-            <br></br>
-            <input type="text" name="name" placeholder="Skills" />
-            <br></br>
-            <br></br>
-            <ButtonContainer>
-              <StyledButton type="submit">Submit</StyledButton>
-            </ButtonContainer>
+          <form onSubmit={handleSubmit}>
+            <fieldset>
+              <FormField>
+                <Label htmlFor="projectName">Project Name:</Label>
+                <InputField
+                  id="projectName"
+                  type="text"
+                  name="projectName"
+                  placeholder="My Awesome Project"
+                  required
+                />
+              </FormField>
+              <FormField>
+                <Label htmlFor="githubUrl">GitHub URL:</Label>
+                <InputField
+                  id="githubUrl"
+                  type="text"
+                  name="githubUrl"
+                  placeholder="https://github.com/my-project"
+                  required
+                />
+              </FormField>
+              <FormField>
+                <Label htmlFor="projectDescription">Project Description:</Label>
+                <InputField
+                  id="projectDescription"
+                  type="text"
+                  name="projectDescription"
+                  placeholder="This is a description of my project"
+                  required
+                />
+              </FormField>
+              <FormField>
+                <Label htmlFor="category">Category:</Label>
+                <InputField
+                  id="category"
+                  type="text"
+                  name="category"
+                  placeholder="Accessibility"
+                  required
+                />
+              </FormField>
+              <FormField>
+                <Label htmlFor="projectImage">Project Image URL:</Label>
+                <InputField
+                  id="projectImage"
+                  type="text"
+                  name="projectImage"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </FormField>
+              <FormField>
+                <Label htmlFor="skills">Skills:</Label>
+                <InputField
+                  id="skills"
+                  type="text"
+                  name="skills"
+                  placeholder="JavaScript, React"
+                  required
+                />
+              </FormField>
+              <ButtonContainer>
+                <StyledButton type="submit">Submit</StyledButton>
+              </ButtonContainer>
+            </fieldset>
           </form>
         </FormContainer>
       </LandingPageContainer>
