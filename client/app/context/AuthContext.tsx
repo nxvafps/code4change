@@ -29,11 +29,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // check if user is logged in when component mounts
     async function checkAuthStatus() {
       try {
         const response = await fetch("http://localhost:3001/api/auth/user", {
-          credentials: "include", // important for sending cookies
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -52,11 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:3001/api/auth/logout", {
+      const response = await fetch("http://localhost:3001/api/auth/logout", {
         credentials: "include",
       });
       setUser(null);
-      window.location.href = "/login";
+      if (response.ok) {
+        window.location.href = "/";
+      } else {
+        console.error("Logout failed:", await response.text());
+      }
     } catch (error) {
       console.error("Error logging out:", error);
     }
