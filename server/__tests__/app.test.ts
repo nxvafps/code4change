@@ -260,6 +260,29 @@ describe("Project Routes - End to End Tests", () => {
       );
     });
   });
+  describe("GET /projects/:project_id/issues", () => {
+    it("should return issues for a project", async () => {
+      const projectId = 1;
+      const response = await request(app)
+        .get(`/api/projects/${projectId}/issues`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty("issues");
+      expect(Array.isArray(response.body.issues)).toBe(true);
+    });
+
+    it("should return 404 if no issues found for the project", async () => {
+      const projectId = 9999;
+      const response = await request(app)
+        .get(`/api/projects/${projectId}/issues`)
+        .expect(404);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "No issues found for this project."
+      );
+    });
+  });
 });
 
 describe("Issues Routes - End to End Tests", () => {});

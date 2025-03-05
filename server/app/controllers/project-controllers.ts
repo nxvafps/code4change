@@ -33,7 +33,28 @@ export const getAllProjects = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const getProjectIssues = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { project_id } = req.params;
 
+  try {
+    const issues = await ProjectModel.getIssuesByProjectId(
+      parseInt(project_id)
+    );
+
+    if (issues.length === 0) {
+      res.status(404).json({ message: "No issues found for this project." });
+      return;
+    }
+
+    res.status(200).json({ issues });
+  } catch (error) {
+    console.error("Error sending issues:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 export const postProject = async (
   req: Request,
   res: Response

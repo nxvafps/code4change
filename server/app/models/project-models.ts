@@ -27,7 +27,18 @@ export const getAllProjects = async (): Promise<Project[]> => {
     throw error;
   }
 };
-
+export const getIssuesByProjectId = async (projectId: number) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM issues WHERE project_id = $1`,
+      [projectId]
+    );
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching issues by project id", error);
+    throw error;
+  }
+};
 export const postProject = async (
   name: string,
   description: string,
