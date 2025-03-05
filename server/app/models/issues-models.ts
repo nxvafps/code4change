@@ -13,3 +13,19 @@ export const getIssueById = async (issueId: number): Promise<Issue[]> => {
   ]);
   return result.rows[0] || null;
 };
+
+export const postIssue = async (
+  project_id: number,
+  title: string,
+  description: string,
+  status: string,
+  created_by: number,
+  assigned_to?: number
+) => {
+  const result = await pool.query(
+    `INSERT INTO issues (project_id, title, description, status, created_by, assigned_to)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [project_id, title, description, status, created_by, assigned_to || null]
+  );
+  return result.rows[0];
+};

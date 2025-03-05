@@ -538,6 +538,79 @@ describe("End to End Tests", () => {
         });
       });
     });
+    describe("POST /api/issues", () => {
+      it("should create a new issue and return 201", async () => {
+        const newIssue = {
+          project_id: 1,
+          title: "Fix login bug",
+          description: "Users cannot log in with valid credentials.",
+          status: "open",
+          created_by: 1,
+          assigned_to: 2,
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(newIssue)
+          .expect(201);
+
+        expect(response.body).toHaveProperty("issue");
+        expect(response.body.issue).toHaveProperty("id");
+        expect(response.body.issue.title).toBe(newIssue.title);
+        expect(response.body.issue.status).toBe(newIssue.status);
+      });
+
+      it("should return 400 when missing required fields", async () => {
+        const incompleteIssue = {
+          title: "Incomplete issue",
+          description: "This issue is missing required fields",
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(incompleteIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Missing required fields"
+        );
+      });
+
+      it("should return 400 when project_id is not a number", async () => {
+        const invalidIssue = {
+          project_id: "invalid_id",
+          title: "Invalid ID test",
+          description: "Testing with a non-numeric project_id",
+          status: "open",
+          created_by: 1,
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(invalidIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty("message", "Invalid project_id");
+      });
+
+      it("should return 400 when created_by is not a number", async () => {
+        const invalidIssue = {
+          project_id: 1,
+          title: "Invalid creator ID test",
+          description: "Testing with a non-numeric created_by",
+          status: "open",
+          created_by: "not_a_number",
+        };
+
+        const response = await request(app)
+          .post("/api/issues")
+          .send(invalidIssue)
+          .expect(400);
+
+        expect(response.body).toHaveProperty("message", "Invalid created_by");
+      });
+    });
   });
 
   describe("Contributions Routes", () => {
