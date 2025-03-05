@@ -1,5 +1,5 @@
 import pool from "../db";
-import { User, Project } from "../types/table-data-types";
+import { User, Project, Contribution } from "../types/table-data-types";
 
 export const getUserByUsername = async (
   username: string
@@ -203,6 +203,47 @@ export const getUserProjectById = async (
     }
   } catch (error) {
     console.error("Error fetching user project by ID:", error);
+    throw error;
+  }
+};
+
+export const getUserProjectContributions = async (
+  username: string,
+  project_id: number
+): Promise<Contribution[] | null | false> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await client.query(
+        "SELECT id FROM users WHERE github_username = $1",
+        [username]
+      );
+
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const projectResult = await client.query(
+        "SELECT id FROM projects WHERE id = $1 AND owner_id = $2",
+        [project_id, user_id]
+      );
+
+      if (projectResult.rows.length === 0) return false;
+
+      const contributionsResult = await client.query(
+        `SELECT c.*, u.github_username as user_github_username
+         FROM contributions c
+         JOIN users u ON c.user_id = u.id
+         WHERE c.project_id = $1
+         ORDER BY c.created_at DESC`,
+        [project_id]
+      );
+
+      return contributionsResult.rows;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error fetching project contributions:", error);
     throw error;
   }
 };

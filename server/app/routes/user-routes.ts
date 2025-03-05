@@ -10,6 +10,10 @@ router.get(
   "/:username/projects/:project_id",
   UserController.getUserProjectById
 );
+router.get(
+  "/:username/projects/:project_id/contributions",
+  UserController.getUserProjectContributions
+);
 router.get("/:username", UserController.getUserByUsername);
 
 export default router;
