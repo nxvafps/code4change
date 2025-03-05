@@ -5,8 +5,11 @@ import passport from "./config/passport";
 import cors from "cors";
 import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
+
+import projectRouter from "./routes/project-routes";
 import categoriesRoutes from "./routes/categories-routes";
 import skillsRoutes from "./routes/skills-routes";
+
 
 const app = express();
 
@@ -44,6 +47,8 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+
+app.use("/api/projects", projectRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/skills", skillsRoutes);
 
