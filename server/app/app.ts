@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import passport from "./config/passport";
 import cors from "cors";
 import authRoutes from "./routes/auth-routes";
+import userRoutes from "./routes/user-routes";
 
 const app = express();
 
@@ -35,15 +36,12 @@ app.use(
   })
 );
 
-// health check route
 app.get("/api/health", (req, res) => {
   res.status(200).send({ status: "Server is running" });
 });
 
-// auth routes
 app.use("/api/auth", authRoutes);
-
-// API routes will go here
+app.use("/api/users", userRoutes);
 
 // 404 route
 app.all("*", (req, res) => {

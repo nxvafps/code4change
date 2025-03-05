@@ -2,11 +2,11 @@ import { ProjectRelation } from "../../../types/table-data-types";
 
 const projectRelations: ProjectRelation[] = [
   {
-    owner_username: "nxvafps",
+    owner_username: "genericuser1",
     project: {
       name: "EcoTracker",
       description: "An app to track and reduce your carbon footprint",
-      github_repo_url: "https://github.com/nxvafps/EcoTracker",
+      github_repo_url: "https://github.com/genericuser1/EcoTracker",
       project_image_url: "https://example.com/images/ecotracker.jpg",
       status: "active",
       categories: ["climateChange", "education"],

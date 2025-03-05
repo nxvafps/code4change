@@ -2,7 +2,7 @@ import { UserCategory } from "../../../types/table-data-types";
 
 const userCategoriesRelations = [
   {
-    user_github_username: "nxvafps",
+    user_github_username: "genericuser1",
     category_names: ["climateChange", "education", "lgbtqia"],
   },
   {
