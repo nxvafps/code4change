@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
 import categoriesRoutes from "./routes/categories-routes";
+import skillsRoutes from "./routes/skills-routes";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoriesRoutes);
+app.use("/api/skills", skillsRoutes);
 
 // 404 route
 app.all("*", (req, res) => {
