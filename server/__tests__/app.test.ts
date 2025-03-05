@@ -452,7 +452,39 @@ describe("End to End Tests", () => {
     });
   });
 
-  describe("Issues Routes", () => {});
+  describe("Issues Routes", () => {
+    describe("Issues Routes", () => {
+      describe("GET /api/issues", () => {
+        it("should return an array of all issue objects", async () => {
+          const response = await request(app).get("/api/issues").expect(200);
+
+          expect(response.body).toHaveProperty("issues");
+          expect(Array.isArray(response.body.issues)).toBe(true);
+          expect(response.body.issues.length).toBeGreaterThan(0);
+
+          const issue = response.body.issues[0];
+          expect(issue).toHaveProperty("id");
+          expect(issue).toHaveProperty("project_id");
+          expect(issue).toHaveProperty("title");
+          expect(issue).toHaveProperty("description");
+          expect(issue).toHaveProperty("status");
+          expect(issue).toHaveProperty("created_by");
+          expect(issue).toHaveProperty("created_at");
+          expect(issue).toHaveProperty("updated_at");
+        });
+
+        it("should return an empty array when there are no issues", async () => {
+          const response = await request(app).get("/api/issues").expect(200);
+
+          expect(response.body).toHaveProperty("issues");
+          expect(Array.isArray(response.body.issues)).toBe(true);
+          if (response.body.issues.length === 0) {
+            expect(response.body.issues.length).toBe(0);
+          }
+        });
+      });
+    });
+  });
 
   describe("Contributions Routes", () => {
     describe("GET /contributions", () => {
