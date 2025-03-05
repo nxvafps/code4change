@@ -4,17 +4,17 @@ import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
 
 describe("User Routes - End to End Tests", () => {
-  beforeAll(async () => {
-    if (process.env.NODE_ENV !== "test") {
-      throw new Error("Tests should only run in test environment");
-    }
+  // beforeAll(async () => {
+  //   if (process.env.NODE_ENV !== "test") {
+  //     throw new Error("Tests should only run in test environment");
+  //   }
 
-    await runSeed();
-  });
+  //   await runSeed();
+  // });
 
-  afterAll(async () => {
-    await pool.end();
-  });
+  // afterAll(async () => {
+  //   await pool.end();
+  // });
 
   describe("GET /api/users", () => {
     it("should return all users", async () => {
@@ -152,7 +152,116 @@ describe("User Routes - End to End Tests", () => {
     });
   });
 });
-describe("Project Routes - End to End Tests", () => {});
+
+describe("Project Routes - End to End Tests", () => {
+  beforeAll(async () => {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("Tests should only run in test environment");
+    }
+
+    await runSeed();
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+  describe("GET /api/projects", () => {
+    it("should return all projects", async () => {
+      const response = await request(app).get("/api/projects").expect(200);
+      expect(response.body).toHaveProperty("projects");
+      expect(Array.isArray(response.body.projects)).toBe(true);
+      expect(response.body.projects.length).toBeGreaterThan(0);
+
+      const project = response.body.projects[0];
+
+      expect(project).toHaveProperty("id");
+      expect(project).toHaveProperty("name");
+      expect(project).toHaveProperty("description");
+      expect(project).toHaveProperty("github_repo_url");
+      expect(project).toHaveProperty("project_image_url");
+      expect(project).toHaveProperty("status");
+    });
+  });
+
+  describe("GET /api/projects/:project_id", () => {
+    it("should return a project when a valid project id is provided", async () => {
+      const allProjects = await request(app).get("/api/projects").expect(200);
+      const testProject = allProjects.body.projects[0].id;
+      console.log(testProject);
+      const response = await request(app)
+        .get(`/api/projects/${testProject}`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty("project");
+      expect(response.body.project.id).toBe(testProject);
+      expect(response.body.project).toHaveProperty("description");
+      expect(response.body.project).toHaveProperty("github_repo_url");
+      expect(response.body.project).toHaveProperty("project_image_url");
+      expect(response.body.project).toHaveProperty("status");
+      expect(response.body.project).toHaveProperty("owner_id");
+    });
+
+    it("should return 404 when project name is not found", async () => {
+      const nonExistentProject = 9999;
+
+      const response = await request(app)
+        .get(`/api/projects/${nonExistentProject}`)
+        .expect(404);
+
+      expect(response.body).toHaveProperty("message", "project not found");
+    });
+  });
+  describe("POST /api/projects", () => {
+    it("should create a new project successfully", async () => {
+      const projectData = {
+        name: "EcoTracker",
+        description: "An app to track and reduce your carbon footprint",
+        github_repo_url: "https://github.com/genericuser1/Ecoker",
+        project_image_url: "https://example.com/images/ecotracker.jpg",
+        owner_id: 1,
+        status: "active",
+      };
+
+      const response = await request(app)
+        .post("/api/projects")
+        .send(projectData)
+        .expect(201);
+
+      expect(response.body).toHaveProperty("project");
+      expect(response.body.project).toHaveProperty("id");
+      expect(response.body.project.name).toBe(projectData.name);
+      expect(response.body.project.description).toBe(projectData.description);
+      expect(response.body.project.github_repo_url).toBe(
+        projectData.github_repo_url
+      );
+      expect(response.body.project.project_image_url).toBe(
+        projectData.project_image_url
+      );
+      expect(response.body.project.owner_id).toBe(projectData.owner_id);
+      expect(response.body.project.status).toBe(projectData.status);
+    });
+
+    it("should return 400 if the project data is incomplete", async () => {
+      const incompleteData = {
+        name: "EcoTracker",
+        description: "test carbon footprint",
+        github_repo_url: "https://github.com/genericuser1/EcoTracker",
+        project_image_url: "https://example.com/images/ecotracker.jpg",
+      };
+
+      const response = await request(app)
+        .post("/api/projects")
+        .send(incompleteData)
+        .expect(400);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Bad request: missing fields"
+      );
+    });
+  });
+});
+
 describe("Issues Routes - End to End Tests", () => {});
 describe("Contributions Routes - End to End Tests", () => {});
 describe("Skills Routes - End to End Tests", () => {});

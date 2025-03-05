@@ -5,6 +5,7 @@ import passport from "./config/passport";
 import cors from "cors";
 import authRoutes from "./routes/auth-routes";
 import userRoutes from "./routes/user-routes";
+import projectRouter from "./routes/project-routes";
 
 const app = express();
 
@@ -42,7 +43,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/projects", projectRouter);
 // 404 route
 app.all("*", (req, res) => {
   res.status(404).send({ message: "Route not found" });
