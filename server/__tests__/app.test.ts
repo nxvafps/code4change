@@ -453,34 +453,88 @@ describe("End to End Tests", () => {
   });
 
   describe("Issues Routes", () => {
+    describe("GET /api/issues", () => {
+      it("should return an array of all issue objects", async () => {
+        const response = await request(app).get("/api/issues").expect(200);
+
+        expect(response.body).toHaveProperty("issues");
+        expect(Array.isArray(response.body.issues)).toBe(true);
+        expect(response.body.issues.length).toBeGreaterThan(0);
+
+        const issue = response.body.issues[0];
+        expect(issue).toHaveProperty("id");
+        expect(issue).toHaveProperty("project_id");
+        expect(issue).toHaveProperty("title");
+        expect(issue).toHaveProperty("description");
+        expect(issue).toHaveProperty("status");
+        expect(issue).toHaveProperty("created_by");
+        expect(issue).toHaveProperty("created_at");
+        expect(issue).toHaveProperty("updated_at");
+      });
+
+      it("should return an empty array when there are no issues", async () => {
+        const response = await request(app).get("/api/issues").expect(200);
+
+        expect(response.body).toHaveProperty("issues");
+        expect(Array.isArray(response.body.issues)).toBe(true);
+        if (response.body.issues.length === 0) {
+          expect(response.body.issues.length).toBe(0);
+        }
+      });
+    });
     describe("Issues Routes", () => {
-      describe("GET /api/issues", () => {
-        it("should return an array of all issue objects", async () => {
-          const response = await request(app).get("/api/issues").expect(200);
+      describe("GET /api/issues/:id", () => {
+        it("should return a single issue when a valid ID is provided", async () => {
+          const allIssuesResponse = await request(app)
+            .get("/api/issues")
+            .expect(200);
+          const testIssue = allIssuesResponse.body.issues[0];
 
-          expect(response.body).toHaveProperty("issues");
-          expect(Array.isArray(response.body.issues)).toBe(true);
-          expect(response.body.issues.length).toBeGreaterThan(0);
+          const response = await request(app)
+            .get(`/api/issues/${testIssue.id}`)
+            .expect(200);
 
-          const issue = response.body.issues[0];
-          expect(issue).toHaveProperty("id");
-          expect(issue).toHaveProperty("project_id");
-          expect(issue).toHaveProperty("title");
-          expect(issue).toHaveProperty("description");
-          expect(issue).toHaveProperty("status");
-          expect(issue).toHaveProperty("created_by");
-          expect(issue).toHaveProperty("created_at");
-          expect(issue).toHaveProperty("updated_at");
+          expect(response.body).toHaveProperty("issue");
+          expect(response.body.issue).toHaveProperty("id", testIssue.id);
+          expect(response.body.issue).toHaveProperty(
+            "project_id",
+            testIssue.project_id
+          );
+          expect(response.body.issue).toHaveProperty("title", testIssue.title);
+          expect(response.body.issue).toHaveProperty(
+            "description",
+            testIssue.description
+          );
+          expect(response.body.issue).toHaveProperty(
+            "status",
+            testIssue.status
+          );
+          expect(response.body.issue).toHaveProperty(
+            "created_by",
+            testIssue.created_by
+          );
+          expect(response.body.issue).toHaveProperty("created_at");
+          expect(response.body.issue).toHaveProperty("updated_at");
         });
 
-        it("should return an empty array when there are no issues", async () => {
-          const response = await request(app).get("/api/issues").expect(200);
+        it("should return 404 when issue ID does not exist", async () => {
+          const nonExistentId = 999999;
 
-          expect(response.body).toHaveProperty("issues");
-          expect(Array.isArray(response.body.issues)).toBe(true);
-          if (response.body.issues.length === 0) {
-            expect(response.body.issues.length).toBe(0);
-          }
+          const response = await request(app)
+            .get(`/api/issues/${nonExistentId}`)
+            .expect(404);
+
+          expect(response.body).toHaveProperty("message", "Issue not found");
+        });
+
+        it("should return 400 when an invalid issue ID is provided", async () => {
+          const invalidId = "abc";
+
+          const response = await request(app)
+            .get(`/api/issues/${invalidId}`)
+            .expect(400);
+
+          expect(response.body).toHaveProperty("message", "Invalid issue ID");
         });
       });
     });

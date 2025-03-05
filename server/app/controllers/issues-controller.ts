@@ -9,3 +9,23 @@ export const getAllIssues = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getIssueById = async (req: Request, res: Response) => {
+  const { issue_id } = req.params;
+  if (isNaN(Number(issue_id))) {
+    res.status(400).json({ message: "Invalid issue ID" });
+    return;
+  }
+  try {
+    const issue = await IssueModel.getIssueById(parseInt(issue_id));
+
+    if (!issue) {
+      res.status(404).json({ message: "Issue not found" });
+      return;
+    }
+    res.status(200).json({ issue });
+  } catch (error) {
+    console.error("Error fetching issue:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
