@@ -156,5 +156,32 @@ describe("Project Routes - End to End Tests", () => {});
 describe("Issues Routes - End to End Tests", () => {});
 describe("Contributions Routes - End to End Tests", () => {});
 describe("Skills Routes - End to End Tests", () => {});
-describe("Categories Routes - End to End Tests", () => {});
+
+describe.only("Categories Routes - End to End Tests", () => {
+  beforeAll(async () => {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("Tests should only run in test environment");
+    }
+
+    await runSeed();
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+
+  describe("GET /api/categories", () => {
+    it("should return an array of all category objects", async () => {
+      const response = await request(app).get("/api/categories").expect(200);
+      expect(response.body).toHaveProperty("categories");
+      expect(Array.isArray(response.body.categories)).toBe(true);
+      expect(response.body.categories.length).toBe(8);
+    });
+    it("should return an error if a non-exsistent path is requested", async () => {
+      const response = await request(app).get("/api/categoriez").expect(404);
+      expect(response.body.message).toBe("Route not found");
+    });
+  });
+});
+
 describe("Leaderboard Routes - End to End Tests", () => {});
