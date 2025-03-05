@@ -329,6 +329,45 @@ describe("End to End Tests", () => {
         );
       });
     });
+
+    describe("GET /api/users/:username/contributions", () => {
+      it("should return all contributions for a user", async () => {
+        const allUserResponse = await request(app).get("/api/users");
+        const testUser = allUserResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .get(`/api/users/${testUser}/contributions`)
+          .expect(200);
+
+        expect(response.body).toHaveProperty("contributions");
+        expect(Array.isArray(response.body.contributions)).toBe(true);
+
+        if (response.body.contributions.length > 0) {
+          const contribution = response.body.contributions[0];
+          expect(contribution).toHaveProperty("id");
+          expect(contribution).toHaveProperty("user_id");
+          expect(contribution).toHaveProperty("project_id");
+          expect(contribution).toHaveProperty("pull_request_url");
+          expect(contribution).toHaveProperty("additions");
+          expect(contribution).toHaveProperty("deletions");
+          expect(contribution).toHaveProperty("total_changes");
+          expect(contribution).toHaveProperty("status");
+          expect(contribution).toHaveProperty("created_at");
+          expect(contribution).toHaveProperty("user_github_username");
+          expect(contribution).toHaveProperty("project_name");
+        }
+      });
+
+      it("it should return 404 when user is not found", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist" + Date.now();
+        const response = await request(app)
+          .get(`/api/users/${nonExistentUser}/contributions`)
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+    });
   });
 
   describe("Project Routes", () => {
