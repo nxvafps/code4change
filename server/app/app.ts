@@ -52,7 +52,7 @@ app.use("/api/issues", issuesRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/skills", skillsRoutes);
-app.use("/contributions", contributionRoutes);
+app.use("/api/contributions", contributionRoutes);
 
 // 404 route
 app.all("*", (req, res) => {

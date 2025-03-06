@@ -14,6 +14,7 @@ router.get(
   "/:username/projects/:project_id/contributions",
   UserController.getUserProjectContributions
 );
+router.get("/:username/contributions", UserController.getUserContributions);
 router.get("/:username", UserController.getUserByUsername);
 
 export default router;

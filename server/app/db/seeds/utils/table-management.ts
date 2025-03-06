@@ -84,6 +84,17 @@ export const createTables = async () => {
 );
 `);
     await client.query(`
+      CREATE TABLE IF NOT EXISTS project_categories (
+        id SERIAL PRIMARY KEY,
+        project_id INT NOT NULL,
+        category_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+        UNIQUE(project_id, category_id)
+      );
+    `);
+    await client.query(`
         CREATE TABLE IF NOT EXISTS user_categories (
           id SERIAL PRIMARY KEY,
           user_id INT NOT NULL,
@@ -160,6 +171,7 @@ export const dropTables = async () => {
     await client.query("DROP TABLE IF EXISTS user_skills CASCADE");
     await client.query("DROP TABLE IF EXISTS user_categories CASCADE");
     await client.query("DROP TABLE IF EXISTS project_skills CASCADE");
+    await client.query("DROP TABLE IF EXISTS project_categories CASCADE");
     await client.query("DROP TABLE IF EXISTS user_levels CASCADE");
     await client.query("DROP TABLE IF EXISTS projects CASCADE");
     await client.query("DROP TABLE IF EXISTS levels CASCADE");

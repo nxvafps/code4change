@@ -55,6 +55,29 @@ export const getProjectIssues = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getProjectSkills = async (req: Request, res: Response) => {
+  try {
+    const { project_id } = req.params;
+
+    if (isNaN(Number(project_id))) {
+      res.status(400).json({ message: "Bad request" });
+      return;
+    }
+
+    const skills = await ProjectModel.getProjectSkills(Number(project_id));
+
+    if (!skills.length) {
+      res.status(404).json({ message: "No skills found for this project" });
+      return;
+    }
+
+    res.status(200).json({ skills });
+  } catch (error) {
+    console.error("Error in getProjectSkills controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 export const postProject = async (
   req: Request,
   res: Response

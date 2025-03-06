@@ -14,6 +14,7 @@ import {
   insertUserLevels,
   insertProject,
   insertProjectSkills,
+  insertProjectCategories,
   insertIssues,
   insertContribution,
 } from "../app/db/seeds/utils/insert-data";
@@ -44,6 +45,7 @@ jest.mock("../app/db/seeds/utils/insert-data", () => ({
   insertUserLevels: jest.fn(),
   insertProject: jest.fn(),
   insertProjectSkills: jest.fn(),
+  insertProjectCategories: jest.fn(),
   insertIssues: jest.fn(),
   insertContribution: jest.fn(),
 }));
@@ -143,6 +145,9 @@ describe("seed function", () => {
     expect(insertProject).toHaveBeenCalledWith(mockSeedData.projectRelations);
     expect(insertProjectSkills).toHaveBeenCalledWith(
       mockSeedData.projectSkillRelations
+    );
+    expect(insertProjectCategories).toHaveBeenCalledWith(
+      mockSeedData.projectRelations
     );
     expect(insertIssues).toHaveBeenCalledWith(mockSeedData.issueRelations);
     expect(insertContribution).toHaveBeenCalledWith(

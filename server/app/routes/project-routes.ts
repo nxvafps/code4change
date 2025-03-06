@@ -6,5 +6,6 @@ const router = express.Router();
 router.get("/", ProjectController.getAllProjects);
 router.get("/:project_id", ProjectController.getProjectById);
 router.get("/:project_id/issues", ProjectController.getProjectIssues);
+router.get("/:project_id/skills", ProjectController.getProjectSkills);
 router.post("/", ProjectController.postProject);
 export default router;
