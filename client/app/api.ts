@@ -24,6 +24,19 @@ export const getProjectById = async (project_id: ParamValue) => {
     throw new Error("Failed to get project");
   }
 };
+
+export const getIssuesByProjectId = async (project_Id: ParamValue) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3001/api/projects/${project_Id}/issues`
+    );
+    return response.data.issues;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
+    throw error;
+  }
+};
+
 export const getAllProjects = async () => {
   try {
     const response = await axios.get("http://localhost:3001/api/projects");

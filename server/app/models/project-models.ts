@@ -5,9 +5,14 @@ export const getProjectById = async (
   projectId: string
 ): Promise<Project | null> => {
   try {
-    const result = await pool.query("SELECT * FROM projects WHERE id = $1", [
-      projectId,
-    ]);
+    const result = await pool.query(
+      `SELECT p.id, p.name, p.description, p.github_repo_url, p.project_image_url, 
+              u.github_username AS owner_name, p.status, p.created_at, p.updated_at
+       FROM projects p
+       LEFT JOIN users u ON p.owner_id = u.id
+       WHERE p.id = $1`,
+      [projectId]
+    );
 
     if (result.rows.length === 0) return null;
     return result.rows[0];
@@ -46,9 +51,25 @@ export const getAllProjects = async (): Promise<Project[]> => {
 export const getIssuesByProjectId = async (projectId: number) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM issues WHERE project_id = $1`,
+      `
+        SELECT 
+          i.id, 
+          i.project_id, 
+          i.title, 
+          i.description, 
+          i.status, 
+          u1.github_username AS created_by_name, 
+          u2.github_username AS assigned_to_name, 
+          i.created_at, 
+          i.updated_at
+        FROM issues i
+        LEFT JOIN users u1 ON i.created_by = u1.id
+        LEFT JOIN users u2 ON i.assigned_to = u2.id
+        WHERE i.id = $1
+        `,
       [projectId]
     );
+
     return result.rows;
   } catch (error) {
     console.error("Error fetching issues by project id", error);

@@ -167,3 +167,35 @@ export const getUserContributions = async (
     }
   }
 };
+
+export const postUserCategories = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username } = req.params;
+    const { categories } = req.body;
+    if (!categories || !Array.isArray(categories)) {
+      res
+        .status(400)
+        .json({ message: "Bad request: categories must be an array" });
+      return;
+    }
+    const result = await UserModel.addUserCategories(username, categories);
+    if (result === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    if (result === false) {
+      res.status(400).json({ message: "Invalid category names provided" });
+    }
+    res
+      .status(201)
+      .json({ message: "Category is added successfully", categories: result });
+  } catch (err) {
+    console.error("Err in post user category controller", err);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "internal server error" });
+    }
+  }
+};

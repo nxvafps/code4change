@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../app/app";
 import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
+import categories from "../app/db/data/development-data/categories";
 
 describe("End to End Tests", () => {
   beforeAll(async () => {
@@ -368,6 +369,92 @@ describe("End to End Tests", () => {
         expect(response.body).toHaveProperty("message", "User not found");
       });
     });
+
+    describe("POST api/users/:username/categories", () => {
+      it("shoult add a category to user", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const categoryResponse = await request(app).get("/api/categories");
+        const testCategories = categoryResponse.body.categories
+          .slice(0, 2)
+          .map((cat: any) => cat.category_name);
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({ categories: testCategories })
+          .expect(201);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Category is added successfully"
+        );
+        expect(response.body).toHaveProperty("categories");
+        expect(Array.isArray(response.body.categories)).toBe(true);
+
+        const profileResponse = await request(app)
+          .get(`/api/users/${testUser}/profile`)
+          .expect(200);
+
+        testCategories.forEach((category: any) => {
+          expect(profileResponse.body.user.categories).toContain(category);
+        });
+      });
+
+      it("should return 400 when invalid category data is provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({ categories: "not an array" })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+
+        const responseNoCategories = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({})
+          .expect(400);
+
+        expect(responseNoCategories.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+      });
+
+      it("should return 404 when user does not exist", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist_" + Date.now();
+
+        const response = await request(app)
+          .post(`/api/users/${nonExistentUser}/categories`)
+          .send({ categories: ["Education", "Environment"] })
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when invalid category names are provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({
+            categories: ["NonexistentCategory1", "NonexistentCategory2"],
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid category names provided"
+        );
+      });
+    });
   });
 
   describe("Project Routes", () => {
@@ -404,7 +491,7 @@ describe("End to End Tests", () => {
         expect(response.body.project).toHaveProperty("github_repo_url");
         expect(response.body.project).toHaveProperty("project_image_url");
         expect(response.body.project).toHaveProperty("status");
-        expect(response.body.project).toHaveProperty("owner_id");
+        expect(response.body.project).toHaveProperty("owner_name");
       });
 
       it("should return 404 when project name is not found", async () => {
@@ -586,10 +673,7 @@ describe("End to End Tests", () => {
             "status",
             testIssue.status
           );
-          expect(response.body.issue).toHaveProperty(
-            "created_by",
-            testIssue.created_by
-          );
+          expect(response.body.issue).toHaveProperty("created_by_name");
           expect(response.body.issue).toHaveProperty("created_at");
           expect(response.body.issue).toHaveProperty("updated_at");
         });
