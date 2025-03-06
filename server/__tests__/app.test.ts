@@ -393,7 +393,7 @@ describe("End to End Tests", () => {
       it("should return a project when a valid project id is provided", async () => {
         const allProjects = await request(app).get("/api/projects").expect(200);
         const testProject = allProjects.body.projects[0].id;
-        console.log(testProject);
+
         const response = await request(app)
           .get(`/api/projects/${testProject}`)
           .expect(200);
@@ -464,6 +464,44 @@ describe("End to End Tests", () => {
           "message",
           "Bad request: missing fields"
         );
+      });
+      describe("GET /projects/:project_id/skills", () => {
+        it("should return an array of skills for a valid project_id", async () => {
+          const projectId = 1;
+          const response = await request(app)
+            .get(`/api/projects/${projectId}/skills`)
+            .expect(200);
+
+          expect(response.body).toHaveProperty("skills");
+          expect(Array.isArray(response.body.skills)).toBe(true);
+          expect(response.body.skills.length).toBeGreaterThan(0);
+
+          const skill = response.body.skills[0];
+          expect(skill).toHaveProperty("id");
+          expect(skill).toHaveProperty("name");
+        });
+        it("should return 404 if the project has no  skills", async () => {
+          const projectId = 99999;
+
+          const response = await request(app)
+            .get(`/api/projects/${projectId}/skills`)
+            .expect(404);
+
+          expect(response.body).toHaveProperty(
+            "message",
+            "No skills found for this project"
+          );
+        });
+
+        it("should return 400 if project_id is not a number", async () => {
+          const invalidProjectId = "abc";
+
+          const response = await request(app)
+            .get(`/api/projects/${invalidProjectId}/skills`)
+            .expect(400);
+
+          expect(response.body).toHaveProperty("message", "Bad request");
+        });
       });
     });
     describe("GET /projects/:project_id/issues", () => {
