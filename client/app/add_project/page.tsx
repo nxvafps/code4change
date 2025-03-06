@@ -80,10 +80,29 @@ const InputField = styled.input`
   border-radius: 0.375rem;
   border: 1px solid #ccc;
 `;
-
+import { useState } from "react";
+import { postProject } from "@/app/api";
 export default function AddProject() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [projectData, setProjectData] = useState({
+    name: "",
+    description: "",
+    github_repo_url: "",
+    project_image_url: "",
+    owner_id: 1,
+    status: "active",
+  });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProjectData({ ...projectData, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    try {
+      const newProject = await postProject(projectData);
+    } catch (error) {
+      console.error("Error submitting project", error);
+      alert("Failed to add project.");
+    }
   };
 
   return (
@@ -102,6 +121,8 @@ export default function AddProject() {
                   name="projectName"
                   placeholder="My Awesome Project"
                   required
+                  value={projectData.name}
+                  onChange={handleChange}
                 />
               </FormField>
               <FormField>
@@ -112,6 +133,8 @@ export default function AddProject() {
                   name="githubUrl"
                   placeholder="https://github.com/my-project"
                   required
+                  value={projectData.github_repo_url}
+                  onChange={handleChange}
                 />
               </FormField>
               <FormField>
@@ -122,9 +145,11 @@ export default function AddProject() {
                   name="projectDescription"
                   placeholder="This is a description of my project"
                   required
+                  value={projectData.description}
+                  onChange={handleChange}
                 />
               </FormField>
-              <FormField>
+              {/* <FormField>
                 <Label htmlFor="category">Category:</Label>
                 <InputField
                   id="category"
@@ -132,8 +157,10 @@ export default function AddProject() {
                   name="category"
                   placeholder="Accessibility"
                   required
+                  value={projectData}
+                  onChange={handleChange}
                 />
-              </FormField>
+              </FormField> */}
               <FormField>
                 <Label htmlFor="projectImage">Project Image URL:</Label>
                 <InputField
@@ -141,9 +168,11 @@ export default function AddProject() {
                   type="text"
                   name="projectImage"
                   placeholder="https://example.com/image.jpg"
+                  value={projectData.project_image_url}
+                  onChange={handleChange}
                 />
               </FormField>
-              <FormField>
+              {/* <FormField>
                 <Label htmlFor="skills">Skills:</Label>
                 <InputField
                   id="skills"
@@ -151,8 +180,10 @@ export default function AddProject() {
                   name="skills"
                   placeholder="JavaScript, React"
                   required
+                  value={projectData.}
+                  onChange={handleChange}
                 />
-              </FormField>
+              </FormField> */}
               <ButtonContainer>
                 <StyledButton type="submit">Submit</StyledButton>
               </ButtonContainer>
