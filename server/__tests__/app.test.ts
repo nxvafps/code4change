@@ -404,7 +404,7 @@ describe("End to End Tests", () => {
         expect(response.body.project).toHaveProperty("github_repo_url");
         expect(response.body.project).toHaveProperty("project_image_url");
         expect(response.body.project).toHaveProperty("status");
-        expect(response.body.project).toHaveProperty("owner_id");
+        expect(response.body.project).toHaveProperty("owner_name");
       });
 
       it("should return 404 when project name is not found", async () => {
@@ -586,10 +586,7 @@ describe("End to End Tests", () => {
             "status",
             testIssue.status
           );
-          expect(response.body.issue).toHaveProperty(
-            "created_by",
-            testIssue.created_by
-          );
+          expect(response.body.issue).toHaveProperty("created_by_name");
           expect(response.body.issue).toHaveProperty("created_at");
           expect(response.body.issue).toHaveProperty("updated_at");
         });

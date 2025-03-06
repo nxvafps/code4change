@@ -4,6 +4,7 @@ import NavBar from "@/app/components/Navbar";
 import { getProjectById } from "@/app/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { IssuesBox } from "@/app/components/projectIssues";
 
 export default function ProjectDetails() {
   const { project_id } = useParams();
@@ -49,10 +50,18 @@ export default function ProjectDetails() {
             </a>
             <img src={project.project_image_url} alt={project.name} />
             <p>
-              <strong>Owner ID:</strong> {project.owner_id}
+              <strong>Owner name:</strong> {project.owner_name}
             </p>
             <p>
               <strong>Status:</strong> {project.status}
+            </p>
+            <p>
+              <strong>Github link:</strong>
+              <button
+                onClick={() => window.open(project.github_repo_url, "_blank")}
+              >
+                Go to GitHub
+              </button>
             </p>
             <p>
               <strong>Created at:</strong>{" "}
@@ -62,6 +71,7 @@ export default function ProjectDetails() {
               <strong>Updated at:</strong>{" "}
               {new Date(project.updated_at).toLocaleString()}
             </p>
+            <IssuesBox projectId={project_id} />
           </div>
         )}
       </div>
@@ -75,7 +85,7 @@ interface Project {
   description: string;
   github_repo_url: string;
   project_image_url: string;
-  owner_id: number;
+  owner_name: string;
   status: string;
   created_at: string;
   updated_at: string;
