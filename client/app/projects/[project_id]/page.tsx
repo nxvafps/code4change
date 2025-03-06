@@ -33,26 +33,35 @@ export default function ProjectDetails() {
   return (
     <div>
       <NavBar />
-      <div className="container mx-auto p-4">
+      <div>
         {loading && <p>Loading project details...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p>{error}</p>}
         {project && (
-          <div className="p-6 border rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold">{project.name}</h1>
-            <p className="text-gray-700">{project.description}</p>
+          <div>
+            <h1>{project.name}</h1>
+            <p>{project.description}</p>
             <a
               href={project.github_repo_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 underline"
             >
               GitHub Repository
             </a>
-            <img
-              src={project.project_image_url}
-              alt={project.name}
-              className="w-full mt-4 rounded-lg"
-            />
+            <img src={project.project_image_url} alt={project.name} />
+            <p>
+              <strong>Owner ID:</strong> {project.owner_id}
+            </p>
+            <p>
+              <strong>Status:</strong> {project.status}
+            </p>
+            <p>
+              <strong>Created at:</strong>{" "}
+              {new Date(project.created_at).toLocaleString()}
+            </p>
+            <p>
+              <strong>Updated at:</strong>{" "}
+              {new Date(project.updated_at).toLocaleString()}
+            </p>
           </div>
         )}
       </div>
@@ -69,4 +78,5 @@ interface Project {
   owner_id: number;
   status: string;
   created_at: string;
+  updated_at: string;
 }
