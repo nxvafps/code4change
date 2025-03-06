@@ -6,7 +6,10 @@ export const getUserByUsername = async (
 ): Promise<User | null> => {
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE github_username = $1",
+      `SELECT id, github_id, github_username, email, profile_picture, 
+              role, xp, created_at, updated_at 
+       FROM users 
+       WHERE github_username = $1`,
       [username]
     );
     if (result.rows.length === 0) return null;
@@ -19,7 +22,11 @@ export const getUserByUsername = async (
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
-    const result = await pool.query("SELECT * FROM users");
+    const result = await pool.query(`
+      SELECT id, github_id, github_username, email, profile_picture, 
+             role, xp, created_at, updated_at
+      FROM users
+    `);
     return result.rows;
   } catch (error) {
     console.error("Error fetching all users:", error);
@@ -128,17 +135,12 @@ export const getUserProjects = async (
             ARRAY[]::text[]
           )
           FROM categories c
-          WHERE c.id IN (
-            SELECT uc.category_id
-            FROM user_categories uc
-            WHERE uc.user_id = p.owner_id
-          )
+          JOIN project_categories pc ON c.id = pc.category_id
+          WHERE pc.project_id = p.id
         ) as categories
         FROM projects p
         JOIN users u ON p.owner_id = u.id
-        WHERE p.owner_id = $1
-        ORDER BY p.created_at DESC
-        `,
+        WHERE p.owner_id = $1`,
         [user_id]
       );
       return projectsResult.rows;
@@ -183,11 +185,8 @@ export const getUserProjectById = async (
             ARRAY[]::text[]
           )
           FROM categories c
-          WHERE c.id IN (
-            SELECT uc.category_id
-            FROM user_categories uc
-            WHERE uc.user_id = p.owner_id
-          )
+          JOIN project_categories pc ON c.id = pc.category_id
+          WHERE pc.project_id = p.id
         ) as categories
         FROM projects p
         JOIN users u ON p.owner_id = u.id

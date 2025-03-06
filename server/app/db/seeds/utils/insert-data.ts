@@ -494,3 +494,62 @@ export const insertProject = async (projectRelations: ProjectRelation[]) => {
     client.release();
   }
 };
+
+export const insertProjectCategories = async (
+  projectRelations: ProjectRelation[]
+) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    await Promise.all(
+      projectRelations.map(
+        async ({ owner_username, project }: ProjectRelation) => {
+          const projectQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project.name]
+          );
+          const project_id = projectQuery.rows[0]?.id;
+
+          if (!project_id) {
+            console.warn(
+              `Project named "${project.name}" not found, skipping category relations`
+            );
+            return;
+          }
+
+          await Promise.all(
+            project.categories.map(async (category_name) => {
+              const categoryCheck = await client.query(
+                `SELECT id FROM categories WHERE category_name = $1`,
+                [category_name]
+              );
+
+              if (!categoryCheck.rows.length) {
+                console.warn(
+                  `Category "${category_name}" not found, skipping relation for project "${project.name}"`
+                );
+                return;
+              }
+
+              await client.query(
+                `INSERT INTO project_categories (project_id, category_id)
+                 SELECT $1, id FROM categories WHERE category_name = $2
+                 ON CONFLICT (project_id, category_id) DO NOTHING`,
+                [project_id, category_name]
+              );
+            })
+          );
+        }
+      )
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting project categories", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+};
