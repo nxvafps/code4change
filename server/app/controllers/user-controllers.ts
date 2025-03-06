@@ -178,7 +178,7 @@ export const postUserCategories = async (
     if (!categories || !Array.isArray(categories)) {
       res
         .status(400)
-        .json({ messsage: "Bad request: category must be an array" });
+        .json({ message: "Bad request: categories must be an array" });
       return;
     }
     const result = await UserModel.addUserCategories(username, categories);
@@ -187,7 +187,7 @@ export const postUserCategories = async (
       return;
     }
     if (result === false) {
-      res.status(400).json({ message: "Invalid categories name provided" });
+      res.status(400).json({ message: "Invalid category names provided" });
     }
     res
       .status(201)
