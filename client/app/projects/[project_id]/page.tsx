@@ -4,6 +4,7 @@ import NavBar from "@/app/components/Navbar";
 import { getProjectById } from "@/app/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { IssuesBox } from "@/app/components/projectIssues";
 
 export default function ProjectDetails() {
   const { project_id } = useParams();
@@ -70,6 +71,7 @@ export default function ProjectDetails() {
               <strong>Updated at:</strong>{" "}
               {new Date(project.updated_at).toLocaleString()}
             </p>
+            <IssuesBox projectId={project_id} />
           </div>
         )}
       </div>
