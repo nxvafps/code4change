@@ -5,9 +5,14 @@ export const getProjectById = async (
   projectId: string
 ): Promise<Project | null> => {
   try {
-    const result = await pool.query("SELECT * FROM projects WHERE id = $1", [
-      projectId,
-    ]);
+    const result = await pool.query(
+      `SELECT p.id, p.name, p.description, p.github_repo_url, p.project_image_url, 
+              u.github_username AS owner_name, p.status, p.created_at, p.updated_at
+       FROM projects p
+       LEFT JOIN users u ON p.owner_id = u.id
+       WHERE p.id = $1`,
+      [projectId]
+    );
 
     if (result.rows.length === 0) return null;
     return result.rows[0];
