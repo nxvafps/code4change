@@ -1,29 +1,22 @@
 import styled from "styled-components";
 import Link from "next/link";
-
-interface User {
-  github_id: string;
-  github_username: string;
-  email: string;
-  xp: number;
-  role: string;
-  profile_picture: string;
-  skills: string[];
-  categories: string[];
-}
-
-interface UserCardProps {
-  user: User;
-}
+import { User } from "../../../server/app/types/table-data-types";
+import { useParams } from "next/navigation";
+import { fetchUserByUsername } from "../api";
+import { useState, useEffect } from "react";
+import ContributionsCard from "./ContributionsCard";
 
 const UsersPageContainer = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   flex: 1;
   padding: 1rem;
   background-color: #f9f9f9;
+  border: solid 1px red;
+  height: 100px;
+  width: 90%;
+  max-width: 800px;
 `;
 
 const Section = styled.section`
@@ -34,6 +27,7 @@ const Section = styled.section`
   max-width: 800px;
   width: 100%;
   text-align: center;
+  border: solid 1px;
   margin-bottom: 1.5rem;
 
   @media (max-width: 768px) {
@@ -45,7 +39,9 @@ const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 80px;
+  height: 80px;
+  border: solid 1px;
 `;
 
 const ProfileImage = styled.img`
@@ -53,6 +49,8 @@ const ProfileImage = styled.img`
   height: 40%;
   object-fit: cover;
   border-radius: 10px;
+  width: 80px;
+  height: 80px;
 `;
 
 const Title = styled.h1`
@@ -96,38 +94,59 @@ const Tag = styled.span`
   }
 `;
 
-export default function UserCard({ user }: UserCardProps) {
+export default function UserCard() {
+  const { username } = useParams<{ username: string }>();
+
+  const [user, setUser] = useState<User | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (username) {
+      fetchUserByUsername(username)
+        .then((userFromAPI) => {
+          setUser(userFromAPI);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Failed to load, please try again");
+          setLoading(false);
+        });
+    }
+  }, []);
+
   return (
     <UsersPageContainer>
-      <Title>{user.github_username}</Title>
+      <ImageContainer>
+        <ProfileImage
+          src={user?.profile_picture}
+          alt={`Profile of ${user?.github_username}`}
+        />
+      </ImageContainer>
       <Section>
-        <ImageContainer>
-          <ProfileImage
-            src={user.profile_picture}
-            alt={`Profile of ${user.github_username}`}
-          />
-        </ImageContainer>
-        <Link href={`https://github.com/${user.github_id}`} passHref>
+        <Title>{user?.github_username}</Title>
+        <Link href={`https://github.com/${user?.github_id}`} passHref>
           <InfoText>
-            <strong>{`https://github.com/${user.github_id}`}</strong>
+            <strong>{`https://github.com/${user?.github_id}`}</strong>
           </InfoText>
         </Link>
         <InfoText>
           <strong>Email: </strong>
-          {user.email}
+          {user?.email}
         </InfoText>
         <InfoText>
           <strong>XP: </strong>
-          {user.xp}
+          {user?.xp}
         </InfoText>
         <InfoText>
           <strong>Role: </strong>
-          {user.role}
+          {user?.role}
         </InfoText>
         <div>
           <strong>Skills: </strong>
           <TagList>
-            {user.skills.map((skill, index) => (
+            {user?.skills?.map((skill, index) => (
               <Tag key={index}>{skill}</Tag>
             ))}
           </TagList>
@@ -135,7 +154,7 @@ export default function UserCard({ user }: UserCardProps) {
         <div>
           <strong>Categories:</strong>
           <TagList>
-            {user.categories.map((category, index) => (
+            {user?.categories.map((category, index) => (
               <Tag key={index}>{category}</Tag>
             ))}
           </TagList>
