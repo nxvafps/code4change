@@ -27,6 +27,7 @@ export const getIssueById = async (issueId: number): Promise<Issue[]> => {
       `,
     [issueId]
   );
+
   return result.rows[0] || null;
 };
 
