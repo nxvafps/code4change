@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import axios from "axios";
 import { ParamValue } from "next/dist/server/request/params";
 
@@ -31,4 +32,10 @@ export const getAllProjects = async () => {
     console.error("Error fetching projects", error);
     throw new Error("Failed to fetch projects");
   }
+};
+
+export const fetchUserByUsername = (userName: string) => {
+  return code4changeApi.get(`/users/${userName}/profile`).then((res) => {
+    return res.data.user;
+  });
 };
