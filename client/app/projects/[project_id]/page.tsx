@@ -49,7 +49,7 @@ export default function ProjectDetails() {
             </a>
             <img src={project.project_image_url} alt={project.name} />
             <p>
-              <strong>Owner ID:</strong> {project.owner_id}
+              <strong>Owner name:</strong> {project.owner_name}
             </p>
             <p>
               <strong>Status:</strong> {project.status}
@@ -83,7 +83,7 @@ interface Project {
   description: string;
   github_repo_url: string;
   project_image_url: string;
-  owner_id: number;
+  owner_name: string;
   status: string;
   created_at: string;
   updated_at: string;
