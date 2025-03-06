@@ -40,7 +40,7 @@ export default function ProjectCardBox() {
             <ProjectCard
               key={index}
               project_id={project.id}
-              owner={project.owner_id}
+              owner={project.owner_name}
               name={project.name}
               description={project.description}
               github_repo_url={project.github_repo_url}
