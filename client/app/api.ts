@@ -39,3 +39,9 @@ export const fetchUserByUsername = (userName: string) => {
     return res.data.user;
   });
 };
+
+export const fetchContributionsByUsername = (userName: string) => {
+  return code4changeApi.get(`/users/${userName}/contributions`).then((res) => {
+    return res.data.contributions;
+  });
+};
