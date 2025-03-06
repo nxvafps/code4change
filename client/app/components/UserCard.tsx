@@ -4,7 +4,6 @@ import { User } from "../../../server/app/types/table-data-types";
 import { useParams } from "next/navigation";
 import { fetchUserByUsername } from "../api";
 import { useState, useEffect } from "react";
-import ContributionsCard from "./ContributionsCard";
 
 const UsersPageContainer = styled.div`
   display: flex;
@@ -17,6 +16,7 @@ const UsersPageContainer = styled.div`
   height: 100px;
   width: 90%;
   max-width: 800px;
+  margin-top: 10px;
 `;
 
 const Section = styled.section`
