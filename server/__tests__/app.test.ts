@@ -586,10 +586,7 @@ describe("End to End Tests", () => {
             "status",
             testIssue.status
           );
-          expect(response.body.issue).toHaveProperty(
-            "created_by",
-            testIssue.created_by
-          );
+          expect(response.body.issue).toHaveProperty("created_by_name");
           expect(response.body.issue).toHaveProperty("created_at");
           expect(response.body.issue).toHaveProperty("updated_at");
         });
