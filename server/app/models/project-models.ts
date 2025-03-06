@@ -19,7 +19,23 @@ export const getProjectById = async (
 
 export const getAllProjects = async (): Promise<Project[]> => {
   try {
-    const result = await pool.query("SELECT * FROM projects");
+    const result = await pool.query(`
+      SELECT
+        p.id,
+        p.name,
+        p.description,
+        p.github_repo_url,
+        p.project_image_url,
+        p.owner_id,
+        p.status,
+        p.created_at,
+        p.updated_at,
+        u.github_username AS owner_name
+      FROM
+        projects p
+      JOIN
+        users u ON p.owner_id = u.id
+    `);
 
     return result.rows;
   } catch (error) {
