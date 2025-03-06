@@ -23,7 +23,7 @@ export const getProjectById = async (project_id: ParamValue) => {
     throw new Error("Failed to get project");
   }
 };
-export const getProjects = async () => {
+export const getAllProjects = async () => {
   try {
     const response = await axios.get("http://localhost:3001/api/projects");
     return response.data.projects;
