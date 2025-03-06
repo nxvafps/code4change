@@ -9,3 +9,13 @@ export const fetchUsers = () => {
     return res.data.users;
   });
 };
+
+export const getProjectById = async (project_id: string) => {
+  try {
+    const response = await axios.get(`/api/project/${project_id}`);
+    return response.data.project;
+  } catch (error) {
+    console.error("Error fetching project:", error);
+    throw new Error("Failed to fetch project details");
+  }
+};
