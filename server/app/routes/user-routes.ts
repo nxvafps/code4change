@@ -16,5 +16,5 @@ router.get(
 );
 router.get("/:username/contributions", UserController.getUserContributions);
 router.get("/:username", UserController.getUserByUsername);
-
+router.post("/:username/categories", UserController.postUserCategories);
 export default router;
