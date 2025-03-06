@@ -280,4 +280,56 @@ export const getUserContributions = async (
   }
 };
 
-// {getUserByUsername, getAllUsers}
+export const addUserCategories = async (
+  username: string,
+  categoryNames: string[]
+): Promise<string[] | null | false> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await client.query(
+        `SELECT id FROM users WHERE github_username = $1`,
+        [username]
+      );
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const validCategories = await Promise.all(
+        categoryNames.map(async (categoryName) => {
+          const categoryCheck = await client.query(
+            `SELECT id FROM categories WHERE  category_name = $1`,
+            [categoryName]
+          );
+          return categoryCheck.rows.length > 0;
+        })
+      );
+
+      if (validCategories.some((valid) => !valid)) {
+        return false;
+      }
+      await Promise.all(
+        categoryNames.map(async (categoryName) => {
+          await client.query(
+            `INSERT INTO user_categories (user_id, category_id) 
+  SELECT $1, id FROM categories WHERE category_name = $2
+  ON CONFLICT (user_id, category_id) DO NOTHING`,
+            [user_id, categoryName]
+          );
+        })
+      );
+      const categoryResults = await client.query(
+        `SELECT c.category_name
+FROM categories c
+JOIN user_categories uc ON c.id = uc.category_id
+WHERE uc.user_id=$1`,
+        [user_id]
+      );
+      return categoryResults.rows.map((row) => row.category_name);
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    console.error("err adding user categories", err);
+    throw err;
+  }
+};
