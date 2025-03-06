@@ -52,6 +52,27 @@ export const fetchUserByUsername = (userName: string) => {
     return res.data.user;
   });
 };
+export const postProject = async (projectData: {
+  name: string;
+  description: string;
+  github_repo_url: string;
+  project_image_url?: string | null;
+  owner_id: number;
+  status: string;
+}) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:3001/api/projects`,
+      projectData
+    );
+    console.log(response.data);
+
+    return response.data.project;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
+};
 
 export const fetchContributionsByUsername = (userName: string) => {
   return code4changeApi.get(`/users/${userName}/contributions`).then((res) => {
