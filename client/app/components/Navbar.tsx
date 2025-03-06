@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.svg";
 import { useAuth } from "../context/AuthContext";
+import { User } from "../../../server/app/types/table-data-types";
 
 const NavbarContainer = styled.nav`
   display: flex;
@@ -47,7 +48,7 @@ const LogoutButton = styled.button`
 `;
 
 export default function NavBar() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -57,12 +58,14 @@ export default function NavBar() {
     }
   };
 
+  const userName = user?.github_username;
+
   return (
     <NavbarContainer>
       <Image src={logo} alt="code4change logo" width={60} height={60} />
       <LinkContainer>
         <StyledLink href="/home">Home</StyledLink>
-        <StyledLink href="/">My Profile</StyledLink>
+        <StyledLink href={`/${userName}`}>My Profile</StyledLink>
         <StyledLink href="/projects">Projects</StyledLink>
         <StyledLink href="/add_project">Add Project</StyledLink>
         <StyledLink href="/leaderboard">Leaderboard</StyledLink>
