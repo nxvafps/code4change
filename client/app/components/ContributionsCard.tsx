@@ -1,4 +1,40 @@
 import styled from "styled-components";
+import { Contribution as BaseContribution } from "../../../server/app/types/table-data-types";
+
+interface Contribution extends BaseContribution {
+  project_name: string;
+}
+
+interface ContributionsCardProps {
+  contribution: Contribution;
+}
+
+export default function ContributionsCard({
+  contribution,
+}: ContributionsCardProps) {
+  return (
+    <ContributionsContainer>
+      <ContributionInfoText>
+        <strong>Project Name: </strong> {contribution.project_name}
+        <strong>Total Changes: </strong>
+        {contribution.total_changes}
+        <strong>Additions: </strong>
+        {contribution.additions}
+        <strong>Deletions: </strong>
+        {contribution.deletions}
+        <strong>Status: </strong> {contribution.status}
+        <strong>Pull Request: </strong>
+        <ContributionLink
+          href={contribution.pull_request_url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View Pull Request
+        </ContributionLink>
+      </ContributionInfoText>
+    </ContributionsContainer>
+  );
+}
 
 const ContributionsContainer = styled.section`
   background: #fff;
@@ -29,59 +65,3 @@ const ContributionLink = styled.a`
   color: #0070f3;
   text-decoration: none;
 `;
-
-type Contribution = {
-  project_name: string;
-  contribution: {
-    pull_request_url: string;
-    additions: number;
-    deletions: number;
-    total_changes: number;
-    status: string;
-  };
-};
-
-interface ContributionsCardProps {
-  userContributions: Contribution[];
-  username: string;
-}
-
-export default function ContributionsCard({
-  userContributions,
-  username,
-}: ContributionsCardProps) {
-  return (
-    <ContributionsContainer>
-      <Title>{username}'s contributions</Title>
-      {userContributions.length > 0 ? (
-        userContributions.map((contribution, index) => (
-          <ContributionInfoText key={index}>
-            <strong>Project Name: </strong> {contribution.project_name}
-            <br />
-            <strong>Total Changes: </strong>
-            {contribution.contribution.total_changes}
-            <br />
-            <strong>Additions: </strong>
-            {contribution.contribution.additions}
-            <br />
-            <strong>Deletions: </strong>
-            {contribution.contribution.deletions}
-            <br />
-            <strong>Status: </strong> {contribution.contribution.status}
-            <br />
-            <strong>Pull Request: </strong>
-            <ContributionLink
-              href={contribution.contribution.pull_request_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Pull Request
-            </ContributionLink>
-          </ContributionInfoText>
-        ))
-      ) : (
-        <ContributionInfoText>No contributions yet.</ContributionInfoText>
-      )}
-    </ContributionsContainer>
-  );
-}
