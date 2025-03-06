@@ -73,3 +73,9 @@ export const postProject = async (projectData: {
     throw error;
   }
 };
+
+export const fetchContributionsByUsername = (userName: string) => {
+  return code4changeApi.get(`/users/${userName}/contributions`).then((res) => {
+    return res.data.contributions;
+  });
+};
