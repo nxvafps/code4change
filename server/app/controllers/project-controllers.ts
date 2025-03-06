@@ -90,14 +90,7 @@ export const postProject = async (
     owner_id,
     status,
   } = req.body;
-  if (
-    !name ||
-    !description ||
-    !github_repo_url ||
-    !project_image_url ||
-    !owner_id ||
-    !status
-  ) {
+  if (!name || !description || !github_repo_url || !owner_id || !status) {
     res.status(400).json({ message: "Bad request: missing fields" });
     return;
   }

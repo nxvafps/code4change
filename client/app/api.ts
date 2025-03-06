@@ -52,3 +52,27 @@ export const fetchUserByUsername = (userName: string) => {
     return res.data.user;
   });
 };
+export const postProject = async (
+  name: string,
+  description: string,
+  github_repo_url: string,
+  project_image_url: string | null,
+  owner_id: number,
+  status: string
+) => {
+  try {
+    const response = await axios.post(`http://localhost:3001/api/projects`, {
+      name,
+      description,
+      github_repo_url,
+      project_image_url: project_image_url || null,
+      owner_id,
+      status,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
+};
