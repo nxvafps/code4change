@@ -14,12 +14,12 @@ export default function ProjectDetails() {
   useEffect(() => {
     const getProject = async () => {
       try {
-        if (typeof project_id === "string") {
-          const projectData = await getProjectById(project_id);
-          setProject(projectData);
-        }
+        const projectData = await getProjectById(project_id);
+        console.log(projectData);
+
+        setProject(projectData);
       } catch (err) {
-        setError("Failed to fetch project details");
+        setError("Failed ");
       } finally {
         setLoading(false);
       }
@@ -59,4 +59,14 @@ export default function ProjectDetails() {
       <Footer />
     </div>
   );
+}
+interface Project {
+  id: number;
+  name: string;
+  description: string;
+  github_repo_url: string;
+  project_image_url: string;
+  owner_id: number;
+  status: string;
+  created_at: string;
 }

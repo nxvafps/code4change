@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ParamValue } from "next/dist/server/request/params";
 
 const code4changeApi = axios.create({
   baseURL: "http://localhost:3001/api",
@@ -10,12 +11,15 @@ export const fetchUsers = () => {
   });
 };
 
-export const getProjectById = async (project_id: string) => {
+export const getProjectById = async (project_id: ParamValue) => {
   try {
-    const response = await axios.get(`/api/project/${project_id}`);
+    const response = await code4changeApi.get(
+      `http://localhost:3001/api/projects/${project_id}`
+    );
+
     return response.data.project;
   } catch (error) {
-    console.error("Error fetching project:", error);
-    throw new Error("Failed to fetch project details");
+    console.error("Error fetching", error);
+    throw new Error("Failed to get project");
   }
 };
