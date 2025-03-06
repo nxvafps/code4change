@@ -400,6 +400,60 @@ describe("End to End Tests", () => {
           expect(profileResponse.body.user.categories).toContain(category);
         });
       });
+
+      it("should return 400 when invalid category data is provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({ categories: "not an array" })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+
+        const responseNoCategories = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({})
+          .expect(400);
+
+        expect(responseNoCategories.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+      });
+
+      it("should return 404 when user does not exist", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist_" + Date.now();
+
+        const response = await request(app)
+          .post(`/api/users/${nonExistentUser}/categories`)
+          .send({ categories: ["Education", "Environment"] })
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when invalid category names are provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({
+            categories: ["NonexistentCategory1", "NonexistentCategory2"],
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid category names provided"
+        );
+      });
     });
   });
 
