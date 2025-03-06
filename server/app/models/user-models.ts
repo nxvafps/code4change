@@ -135,17 +135,12 @@ export const getUserProjects = async (
             ARRAY[]::text[]
           )
           FROM categories c
-          WHERE c.id IN (
-            SELECT uc.category_id
-            FROM user_categories uc
-            WHERE uc.user_id = p.owner_id
-          )
+          JOIN project_categories pc ON c.id = pc.category_id
+          WHERE pc.project_id = p.id
         ) as categories
         FROM projects p
         JOIN users u ON p.owner_id = u.id
-        WHERE p.owner_id = $1
-        ORDER BY p.created_at DESC
-        `,
+        WHERE p.owner_id = $1`,
         [user_id]
       );
       return projectsResult.rows;
@@ -190,11 +185,8 @@ export const getUserProjectById = async (
             ARRAY[]::text[]
           )
           FROM categories c
-          WHERE c.id IN (
-            SELECT uc.category_id
-            FROM user_categories uc
-            WHERE uc.user_id = p.owner_id
-          )
+          JOIN project_categories pc ON c.id = pc.category_id
+          WHERE pc.project_id = p.id
         ) as categories
         FROM projects p
         JOIN users u ON p.owner_id = u.id

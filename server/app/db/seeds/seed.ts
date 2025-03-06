@@ -10,6 +10,7 @@ import {
   insertUserLevels,
   insertProject,
   insertProjectSkills,
+  insertProjectCategories,
   insertIssues,
   insertContribution,
 } from "./utils/insert-data";
@@ -48,6 +49,7 @@ const seed = async ({
     await insertUserLevels(userLevelRelations);
     await insertProject(projectRelations);
     await insertProjectSkills(projectSkillRelations);
+    await insertProjectCategories(projectRelations);
     await insertIssues(issueRelations);
     await insertContribution(contributionRelations);
 
