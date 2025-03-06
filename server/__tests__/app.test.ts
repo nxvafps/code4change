@@ -653,15 +653,15 @@ describe("End to End Tests", () => {
   });
 
   describe("Contributions Routes", () => {
-    describe("GET /contributions", () => {
+    describe("GET api/contributions", () => {
       it("should return an array of all contributions", async () => {
-        const result = await request(app).get("/contributions").expect(200);
+        const result = await request(app).get("/api/contributions").expect(200);
         expect(result.body).toHaveProperty("contributions");
         expect(result.body.contributions.length).toBe(3);
         expect(Array.isArray(result.body.contributions)).toBe(true);
       });
       it("should return an array of contribution objects with the following properties", async () => {
-        const result = await request(app).get("/contributions").expect(200);
+        const result = await request(app).get("/api/contributions").expect(200);
         const contribution = result.body.contributions[0];
         expect(contribution).toHaveProperty("id");
         expect(contribution).toHaveProperty("user_id");
