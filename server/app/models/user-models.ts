@@ -6,7 +6,10 @@ export const getUserByUsername = async (
 ): Promise<User | null> => {
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE github_username = $1",
+      `SELECT id, github_id, github_username, email, profile_picture, 
+              role, xp, created_at, updated_at 
+       FROM users 
+       WHERE github_username = $1`,
       [username]
     );
     if (result.rows.length === 0) return null;
@@ -19,7 +22,11 @@ export const getUserByUsername = async (
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
-    const result = await pool.query("SELECT * FROM users");
+    const result = await pool.query(`
+      SELECT id, github_id, github_username, email, profile_picture, 
+             role, xp, created_at, updated_at
+      FROM users
+    `);
     return result.rows;
   } catch (error) {
     console.error("Error fetching all users:", error);
