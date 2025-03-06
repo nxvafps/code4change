@@ -3,6 +3,7 @@ import NavBar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styled from "styled-components";
 import UserCard from "../components/UserCard";
+import ContributionsList from "../components/ContributionsList";
 
 const PageContainer = styled.div`
   display: flex;
@@ -15,9 +16,8 @@ export default function UserPage() {
   return (
     <PageContainer>
       <NavBar />
-
       <UserCard />
-
+      <ContributionsList />
       <Footer />
     </PageContainer>
   );
