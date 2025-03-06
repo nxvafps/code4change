@@ -30,8 +30,6 @@ export default function ContributionsList() {
       });
   }, []);
 
-  console.log(">>>>>", contributions);
-
   return (
     <ListContainer>
       {contributions?.map((contribution) => (
