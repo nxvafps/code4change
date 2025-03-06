@@ -1,17 +1,28 @@
 "use client";
 
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchUsers } from "../api";
+import { User } from "../../../server/app/types/table-data-types";
 
 export default function LeaderboardTable() {
-  const [users, setUsers] = useState([
-    { username: "Mark", xp: 123 },
-    { username: "Rina", xp: 433 },
-    { username: "Alois", xp: 438 },
-    { username: "Cristian", xp: 398 },
-    { username: "Ollie", xp: 400 },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchUsers()
+      .then((usersFromApi) => {
+        setUsers(usersFromApi);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to load leaderboard, please try again");
+        setIsLoading(false);
+      });
+  }, []);
+  console.log(users);
 
   const sortedUsers = [...users].sort((a, b) => b.xp - a.xp);
   return (
@@ -27,11 +38,11 @@ export default function LeaderboardTable() {
         </thead>
         <tbody>
           {sortedUsers.map((user, index) => (
-            <TableRow key={user.username} rank={index + 1}>
+            <TableRow key={user.id} rank={index + 1}>
               <TableData>{index + 1}</TableData>
               <TableData>
-                <StyledLink href={`/${user.username}`} passHref>
-                  {user.username}
+                <StyledLink href={`/${user.github_username}`} passHref>
+                  {user.github_username}
                 </StyledLink>
               </TableData>
               <TableData>{user.xp}</TableData>
