@@ -55,6 +55,14 @@ export default function ProjectDetails() {
               <strong>Status:</strong> {project.status}
             </p>
             <p>
+              <strong>Github link:</strong>
+              <button
+                onClick={() => window.open(project.github_repo_url, "_blank")}
+              >
+                Go to GitHub
+              </button>
+            </p>
+            <p>
               <strong>Created at:</strong>{" "}
               {new Date(project.created_at).toLocaleString()}
             </p>
