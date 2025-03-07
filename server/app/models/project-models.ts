@@ -97,7 +97,7 @@ export const postProject = async (
   name: string,
   description: string,
   github_repo_url: string,
-  project_image_url: string,
+  project_image_url: string | null,
   owner_id: number,
   status: string
 ): Promise<Project | null> => {
