@@ -109,3 +109,30 @@ export const postProject = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const deleteProjectAndIssuesByID = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const project_id = parseInt(req.params.project_id, 10);
+
+    if (isNaN(project_id)) {
+      throw new Error("Bad request");
+    }
+
+    await ProjectModel.removeArticleAndIssuesByID(project_id);
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "Project not found") {
+        res.status(404).json({ error: { message: error.message } });
+      } else if (error.message === "Bad request") {
+        res.status(400).json({ error: { message: error.message } });
+      } else {
+        console.error("Error in deleteProjectAndIssues controller", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  }
+};
