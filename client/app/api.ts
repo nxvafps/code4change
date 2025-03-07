@@ -65,7 +65,6 @@ export const postProject = async (projectData: {
       `http://localhost:3001/api/projects`,
       projectData
     );
-    console.log(response.data);
 
     return response.data.project;
   } catch (error) {
