@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { AuthProvider } from "./context/AuthContext";
 import { Geist, Geist_Mono } from "next/font/google";
 import StyledComponentsRegistry from "./registry/StyledComponentsRegistry";
+import { ThemeProvider } from "styled-components";
+import theme from "./styles/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,7 +30,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
-          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+          <StyledComponentsRegistry>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          </StyledComponentsRegistry>
         </AuthProvider>
       </body>
     </html>
