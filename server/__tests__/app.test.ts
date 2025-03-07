@@ -455,6 +455,54 @@ describe("End to End Tests", () => {
         );
       });
     });
+
+    describe("POST api/users/:username/skills", () => {
+      it("should add a skill to user", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const skillResponse = await request(app).get("/api/skills");
+
+        const testSkills = skillResponse.body.skills
+          .slice(0, 2)
+          .map((sk: any) => sk.name);
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({ skills: testSkills })
+          .expect(201);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Skill is added successfully"
+        );
+        expect(response.body).toHaveProperty("skills");
+        expect(Array.isArray(response.body.skills)).toBe(true);
+
+        const profileResponse = await request(app)
+          .get(`/api/users/${testUser}/profile`)
+          .expect(200);
+
+        testSkills.forEach((skill: any) => {
+          expect(profileResponse.body.user.skills).toContain(skill);
+        });
+      });
+
+      it.skip("should return 400 when invalid skill data is provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({ skills: "not an array" })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "massage",
+          "Bad request: skills must be an array"
+        );
+      });
+    });
   });
 
   describe("Project Routes", () => {

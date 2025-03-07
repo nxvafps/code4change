@@ -17,5 +17,6 @@ router.get(
 router.get("/:username/contributions", UserController.getUserContributions);
 router.get("/:username", UserController.getUserByUsername);
 router.post("/:username/categories", UserController.postUserCategories);
+router.post("/:username/skills", UserController.postUserSkills);
 router.delete("/:username", UserController.removeUserByUsername);
 export default router;
