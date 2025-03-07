@@ -402,3 +402,33 @@ export const deleteUserByUsername = async (username: string): Promise<void> => {
     throw new Error("Error deleting user");
   }
 };
+
+export const updateUserRoleBasedOnProjects = async (
+  userId: number
+): Promise<void> => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const projectCountResult = await client.query(
+      `SELECT COUNT(*) FROM projects WHERE owner_id = $1`,
+      [userId]
+    );
+
+    const projectCount = parseInt(projectCountResult.rows[0].count);
+    const role = projectCount > 0 ? "maintainer" : "developer";
+
+    await client.query(`UPDATE users SET role = $1 WHERE id = $2`, [
+      role,
+      userId,
+    ]);
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error updating user role:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};

@@ -155,21 +155,37 @@ export const postProject = async (
 export const removeArticleAndIssuesByID = async (project_id: number) => {
   const client = await pool.connect();
   try {
-    const project = await client.query(`SELECT * FROM projects WHERE id = $1`, [
-      project_id,
-    ]);
+    const ownerResult = await client.query(
+      `SELECT owner_id FROM projects WHERE id = $1`,
+      [project_id]
+    );
 
-    if (project.rowCount === 0) {
+    if (ownerResult.rowCount === 0) {
       throw new Error("Project not found");
     }
+
+    const owner_id = ownerResult.rows[0].owner_id;
 
     await client.query("BEGIN");
 
     await client.query(`DELETE FROM issues WHERE project_id = $1`, [
       project_id,
-    ]),
-      await client.query(`DELETE FROM projects WHERE id = $1`, [project_id]),
-      await client.query("COMMIT");
+    ]);
+    await client.query(`DELETE FROM projects WHERE id = $1`, [project_id]);
+
+    const projectCountResult = await client.query(
+      `SELECT COUNT(*) FROM projects WHERE owner_id = $1`,
+      [owner_id]
+    );
+
+    const projectCount = parseInt(projectCountResult.rows[0].count);
+    const role = projectCount > 0 ? "maintainer" : "developer";
+
+    await client.query(`UPDATE users SET role = $1 WHERE id = $2`, [
+      role,
+      owner_id,
+    ]);
+    await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
