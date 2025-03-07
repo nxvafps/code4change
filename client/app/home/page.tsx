@@ -3,174 +3,171 @@
 import NavBar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UserBadge from "../components/Badges";
-
-// Define types for the User object
-interface User {
-  github_id: string;
-  github_username: string;
-  email: string;
-  xp: number;
-  role: string;
-  profile_picture: string;
-  skills: string[];
-  categories: string[];
-}
+import { useAuth } from "../context/AuthContext";
+import { User } from "../../../server/app/types/table-data-types";
+import { fetchUserByUsername } from "../api";
 
 const HomePage: React.FC = () => {
-  const [user, setUser] = useState<User>({
-    github_id: "23456789",
-    github_username: "devcontributor",
-    email: "devcontributor@example.com",
-    xp: 135,
-    role: "developer",
-    profile_picture: "https://randomuser.me/api/portraits/women/42.jpg",
-    skills: ["javascript", "react", "node", "express"],
-    categories: ["education", "accessibility", "healthcare"],
-  });
+  const { user } = useAuth();
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  function adjustProgress(xp: number): number {
-    const maxXP = 1000;
-    const actualProgress = Math.min(xp, maxXP);
-    return actualProgress;
-  }
+  useEffect(() => {
+    if (user) {
+      fetchUserByUsername(user.github_username)
+        .then((userFromAPI) => {
+          setUserInfo(userFromAPI);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Failed to load, please try again");
+          setLoading(false);
+        });
+    }
+  }, [user]);
 
-  const actualProgress = adjustProgress(user.xp);
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!userInfo) return <div>User not found.</div>;
 
-  function selectBadge(xp: number): JSX.Element | null {
-    return xp >= 1000 ? (
-      <UserBadge color="diamond" />
-    ) : xp >= 500 ? (
-      <UserBadge color="platinum" />
-    ) : xp >= 250 ? (
-      <UserBadge color="gold" />
-    ) : xp >= 50 ? (
-      <UserBadge color="silver" />
-    ) : xp >= 1 ? (
-      <UserBadge color="bronze" />
-    ) : null;
-  }
+  const adjustProgress = (xp: number): number => {
+    const maxXP = 1500;
+    return Math.min(xp, maxXP);
+  };
+
+  const actualProgress = adjustProgress(userInfo.xp);
+
+  const selectBadge = (xp: number): JSX.Element | null => {
+    if (xp >= 1000) return <UserBadge color="diamond" />;
+    if (xp >= 500) return <UserBadge color="platinum" />;
+    if (xp >= 250) return <UserBadge color="gold" />;
+    if (xp >= 50) return <UserBadge color="silver" />;
+    if (xp >= 0) return <UserBadge color="bronze" />;
+    return null;
+  };
 
   return (
-    <div>
+    <PageWrapper>
       <NavBar />
-      <LandingPageContainer>
-        <form>
-          <FormContainerUser>
-            <div>
-              <h3>Hi {user.github_username}, time to make a difference!</h3>
-              <br />
-              <ImageContainer>
-                <Image src={user.profile_picture} alt="profile" />
-                <BadgeContainer>{selectBadge(user.xp)}</BadgeContainer>
-              </ImageContainer>
-            </div>
-          </FormContainerUser>
-          <div>
-            <Title>Progress Bar - Total XP </Title>
-            <ProgressContainer>
-              <ProgressBar style={{ width: `${actualProgress * 0.1}%` }}>
-                {actualProgress} XP
-              </ProgressBar>
-            </ProgressContainer>
-          </div>
-          <FormContainer>
-            <div>
-              <br />
-              <p>Suggested projects based on skillset</p>
-            </div>
-          </FormContainer>
-        </form>
-      </LandingPageContainer>
+      <ContentWrapper>
+        <Card>
+          <Header>
+            <Greeting>
+              Hi {userInfo.github_username}, time to make a difference!
+            </Greeting>
+          </Header>
+          <ProfileSection>
+            <ProfileImage src={userInfo.profile_picture} alt="profile" />
+            <BadgeSection>{selectBadge(userInfo.xp)}</BadgeSection>
+          </ProfileSection>
+        </Card>
+        <Card>
+          <SectionTitle>Progress Bar - Total XP</SectionTitle>
+          <ProgressWrapper>
+            <ProgressBar progress={actualProgress * 0.1}>
+              <ProgressText>{actualProgress} XP</ProgressText>
+            </ProgressBar>
+          </ProgressWrapper>
+        </Card>
+        <Card>
+          <SectionTitle>Suggested Projects Based on Skillset</SectionTitle>
+        </Card>
+      </ContentWrapper>
       <Footer />
-    </div>
+    </PageWrapper>
   );
 };
 
 export default HomePage;
 
-const LandingPageContainer = styled.div`
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  background-color: var(--background, #f0f0f0);
   display: flex;
-  position: absolute;
-  top: 40%;
-  left: 40%;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  height: 10vh;
-  padding: 1rem;
-  background-color: var(--background);
 `;
 
-const FormContainerUser = styled.div`
-  width: 100%;
-  height: 25vh;
+const ContentWrapper = styled.main`
+  flex: 1;
+  padding: 2rem;
   display: flex;
-  max-width: 54rem;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 1rem;
-  background-color: rgb(255, 255, 255);
-  border-radius: 0.5rem;
-  border: solid 1px purple;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
 `;
 
-const FormContainer = styled.div`
+const Card = styled.section`
   width: 100%;
-  height: 20vh;
+  max-width: 800px;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+`;
+
+const Header = styled.div`
   display: flex;
-  max-width: 54rem;
+  margin-bottom: 1rem;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  background-color: rgb(255, 255, 255);
-  border-radius: 0.5rem;
-  border: solid 1px purple;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const ImageContainer = styled.div`
+const Greeting = styled.h3`
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+`;
+
+const ProfileSection = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 `;
 
-const BadgeContainer = styled.div`
-  margin-left: 50px;
-  height: 50px;
-`;
-
-const Image = styled.img`
-  width: 40%;
-  height: 40%;
+const ProfileImage = styled.img`
+  width: 120px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 50%;
+  border: 3px solid #28a745;
 `;
 
-const Title = styled.h1`
+const BadgeSection = styled.div`
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+`;
+
+const SectionTitle = styled.h2`
   font-size: 1.8rem;
-  margin-bottom: 1.5rem;
   text-align: center;
+  margin-bottom: 1rem;
+  color: #555;
 `;
 
-const ProgressContainer = styled.div`
+const ProgressWrapper = styled.div`
   width: 100%;
-  background-color: rgb(245, 245, 245);
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(26, 44, 188, 0.1);
+  background-color: #eaeaea;
+  border-radius: 8px;
   overflow: hidden;
-  padding: 10px 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-const ProgressBar = styled.div`
-  height: 70px;
-  background: #28a745;
-  color: white;
-  text-align: center;
-  line-height: 70px;
-  font-size: 1.2rem;
+const ProgressBar = styled.div<{ progress: number }>`
+  height: 40px;
+  background: linear-gradient(90deg, #28a745, #1e7e34);
+  width: ${(props) => props.progress}%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ProgressText = styled.span`
+  color: #fff;
   font-weight: bold;
-  transition: width 0.1s ease-in-out;
 `;
