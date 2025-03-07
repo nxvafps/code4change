@@ -82,6 +82,7 @@ const InputField = styled.input`
 `;
 import { useState } from "react";
 import { postProject } from "@/app/api";
+import { useRouter } from "next/router";
 export default function AddProject() {
   const [projectData, setProjectData] = useState({
     name: "",
@@ -91,6 +92,8 @@ export default function AddProject() {
     owner_id: 1,
     status: "active",
   });
+  const router = useRouter();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectData({ ...projectData, [e.target.name]: e.target.value });
   };
@@ -99,6 +102,18 @@ export default function AddProject() {
 
     try {
       const newProject = await postProject(projectData);
+      setIsSubmitted(true);
+      setProjectData({
+        name: "",
+        description: "",
+        github_repo_url: "",
+        project_image_url: "",
+        owner_id: 1,
+        status: "active",
+      });
+      setTimeout(() => {
+        router.push(`http://localhost:3001/api/projects/${newProject.id}`);
+      }, 2000);
     } catch (error) {
       console.error("Error submitting project", error);
       alert("Failed to add project.");
@@ -118,7 +133,7 @@ export default function AddProject() {
                 <InputField
                   id="projectName"
                   type="text"
-                  name="projectName"
+                  name="name"
                   placeholder="My Awesome Project"
                   required
                   value={projectData.name}
@@ -130,7 +145,7 @@ export default function AddProject() {
                 <InputField
                   id="githubUrl"
                   type="text"
-                  name="githubUrl"
+                  name="github_repo_url"
                   placeholder="https://github.com/my-project"
                   required
                   value={projectData.github_repo_url}
@@ -142,53 +157,30 @@ export default function AddProject() {
                 <InputField
                   id="projectDescription"
                   type="text"
-                  name="projectDescription"
+                  name="description"
                   placeholder="This is a description of my project"
                   required
                   value={projectData.description}
                   onChange={handleChange}
                 />
               </FormField>
-              {/* <FormField>
-                <Label htmlFor="category">Category:</Label>
-                <InputField
-                  id="category"
-                  type="text"
-                  name="category"
-                  placeholder="Accessibility"
-                  required
-                  value={projectData}
-                  onChange={handleChange}
-                />
-              </FormField> */}
               <FormField>
                 <Label htmlFor="projectImage">Project Image URL:</Label>
                 <InputField
                   id="projectImage"
                   type="text"
-                  name="projectImage"
+                  name="project_image_url"
                   placeholder="https://example.com/image.jpg"
                   value={projectData.project_image_url}
                   onChange={handleChange}
                 />
               </FormField>
-              {/* <FormField>
-                <Label htmlFor="skills">Skills:</Label>
-                <InputField
-                  id="skills"
-                  type="text"
-                  name="skills"
-                  placeholder="JavaScript, React"
-                  required
-                  value={projectData.}
-                  onChange={handleChange}
-                />
-              </FormField> */}
               <ButtonContainer>
                 <StyledButton type="submit">Submit</StyledButton>
               </ButtonContainer>
             </fieldset>
           </form>
+          {isSubmitted && <>Project posted successfully!</>}
         </FormContainer>
       </LandingPageContainer>
       <Footer />
