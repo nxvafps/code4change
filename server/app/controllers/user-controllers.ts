@@ -7,6 +7,7 @@ export const getUserByUsername = async (
 ): Promise<void> => {
   try {
     const username = req.params.username;
+    console.log(username);
     const user = await UserModel.getUserByUsername(username);
     if (!user) {
       res.status(404).json({ message: "User not found" });
@@ -197,5 +198,49 @@ export const postUserCategories = async (
     if (!res.headersSent) {
       res.status(500).json({ message: "internal server error" });
     }
+  }
+};
+
+export const postUserSkills = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username } = req.params;
+    const { skills } = req.body;
+    if (!skills || !Array.isArray(skills)) {
+      res.status(400).json({ message: "Bad request: skills must be an array" });
+      return;
+    }
+    const result = await UserModel.addUserSkills(username, skills);
+    if (result === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    if (result === false) {
+      res.status(400).json({ message: "Invalid skill name provided" });
+    }
+    res
+      .status(201)
+      .json({ message: "Skill is added successfully", skills: result });
+  } catch (err) {
+    console.error("Err in post user skill contriller", err);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "internal server error" });
+    }
+  }
+};
+
+export const removeUserByUsername = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { username } = req.params;
+  console.log("controller", username);
+  try {
+    await UserModel.deleteUserByUsername(username);
+    res.status(204).json();
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting user", error: err });
   }
 };
