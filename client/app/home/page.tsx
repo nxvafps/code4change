@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { User } from "../../../server/app/types/table-data-types";
 import { fetchUserByUsername } from "../api";
-import ProfileCard from "../components/Profile";
+import ProfileCard from "../components/ProfileCard";
 import ProgressCard from "../components/ProgressCard";
 import UserBadge from "../components/Badges";
 
