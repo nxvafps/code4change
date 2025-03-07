@@ -614,6 +614,24 @@ describe("End to End Tests", () => {
         );
       });
     });
+    describe.only("DELETE /api/projects/:project_id", () => {
+      it("should successfully delete the requested project and all associated issues", async () => {
+        await request(app).delete("/api/projects/1").expect(204);
+      });
+      it("should return an error if the project does not exist", async () => {
+        const response = await request(app)
+          .delete("/api/projects/999")
+          .expect(404);
+        expect(response.body.error.message).toBe("Project not found");
+      });
+      it("should return a 404 if invalid data is given", async () => {
+        const response = await request(app)
+          .delete("/api/projects/eco")
+          .expect(400);
+
+        expect(response.body.error.message).toBe("Bad request");
+      });
+    });
   });
 
   describe("Issues Routes", () => {
