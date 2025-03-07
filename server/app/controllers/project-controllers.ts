@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import * as ProjectModel from "../models/project-models";
+import * as UserModel from "../models/user-models";
 
 export const getProjectById = async (
   req: Request,
@@ -103,6 +104,8 @@ export const postProject = async (
       owner_id,
       status
     );
+
+    await UserModel.updateUserRoleBasedOnProjects(owner_id);
     res.status(201).json({ project });
   } catch (error) {
     console.error("Error creating project:", error);
@@ -119,6 +122,11 @@ export const deleteProjectAndIssuesByID = async (
 
     if (isNaN(project_id)) {
       throw new Error("Bad request");
+    }
+
+    const project = await ProjectModel.getProjectById(project_id.toString());
+    if (!project) {
+      throw new Error("Project not found");
     }
 
     await ProjectModel.removeArticleAndIssuesByID(project_id);
