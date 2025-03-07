@@ -115,3 +115,29 @@ export const postProject = async (
     throw error;
   }
 };
+
+export const removeArticleAndIssuesByID = async (project_id: number) => {
+  const client = await pool.connect();
+  try {
+    const project = await client.query(`SELECT * FROM projects WHERE id = $1`, [
+      project_id,
+    ]);
+
+    if (project.rowCount === 0) {
+      throw new Error("Project not found");
+    }
+
+    await client.query("BEGIN");
+
+    await client.query(`DELETE FROM issues WHERE project_id = $1`, [
+      project_id,
+    ]),
+      await client.query(`DELETE FROM projects WHERE id = $1`, [project_id]),
+      await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
