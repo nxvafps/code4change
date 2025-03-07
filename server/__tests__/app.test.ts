@@ -5,7 +5,7 @@ import runSeed from "../app/db/seeds/run-seed";
 import categories from "../app/db/data/development-data/categories";
 
 describe("End to End Tests", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
     }
@@ -703,7 +703,7 @@ describe("End to End Tests", () => {
     });
     describe("DELETE /api/projects/:project_id", () => {
       it("should successfully delete the requested project and all associated issues", async () => {
-        await request(app).delete("/api/projects/3").expect(204);
+        await request(app).delete("/api/projects/1").expect(204);
       });
       it("should return an error if the project does not exist", async () => {
         const response = await request(app)
