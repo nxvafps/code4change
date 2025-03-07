@@ -7,7 +7,25 @@ export const getProjectById = async (
   try {
     const result = await pool.query(
       `SELECT p.id, p.name, p.description, p.github_repo_url, p.project_image_url, 
-              u.github_username AS owner_name, p.status, p.created_at, p.updated_at
+              u.github_username AS owner_name, p.status, p.created_at, p.updated_at,
+              (
+                SELECT COALESCE(
+                  array_agg(s.name),
+                  ARRAY[]::text[]
+                )
+                  FROM skills s
+                  JOIN project_skills ps ON s.id = ps.skill_id
+                  WHERE ps.project_id = p.id
+              ) as skills,
+               (
+                SELECT COALESCE(
+                  array_agg(c.category_name),
+                  ARRAY[]::text[]
+                )
+                  FROM categories c
+                  JOIN project_categories pc ON c.id = pc.category_id
+                  WHERE pc.project_id = p.id
+              ) as categories
        FROM projects p
        LEFT JOIN users u ON p.owner_id = u.id
        WHERE p.id = $1`,
@@ -35,7 +53,25 @@ export const getAllProjects = async (): Promise<Project[]> => {
         p.status,
         p.created_at,
         p.updated_at,
-        u.github_username AS owner_name
+        u.github_username AS owner_name,
+              (
+                SELECT COALESCE(
+                  array_agg(s.name),
+                  ARRAY[]::text[]
+                )
+                  FROM skills s
+                  JOIN project_skills ps ON s.id = ps.skill_id
+                  WHERE ps.project_id = p.id
+              ) as skills,
+               (
+                SELECT COALESCE(
+                  array_agg(c.category_name),
+                  ARRAY[]::text[]
+                )
+                  FROM categories c
+                  JOIN project_categories pc ON c.id = pc.category_id
+                  WHERE pc.project_id = p.id
+              ) as categories
       FROM
         projects p
       JOIN
