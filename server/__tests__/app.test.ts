@@ -891,3 +891,43 @@ describe("End to End Tests", () => {
 
   describe("Leaderboard Routes", () => {});
 });
+
+// describe("DELETE /api/users/:username", () => {
+//   test("should respond with a 204 and delete the user, returning an empty body", () => {
+//     const username = "genericuser1";
+
+//     return request(app)
+//       .delete(`/api/users/${username}`)
+//       .expect(204)
+//       .then((response) => {
+//         expect(response.body).toEqual({});
+//       });
+//   });
+
+// test("should respond with a 404 when user does not exist, and return message 'user not found'", () => {
+//   const nonExistentGithubId = "999";
+
+//   return request(app)
+//     .delete(`/api/users/${nonExistentGithubId}`)
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body).toEqual({ error: "user not found" });
+//     });
+// });
+
+// test("should respond with a 204 and delete the user, and ensure the user no longer exists", () => {
+//   const github_id = "50117659";
+
+//   return request(app)
+//     .delete(`/api/users/${github_id}`)
+//     .expect(204)
+//     .then(() => {
+//       return pool.query("SELECT * FROM users WHERE github_id = $1", [
+//         github_id,
+//       ]);
+//     })
+//     .then(({ rows: userRows }) => {
+//       expect(userRows.length).toBe(0);
+//     });
+// });
+// });

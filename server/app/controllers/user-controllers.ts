@@ -7,6 +7,7 @@ export const getUserByUsername = async (
 ): Promise<void> => {
   try {
     const username = req.params.username;
+    console.log(username);
     const user = await UserModel.getUserByUsername(username);
     if (!user) {
       res.status(404).json({ message: "User not found" });
@@ -227,5 +228,19 @@ export const postUserSkills = async (
     if (!res.headersSent) {
       res.status(500).json({ message: "internal server error" });
     }
+  }
+};
+
+export const removeUserByUsername = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { username } = req.params;
+  console.log("controller", username);
+  try {
+    await UserModel.deleteUserByUsername(username);
+    res.status(204).json();
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting user", error: err });
   }
 };

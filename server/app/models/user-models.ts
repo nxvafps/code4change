@@ -386,3 +386,19 @@ export const addUserSkills = async (
     throw err;
   }
 };
+
+export const deleteUserByUsername = async (username: string): Promise<void> => {
+  console.log("model", username);
+  try {
+    const result = await pool.query(
+      "DELETE FROM users WHERE username = $1 RETURNING *",
+      [username]
+    );
+
+    if (result.rowCount === 0) {
+      throw new Error(`User with username ${username} not found`);
+    }
+  } catch (err) {
+    throw new Error("Error deleting user");
+  }
+};
