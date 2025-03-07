@@ -82,7 +82,7 @@ const InputField = styled.input`
 `;
 import { useState } from "react";
 import { postProject } from "@/app/api";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 export default function AddProject() {
   const [projectData, setProjectData] = useState({
     name: "",
@@ -112,7 +112,7 @@ export default function AddProject() {
         status: "active",
       });
       setTimeout(() => {
-        router.push(`http://localhost:3001/api/projects/${newProject.id}`);
+        router.push(`/projects/${newProject.id}`);
       }, 2000);
     } catch (error) {
       console.error("Error submitting project", error);
