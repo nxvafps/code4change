@@ -488,7 +488,7 @@ describe("End to End Tests", () => {
         });
       });
 
-      it.skip("should return 400 when invalid skill data is provided", async () => {
+      it("should return 400 when invalid skill data is provided", async () => {
         const allUsersResponse = await request(app).get("/api/users");
         const testUser = allUsersResponse.body.users[0].github_username;
 
@@ -498,8 +498,47 @@ describe("End to End Tests", () => {
           .expect(400);
 
         expect(response.body).toHaveProperty(
-          "massage",
+          "message",
           "Bad request: skills must be an array"
+        );
+
+        const responseNoSkills = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({})
+          .expect(400);
+
+        expect(responseNoSkills.body).toHaveProperty(
+          "message",
+          "Bad request: skills must be an array"
+        );
+      });
+
+      it("should return 404 when user does not exist", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist_" + Date.now();
+
+        const response = await request(app)
+          .post(`/api/users/${nonExistentUser}/skills`)
+          .send({ skills: ["JavaScript", "React"] })
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when invalid skill names are provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({
+            skills: ["NonexistentSkill1", "NonexistentSkill2"],
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid skill name provided"
         );
       });
     });
