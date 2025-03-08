@@ -10,12 +10,14 @@ import { fetchUserByUsername } from "../api";
 import ProfileCard from "../components/ProfileCard";
 import ProgressCard from "../components/ProgressCard";
 import UserBadge from "../components/Badges";
+import { useRouter } from "next/navigation";
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -23,6 +25,12 @@ const HomePage: React.FC = () => {
         .then((userFromAPI) => {
           setUserInfo(userFromAPI);
           setLoading(false);
+          if (
+            (!userFromAPI.skills || userFromAPI.skills.length === 0) &&
+            (!userFromAPI.categories || userFromAPI.categories.length === 0)
+          ) {
+            router.push("/register");
+          }
         })
         .catch(() => {
           setError("Failed to load, please try again");

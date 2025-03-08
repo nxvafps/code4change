@@ -78,3 +78,42 @@ export const fetchContributionsByUsername = (userName: string) => {
     return res.data.contributions;
   });
 };
+
+export const fetchCategories = async () => {
+  const response = await code4changeApi.get(`/categories`);
+  return response.data.categories;
+};
+export const fetchSkills = async () => {
+  const response = await code4changeApi.get(`/skills`);
+  return response.data.skills;
+};
+
+export const updateUserSkills = async (username: string, skills: string[]) => {
+  try {
+    const response = await code4changeApi.post(`/users/${username}/skills`, {
+      skills: skills,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user skills:", error);
+    throw error;
+  }
+};
+
+export const updateUserCategories = async (
+  username: string,
+  categories: string[]
+) => {
+  try {
+    const response = await code4changeApi.post(
+      `/users/${username}/categories`,
+      {
+        categories: categories,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user categories:", error);
+    throw error;
+  }
+};
