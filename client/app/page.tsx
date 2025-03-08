@@ -80,7 +80,7 @@ const LandingPageContainer = styled.div`
 const ContentWrapper = styled.main`
   display: flex;
   position: relative;
-  margin: ${({ theme }) => theme.spacing.xxl} auto;
+  margin: ${({ theme }) => theme.spacing.lg} auto;
   max-width: 68rem;
   flex-direction: column;
   align-items: center;
