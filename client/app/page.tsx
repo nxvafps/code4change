@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import Footer from "./components/Footer";
 import Image from "next/image";
-import code4changeLogo from "../public/newlogo.png";
+import code4changeLogo from "../public/logo.svg";
 import landingPageImage from "../public/Code4Change.webp";
 import { LoginButton, RegisterButton } from "./components/button";
 import Link from "next/link";
@@ -16,56 +16,114 @@ export default function Home() {
         </LogoContainer>
         <Title>Code4Change</Title>
       </NavContainer>
-      <ImageContainer>
-        <BannerImage src={landingPageImage} alt="image of the world" />
-      </ImageContainer>
-      <MissionStatementContainer>
-        <MissionStatement>
-          Join a global community of developers to drive positive change.
-          Contribute to open source projects that tackle real-world challenges,
-          from education to disaster relief. Level up your expertise, earn
-          recognition and make a lasting difference one commit at a time.
-        </MissionStatement>
-      </MissionStatementContainer>
-      <ButtonContainer>
-        <Link href="/login">
-          <LoginButton />
-        </Link>
-        <Link href="/register">
-          <RegisterButton />
-        </Link>
-      </ButtonContainer>
+      <ContentWrapper>
+        <ImageContainer>
+          <BannerImage src={landingPageImage} alt="image of the world" />
+        </ImageContainer>
+        <MissionStatementContainer>
+          <MissionStatement>
+            Join a global community of developers to drive positive change.
+            Contribute to open source projects that tackle real-world
+            challenges, from education to disaster relief. Level up your
+            expertise, earn recognition and make a lasting difference one commit
+            at a time.
+          </MissionStatement>
+        </MissionStatementContainer>
+        <ButtonContainer>
+          <Link href="/login">
+            <AuthButton>Get Started</AuthButton>
+          </Link>
+        </ButtonContainer>
+      </ContentWrapper>
       <Footer />
     </LandingPageContainer>
   );
 }
 
+const AuthButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  transition: all 0.2s ease;
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  width: 200px;
+  text-align: center;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadows.large};
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: ${({ theme }) => theme.shadows.small};
+  }
+`;
+
 const LandingPageContainer = styled.div`
+  background: linear-gradient(
+    to bottom,
+    ${({ theme }) => theme.colors.background.dark},
+    #151515
+  );
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+`;
+
+const ContentWrapper = styled.main`
+  display: flex;
+  position: relative;
+  margin: ${({ theme }) => theme.spacing.lg} auto;
+  max-width: 68rem;
+  flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
+  justify-content: center;
+  height: auto;
+  padding: ${({ theme }) => theme.spacing.lg};
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.text.light};
+  gap: ${({ theme }) => theme.spacing.xl};
+  width: 100%;
 `;
 
 const NavContainer = styled.div`
   display: flex;
-  height: 12vh;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 15vh;
   width: 100%;
-  margin-bottom: 30px;
+  padding: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.text.light};
+  max-width: 68rem;
+  margin: 0 auto;
 `;
 
 const LogoContainer = styled.div`
   height: 100%;
-  width: 200px;
+  width: auto;
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin-right: ${({ theme }) => theme.spacing.md};
+  overflow: visible;
 `;
 
 const Title = styled.h1`
-  width: 100%;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.light};
+  margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ImageContainer = styled.div`
@@ -74,8 +132,10 @@ const ImageContainer = styled.div`
   justify-content: center;
   width: 100%;
   height: 35vh;
-  padding-bottom: 15px;
-  margin-bottom: 10px;
+  padding-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  overflow: hidden;
 `;
 
 const BannerImage = styled(Image)`
@@ -85,8 +145,8 @@ const BannerImage = styled(Image)`
 `;
 
 const LogoImage = styled(Image)`
-  height: 100%;
-  width: 100px;
+  height: 70px;
+  width: 70px;
 `;
 
 const ButtonContainer = styled.div`
@@ -94,28 +154,27 @@ const ButtonContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 20vh;
   width: 100%;
-  gap: 20px;
-  padding: 10px;
+  gap: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.xl} 0;
 `;
 
 const MissionStatementContainer = styled.div`
   width: 100%;
-  height: 20vh;
   max-width: 54rem;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  margin-bottom: 10px;
+  padding: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
 `;
 
 const MissionStatement = styled.p`
   text-align: center;
-  margin-bottom: 2rem;
-  color: #4b5563;
-
-  @media (prefers-color-scheme: dark) {
-    color: #9ca3af;
-  }
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  line-height: 1.6;
 `;

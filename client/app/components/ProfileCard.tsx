@@ -1,13 +1,13 @@
 // ProfileCard.tsx
 "use client";
 
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { User } from "../../../server/app/types/table-data-types";
 
 interface ProfileCardProps {
   userInfo: User;
-  selectBadge: (xp: number) => JSX.Element | null;
+  selectBadge: (xp: number) => ReactElement | null;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, selectBadge }) => {
@@ -30,24 +30,25 @@ export default ProfileCard;
 
 const Card = styled.section`
   width: 100%;
-  max-width: 800px;
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
 `;
 
 const Header = styled.div`
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
   align-items: center;
   justify-content: center;
 `;
 
 const Greeting = styled.h3`
   margin: 0;
-  font-size: 1.5rem;
-  color: #333;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
 `;
 
@@ -55,6 +56,7 @@ const ProfileSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: ${({ theme }) => theme.spacing.md} 0;
 `;
 
 const ProfileImage = styled.img`
@@ -62,11 +64,12 @@ const ProfileImage = styled.img`
   height: 120px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #28a745;
+  border: 3px solid ${({ theme }) => theme.colors.primary.main};
+  box-shadow: ${({ theme }) => theme.shadows.medium};
 `;
 
 const BadgeSection = styled.div`
-  margin-left: 1.5rem;
+  margin-left: ${({ theme }) => theme.spacing.lg};
   display: flex;
   align-items: center;
 `;
