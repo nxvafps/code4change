@@ -50,7 +50,7 @@ const CardContent = styled.div`
 
 const ProjectTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.colors.text.light};
   margin: 0 0 ${({ theme }) => theme.spacing.xs} 0;
   white-space: nowrap;
   overflow: hidden;
@@ -59,13 +59,13 @@ const ProjectTitle = styled.h3`
 
 const ProjectOwner = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.colors.text.light};
   margin: 0 0 ${({ theme }) => theme.spacing.sm} 0;
 `;
 
 const ProjectDescription = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.md};
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.colors.text.light};
   margin-bottom: ${({ theme }) => theme.spacing.md};
   flex-grow: 1;
 
@@ -103,7 +103,7 @@ const GithubLink = styled.a`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.text.primary};
+  color: ${({ theme }) => theme.colors.text.light};
   font-size: ${({ theme }) => theme.typography.fontSize.md};
   text-decoration: none;
   transition: color 0.2s ease;
