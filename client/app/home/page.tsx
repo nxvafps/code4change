@@ -3,7 +3,7 @@
 import NavBar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { useAuth } from "../context/AuthContext";
 import { User } from "../../../server/app/types/table-data-types";
 import { fetchUserByUsername } from "../api";
@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
-  const selectBadge = (xp: number): JSX.Element | null => {
+  const selectBadge = (xp: number): ReactElement | null => {
     if (xp >= 1000) return <UserBadge color="diamond" />;
     if (xp >= 500) return <UserBadge color="platinum" />;
     if (xp >= 250) return <UserBadge color="gold" />;
@@ -55,6 +55,7 @@ const HomePage: React.FC = () => {
     <PageWrapper>
       <NavBar />
       <ContentWrapper>
+        <Title>Your Progress Dashboard</Title>
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
         <ProgressCard actualProgress={actualProgress} />
         <Card>
@@ -70,33 +71,65 @@ export default HomePage;
 
 // Styled components used in HomePage
 const PageWrapper = styled.div`
+  background: linear-gradient(
+    to bottom,
+    ${({ theme }) => theme.colors.background.dark},
+    #151515
+  );
   min-height: 100vh;
-  background-color: var(--background, #f0f0f0);
   display: flex;
   flex-direction: column;
 `;
 
 const ContentWrapper = styled.main`
-  flex: 1;
-  padding: 2rem;
   display: flex;
+  position: relative;
+  margin: ${({ theme }) => theme.spacing.xxl} auto;
+  max-width: 68rem;
   flex-direction: column;
-  gap: 2rem;
   align-items: center;
+  justify-content: center;
+  height: auto;
+  padding: ${({ theme }) => theme.spacing.lg};
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.text.light};
+  gap: ${({ theme }) => theme.spacing.xl};
 `;
 
 const Card = styled.section`
   width: 100%;
-  max-width: 800px;
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.8rem;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
-  margin-bottom: 1rem;
-  color: #555;
+`;
+
+const Title = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  text-align: center;
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
