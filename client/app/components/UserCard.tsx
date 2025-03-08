@@ -5,66 +5,64 @@ import { useParams } from "next/navigation";
 import { fetchUserByUsername } from "../api";
 import { useState, useEffect } from "react";
 
-const UsersPageContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex: 1;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border: solid 1px red;
-  height: 100px;
-  width: 90%;
-  max-width: 800px;
-  margin-top: 10px;
-`;
-
-const Section = styled.section`
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+const ProfileCard = styled.section`
   width: 100%;
-  text-align: center;
-  border: solid 1px;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border: solid 1px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const ProfileImage = styled.img`
-  width: 40%;
-  height: 40%;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 10px;
-  width: 80px;
-  height: 80px;
+  border-radius: 50%;
+  border: 3px solid ${({ theme }) => theme.colors.primary.main};
 `;
 
 const Title = styled.h1`
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
 
 const InfoText = styled.p`
-  font-size: 1rem;
-  margin: 0.5rem 0;
-  color: #333;
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  margin: ${({ theme }) => theme.spacing.sm} 0;
+  color: ${({ theme }) => theme.colors.text.light};
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary.light};
+  }
 
   a {
-    color: #0070f3;
+    color: ${({ theme }) => theme.colors.primary.main};
     text-decoration: none;
     &:hover {
       text-decoration: underline;
@@ -75,23 +73,37 @@ const InfoText = styled.p`
 const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 1rem 0;
-  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin: ${({ theme }) => theme.spacing.md} 0;
   justify-content: center;
 `;
 
 const Tag = styled.span`
-  background-color: #0070f3;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  color: ${({ theme }) => theme.colors.text.light};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #005bb5;
+    background-color: ${({ theme }) => theme.colors.primary.dark};
   }
+`;
+
+const SectionTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-top: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ theme }) => theme.colors.text.light};
+`;
+
+const LoadingState = styled.div`
+  color: ${({ theme }) => theme.colors.text.light};
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
 `;
 
 export default function UserCard() {
@@ -114,52 +126,60 @@ export default function UserCard() {
           setLoading(false);
         });
     }
-  }, []);
+  }, [username]);
+
+  if (loading) return <LoadingState>Loading...</LoadingState>;
+  if (error) return <LoadingState>{error}</LoadingState>;
+  if (!user) return <LoadingState>User not found.</LoadingState>;
 
   return (
-    <UsersPageContainer>
+    <ProfileCard>
       <ImageContainer>
         <ProfileImage
-          src={user?.profile_picture}
-          alt={`Profile of ${user?.github_username}`}
+          src={user.profile_picture}
+          alt={`Profile of ${user.github_username}`}
         />
       </ImageContainer>
-      <Section>
-        <Title>{user?.github_username}</Title>
-        <Link href={`https://github.com/${user?.github_id}`} passHref>
-          <InfoText>
-            <strong>{`https://github.com/${user?.github_id}`}</strong>
-          </InfoText>
-        </Link>
+      <Title>{user.github_username}</Title>
+
+      <Link href={`https://github.com/${user.github_username}`} passHref>
         <InfoText>
-          <strong>Email: </strong>
-          {user?.email}
+          <strong>GitHub: </strong>
+          {`https://github.com/${user.github_username}`}
         </InfoText>
-        <InfoText>
-          <strong>XP: </strong>
-          {user?.xp}
-        </InfoText>
-        <InfoText>
-          <strong>Role: </strong>
-          {user?.role}
-        </InfoText>
-        <div>
-          <strong>Skills: </strong>
-          <TagList>
-            {user?.skills?.map((skill, index) => (
-              <Tag key={index}>{skill}</Tag>
-            ))}
-          </TagList>
-        </div>
-        <div>
-          <strong>Categories:</strong>
-          <TagList>
-            {user?.categories.map((category, index) => (
-              <Tag key={index}>{category}</Tag>
-            ))}
-          </TagList>
-        </div>
-      </Section>
-    </UsersPageContainer>
+      </Link>
+
+      <InfoText>
+        <strong>Email: </strong>
+        {user.email}
+      </InfoText>
+
+      <InfoText>
+        <strong>XP: </strong>
+        {user.xp}
+      </InfoText>
+
+      <InfoText>
+        <strong>Role: </strong>
+        {user.role}
+      </InfoText>
+      <SectionTitle>
+        <strong>Skills</strong>
+      </SectionTitle>
+      <TagList>
+        {user.skills?.map((skill, index) => (
+          <Tag key={index}>{skill}</Tag>
+        ))}
+      </TagList>
+
+      <SectionTitle>
+        <strong>Categories</strong>
+      </SectionTitle>
+      <TagList>
+        {user.categories?.map((category, index) => (
+          <Tag key={index}>{category}</Tag>
+        ))}
+      </TagList>
+    </ProfileCard>
   );
 }
