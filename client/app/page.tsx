@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Footer from "./components/Footer";
 import Image from "next/image";
 import code4changeLogo from "../public/logo.svg";
-import landingPageImage from "../public/Code4Change.webp";
+import landingPageImage from "../public/code4change_d.jpg";
 import { LoginButton, RegisterButton } from "./components/button";
 import Link from "next/link";
 
@@ -131,7 +131,7 @@ const ImageContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 35vh;
+  height: 45vh;
   padding-bottom: ${({ theme }) => theme.spacing.md};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.borderRadius.large};
