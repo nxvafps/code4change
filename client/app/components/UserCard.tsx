@@ -4,6 +4,7 @@ import { User } from "../../../server/app/types/table-data-types";
 import { useParams } from "next/navigation";
 import { fetchUserByUsername } from "../api";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const ProfileCard = styled.section`
   width: 100%;
@@ -109,10 +110,15 @@ const LoadingState = styled.div`
 export default function UserCard() {
   const { username } = useParams<{ username: string }>();
 
+  const { user: currentUser } = useAuth();
+
   const [user, setUser] = useState<User | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const isOwnProfile =
+    currentUser && user && currentUser.github_username === user.github_username;
 
   useEffect(() => {
     if (username) {
@@ -149,10 +155,12 @@ export default function UserCard() {
         </InfoText>
       </Link>
 
-      <InfoText>
-        <strong>Email: </strong>
-        {user.email}
-      </InfoText>
+      {isOwnProfile && (
+        <InfoText>
+          <strong>Email: </strong>
+          {user.email}
+        </InfoText>
+      )}
 
       <InfoText>
         <strong>XP: </strong>
