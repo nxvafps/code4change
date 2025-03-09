@@ -14,54 +14,112 @@ export default function ContributionsCard({
 }: ContributionsCardProps) {
   return (
     <ContributionsContainer>
-      <ContributionInfoText>
-        <strong>Project Name: </strong> {contribution.project_name}
-        <strong>Total Changes: </strong>
-        {contribution.total_changes}
-        <strong>Additions: </strong>
-        {contribution.additions}
-        <strong>Deletions: </strong>
-        {contribution.deletions}
-        <strong>Status: </strong> {contribution.status}
-        <strong>Pull Request: </strong>
-        <ContributionLink
-          href={contribution.pull_request_url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Pull Request
-        </ContributionLink>
-      </ContributionInfoText>
+      <Title>Contribution Details</Title>
+      <ContributionInfo>
+        <InfoRow>
+          <Label>Project Name:</Label>
+          <Value>{contribution.project_name}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Total Changes:</Label>
+          <Value>{contribution.total_changes}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Additions:</Label>
+          <Value>{contribution.additions}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Deletions:</Label>
+          <Value>{contribution.deletions}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Status:</Label>
+          <Value>{contribution.status}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Pull Request:</Label>
+          <ContributionLink
+            href={contribution.pull_request_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Pull Request
+          </ContributionLink>
+        </InfoRow>
+      </ContributionInfo>
     </ContributionsContainer>
   );
 }
 
 const ContributionsContainer = styled.section`
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
   max-width: 800px;
   width: 100%;
-  margin: 1.5rem auto;
+  margin: ${({ theme }) => theme.spacing.lg} auto;
 `;
 
 const Title = styled.h1`
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
 
-const ContributionInfoText = styled.p`
-  font-size: 1rem;
-  margin: 0.5rem 0;
-  color: #333;
-  border: solid 1px purple;
-  border-radius: 20px;
-  padding: 1rem;
+const ContributionInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.background.dark}40;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.dark}40;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const Label = styled.span`
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.accent.main};
+  margin-right: ${({ theme }) => theme.spacing.sm};
+  min-width: 100px;
+`;
+
+const Value = styled.span`
+  color: ${({ theme }) => theme.colors.text.light};
 `;
 
 const ContributionLink = styled.a`
-  color: #0070f3;
+  color: ${({ theme }) => theme.colors.primary.main};
   text-decoration: none;
+  transition: color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.primary.light};
+  }
 `;
