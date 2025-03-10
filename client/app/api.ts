@@ -66,12 +66,6 @@ export const postProject = async (projectData: {
 }) => {
   try {
     const response = await code4changeApi.post("/projects", projectData);
-    const response = await axios.post(
-      `http://localhost:3001/api/projects`,
-      projectData
-    );
-    // const username = projectData.owner_id
-
     return response.data.project;
   } catch (error) {
     console.error("Error creating project:", error);
