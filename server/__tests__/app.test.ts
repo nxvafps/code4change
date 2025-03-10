@@ -706,8 +706,6 @@ describe("End to End Tests", () => {
         const response = await request(app)
           .get(`/api/projects/${projectId}/contributions`)
           .expect(200);
-        console.log(response.body, "hello");
-
         expect(response.body).toHaveProperty("contributions");
         expect(Array.isArray(response.body.contributions)).toBe(true);
       });
