@@ -1,8 +1,12 @@
 import { postissuebyproject, getIssesByProject } from "../api";
 
-export const IssuesMap = async () => {
+export const IssuesMap = async (
+  githubUrl: string,
+  created_by: number,
+  projectId: number
+) => {
   try {
-    const allissues = await getIssesByProject();
+    const allissues = await getIssesByProject(githubUrl);
     const posteachissue = allissues.map(
       async (issue: {
         project_id: number;
@@ -13,11 +17,11 @@ export const IssuesMap = async () => {
         assignee: number | null;
       }) => {
         const postobject = {
-          project_id: 2,
+          project_id: projectId,
           title: issue.title,
           description: issue.body || "no description",
           status: issue.state,
-          created_by: 6,
+          created_by: created_by,
           assigned_to: issue.assignee || null,
         };
 

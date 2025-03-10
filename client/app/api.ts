@@ -95,10 +95,8 @@ export const postissuebyproject = async (projectIssues: {
     throw error;
   }
 };
-export const getIssesByProject = async () => {
-  const responseIssues = await axios.get(
-    `http://api.github.com/repos/Alsamri/proj-test/issues`
-  );
+export const getIssesByProject = async (githuburl: string) => {
+  const responseIssues = await axios.get(`${githuburl}/issues`);
 
   return responseIssues.data;
 };

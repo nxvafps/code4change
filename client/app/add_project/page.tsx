@@ -100,15 +100,14 @@ import { useAuth } from "../context/AuthContext";
 import { IssuesMap } from "../issues_post/issuespost";
 export default function AddProject() {
   const { user }: AuthContextType = useAuth();
-
-  const UserId = user?.id;
+  const userId = user?.id;
 
   const [projectData, setProjectData] = useState({
     name: "",
     description: "",
     github_repo_url: "",
     project_image_url: "",
-    owner_id: 6,
+    owner_id: userId || 1,
     status: "active",
   });
   const router = useRouter();
@@ -122,7 +121,7 @@ export default function AddProject() {
 
     try {
       const newProject = await postProject(projectData);
-      await IssuesMap();
+      await IssuesMap(projectData.github_repo_url, newProject.id, userId || 1);
       setIsSubmitted(true);
       setProjectData({
         name: "",
