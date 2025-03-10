@@ -11,11 +11,21 @@ import ProfileCard from "../components/ProfileCard";
 import ProgressCard from "../components/ProgressCard";
 import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
-import { Project } from "../../../server/app/types/table-data-types";
+
 import { getAllProjects } from "../api";
 
-interface ProjectWithCategories extends Project {
-  categories: string[];
+interface Project {
+  id?: number;
+  name: string;
+  owner_id: number;
+  description?: string;
+  categories?: string[];
+  skills?: string[];
+  github_repo_url: string;
+  project_image_url?: string;
+  status: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 const HomePage: React.FC = () => {
@@ -66,14 +76,14 @@ const HomePage: React.FC = () => {
   if (!userInfo) return <div>User not found.</div>;
 
   function filterProjectsForCategory(
-    projects: ProjectWithCategories[],
+    projects: Project[],
     categories: string[]
   ) {
     if (!categories || categories.length === 0) {
       return [];
     }
     return projects.filter((project) =>
-      project.categories.some((category: any) => categories.includes(category))
+      project.categories?.some((category: any) => categories.includes(category))
     );
   }
 
@@ -108,7 +118,20 @@ const HomePage: React.FC = () => {
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
         <ProgressCard actualProgress={actualProgress} />
         <Card>
-          <SectionTitle>{filteredProjects[0].name}</SectionTitle>
+          <SectionTitle>Recommended Projects</SectionTitle>
+          {filteredProjects.length === 0 ? (
+            <p>
+              We don't have any projects matching your interests yet. Check back
+              soon!
+            </p>
+          ) : (
+            filteredProjects.map((project) => (
+              <div key={project.id}>
+                <h3>{project.name}</h3>
+                <p>{project.description}</p>
+              </div>
+            ))
+          )}
         </Card>
       </ContentWrapper>
       <Footer />
