@@ -1,9 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import Footer from "../components/Footer";
 import NavBar from "../components/Navbar";
+import SearchBar from "../components/Searchbar";
 import ProjectCardBox from "../components/ProjectCardBox";
 import styled from "styled-components";
+
+export default function Projects() {
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All Categories");
+  const [selectedSkill, setSelectedSkill] = useState<string>("All skills");
+
+  return (
+    <PageWrapper>
+      <NavBar />
+      <ContentWrapper>
+        <Title>Available Projects</Title>
+        <SearchBar
+          setSelectedCategory={setSelectedCategory}
+          setSelectedSkill={setSelectedSkill}
+        />
+        <ProjectCardBox
+          selectedCategory={selectedCategory}
+          selectedSkill={selectedSkill}
+        />
+      </ContentWrapper>
+      <Footer />
+    </PageWrapper>
+  );
+}
 
 const PageWrapper = styled.div`
   background: linear-gradient(
@@ -52,16 +78,3 @@ const Title = styled.h1`
     border-radius: ${({ theme }) => theme.borderRadius.small};
   }
 `;
-
-export default function Projects() {
-  return (
-    <PageWrapper>
-      <NavBar />
-      <ContentWrapper>
-        <Title>Available Projects</Title>
-        <ProjectCardBox />
-      </ContentWrapper>
-      <Footer />
-    </PageWrapper>
-  );
-}
