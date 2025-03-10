@@ -13,6 +13,7 @@ import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
 import { Project } from "../../../server/app/types/table-data-types";
 import { getAllProjects } from "../api";
+import ProjectCard from "../components/ProjectCard";
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -61,21 +62,18 @@ const HomePage: React.FC = () => {
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
-  function filterProjectsForCategory(
+  function filterProjectsByCategory(
     projects: Project[],
     categories: string[]
-  ) {
+  ): Project[] {
     return projects.filter((project) =>
       project.categories.some((category) => categories.includes(category))
     );
   }
 
-  const filteredProjects = filterProjectsForCategory(
-    projects,
-    userInfo.categories
-  );
-
-  console.log(filteredProjects);
+  const filteredProjects = userInfo?.categories?.length
+    ? filterProjectsByCategory(projects, userInfo.categories)
+    : [];
 
   const selectBadge = (xp: number): ReactElement | null => {
     if (xp >= 1000) return <UserBadge color="diamond" />;
@@ -101,7 +99,27 @@ const HomePage: React.FC = () => {
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
         <ProgressCard actualProgress={actualProgress} />
         <Card>
-          <SectionTitle>{filteredProjects[0].name}</SectionTitle>
+          <ProjectsGrid>
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((project, index) => (
+                <ProjectCard
+                  key={project.id || index}
+                  project_id={project.id}
+                  owner={project.owner_name}
+                  name={project.name}
+                  description={project.description}
+                  github_repo_url={project.github_repo_url}
+                  project_image={project.project_image_url}
+                  status={project.status}
+                />
+              ))
+            ) : (
+              <SectionTitle>
+                No relevant projects found based on your categories of interest
+                and skills.
+              </SectionTitle>
+            )}
+          </ProjectsGrid>
         </Card>
       </ContentWrapper>
       <Footer />
@@ -172,5 +190,48 @@ const Title = styled.h1`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.primary.main};
     border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
+`;
+
+interface ThemeProps {
+  theme: {
+    spacing: {
+      md: string;
+      lg: string;
+      xl: string;
+    };
+    colors: {
+      text: {
+        light: string;
+      };
+      status: {
+        error: string;
+      };
+      background: {
+        dark: string;
+      };
+    };
+    typography: {
+      fontSize: {
+        md: string;
+        lg: string;
+      };
+    };
+    borderRadius: {
+      medium: string;
+    };
+  };
+}
+
+const ProjectsGrid = styled.div<ThemeProps>`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: ${({ theme }) => theme.spacing.xl};
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: ${({ theme }) => theme.spacing.lg};
   }
 `;
