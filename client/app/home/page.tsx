@@ -11,10 +11,13 @@ import ProfileCard from "../components/ProfileCard";
 import ProgressCard from "../components/ProgressCard";
 import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
+import { Project } from "../../../server/app/types/table-data-types";
+import { getAllProjects } from "../api";
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -39,9 +42,40 @@ const HomePage: React.FC = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const fetchProjects = async (): Promise<void> => {
+      try {
+        const projectData = await getAllProjects();
+        setProjects(projectData);
+      } catch (err) {
+        setError("Failed to load projects, please try again");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
+
+  function filterProjectsForCategory(
+    projects: Project[],
+    categories: string[]
+  ) {
+    return projects.filter((project) =>
+      project.categories.some((category) => categories.includes(category))
+    );
+  }
+
+  const filteredProjects = filterProjectsForCategory(
+    projects,
+    userInfo.categories
+  );
+
+  console.log(filteredProjects);
 
   const selectBadge = (xp: number): ReactElement | null => {
     if (xp >= 1000) return <UserBadge color="diamond" />;
@@ -67,7 +101,7 @@ const HomePage: React.FC = () => {
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
         <ProgressCard actualProgress={actualProgress} />
         <Card>
-          <SectionTitle>Suggested Projects Based on Skillset</SectionTitle>
+          <SectionTitle>{filteredProjects[0].name}</SectionTitle>
         </Card>
       </ContentWrapper>
       <Footer />
@@ -77,7 +111,6 @@ const HomePage: React.FC = () => {
 
 export default HomePage;
 
-// Styled components used in HomePage
 const PageWrapper = styled.div`
   background: linear-gradient(
     to bottom,
