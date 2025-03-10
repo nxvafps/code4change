@@ -65,7 +65,7 @@ export default function ProjectCardBox({
       try {
         const projectData = await getAllProjects();
         setProjects(projectData);
-        const filtered = projectData.filter((proj) => {
+        const filtered = projectData.filter((proj: Project) => {
           const matchesCategory =
             selectedCategory && selectedCategory !== "All Categories"
               ? proj.categories.includes(selectedCategory)
