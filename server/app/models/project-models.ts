@@ -101,7 +101,7 @@ export const getIssuesByProjectId = async (projectId: number) => {
         FROM issues i
         LEFT JOIN users u1 ON i.created_by = u1.id
         LEFT JOIN users u2 ON i.assigned_to = u2.id
-        WHERE i.id = $1
+        WHERE i.project_id = $1
         `,
       [projectId]
     );

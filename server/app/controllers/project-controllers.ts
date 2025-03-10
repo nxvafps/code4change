@@ -45,11 +45,6 @@ export const getProjectIssues = async (
       parseInt(project_id)
     );
 
-    if (issues.length === 0) {
-      res.status(404).json({ message: "No issues found for this project." });
-      return;
-    }
-
     res.status(200).json({ issues });
   } catch (error) {
     console.error("Error sending issues:", error);

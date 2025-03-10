@@ -689,16 +689,15 @@ describe("End to End Tests", () => {
         expect(Array.isArray(response.body.issues)).toBe(true);
       });
 
-      it("should return 404 if no issues found for the project", async () => {
+      it("should return an empty array for projects with no issues", async () => {
         const projectId = 9999;
         const response = await request(app)
           .get(`/api/projects/${projectId}/issues`)
-          .expect(404);
+          .expect(200);
 
-        expect(response.body).toHaveProperty(
-          "message",
-          "No issues found for this project."
-        );
+        expect(response.body).toHaveProperty("issues");
+        expect(Array.isArray(response.body.issues)).toBe(true);
+        expect(response.body.issues.length).toBe(0);
       });
     });
     describe("DELETE /api/projects/:project_id", () => {
