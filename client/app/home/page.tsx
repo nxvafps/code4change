@@ -75,21 +75,26 @@ const HomePage: React.FC = () => {
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
-  function filterProjectsByCategory(
+  function filterProjects(
     projects: Project[],
-    categories: string[] | undefined
+    categories: string[],
+    skills: string[]
   ): Project[] {
-    if (!categories || categories.length === 0) {
-      return [];
-    }
-    return projects.filter((project) =>
-      project.categories?.some((category) => categories.includes(category))
-    );
+    return projects.filter((project) => {
+      const matchesCategory =
+        categories.length === 0 ||
+        project.categories?.some((category) => categories.includes(category));
+      const matchesSkill =
+        skills.length === 0 ||
+        project.skills?.some((skill) => skills.includes(skill));
+      return matchesCategory && matchesSkill;
+    });
   }
-
-  const filteredProjects = userInfo?.categories?.length
-    ? filterProjectsByCategory(projects, userInfo.categories)
-    : [];
+  const filteredProjects = filterProjects(
+    projects,
+    userInfo.categories || [],
+    userInfo.skills || []
+  );
 
   const selectBadge = (xp: number): ReactElement | null => {
     if (xp >= 1000) return <UserBadge color="diamond" />;
