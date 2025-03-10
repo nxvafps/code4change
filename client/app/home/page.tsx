@@ -13,6 +13,10 @@ import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
 import { Project } from "../../../server/app/types/table-data-types";
 import { getAllProjects } from "../api";
+
+interface ProjectWithCategories extends Project {
+  categories: string[];
+}
 import ProjectCard from "../components/ProjectCard";
 
 const HomePage: React.FC = () => {
@@ -62,12 +66,18 @@ const HomePage: React.FC = () => {
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
+  function filterProjectsForCategory(
+    projects: ProjectWithCategories[],
   function filterProjectsByCategory(
     projects: Project[],
     categories: string[]
+  ) {
+    if (!categories || categories.length === 0) {
+      return [];
+    }
   ): Project[] {
     return projects.filter((project) =>
-      project.categories.some((category) => categories.includes(category))
+      project.categories.some((category: any) => categories.includes(category))
     );
   }
 

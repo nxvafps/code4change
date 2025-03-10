@@ -122,7 +122,6 @@ export default function ProjectDetails() {
     const getProject = async () => {
       try {
         const projectData = await getProjectById(project_id);
-        console.log(projectData);
 
         setProject(projectData);
       } catch (err) {
