@@ -18,6 +18,7 @@ export interface Project {
   id?: number;
   name: string;
   owner_id: number;
+  owner_name?: string;
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
@@ -125,10 +126,10 @@ const HomePage: React.FC = () => {
               filteredProjects.map((project, index) => (
                 <ProjectCard
                   key={project.id || index}
-                  project_id={project.id}
+                  project_id={project.id as number}
                   owner={project.owner_name}
                   name={project.name}
-                  description={project.description}
+                  description={project.description as string}
                   github_repo_url={project.github_repo_url}
                   project_image={project.project_image_url}
                   status={project.status}
