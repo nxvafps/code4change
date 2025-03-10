@@ -19,6 +19,7 @@ export interface Project {
   id?: number;
   name: string;
   owner_id: number;
+  owner_name?: string;
   description?: string;
   github_repo_url: string;
   project_image_url?: string;
