@@ -11,13 +11,22 @@ import ProfileCard from "../components/ProfileCard";
 import ProgressCard from "../components/ProgressCard";
 import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
-import { Project } from "../../../server/app/types/table-data-types";
 import { getAllProjects } from "../api";
-
-interface ProjectWithCategories extends Project {
-  categories: string[];
-}
 import ProjectCard from "../components/ProjectCard";
+
+export interface Project {
+  id?: number;
+  name: string;
+  owner_id: number;
+  description?: string;
+  github_repo_url: string;
+  project_image_url?: string;
+  status: string;
+  created_at?: Date;
+  updated_at?: Date;
+  categories?: string[];
+  skills?: string[];
+}
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -67,15 +76,14 @@ const HomePage: React.FC = () => {
   if (!userInfo) return <div>User not found.</div>;
 
   function filterProjectsByCategory(
-    projects: ProjectWithCategories[],
+    projects: Project[],
     categories: string[] | undefined
   ): Project[] {
     if (!categories || categories.length === 0) {
       return [];
     }
-
     return projects.filter((project) =>
-      project.categories.some((category) => categories.includes(category))
+      project.categories?.some((category) => categories.includes(category))
     );
   }
 
