@@ -11,75 +11,138 @@ const FormContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  background-color: rgb(255, 255, 255);
-  border-radius: 0.5rem;
-  border: solid 1px purple;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: ${({ theme }) => theme.spacing.lg};
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
   width: 100%;
-  gap: 20px;
-  padding: 10px;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.lg};
 `;
 
 const StyledButton = styled.button`
-  background-color: #4b525e;
-  color: rgb(255, 255, 255);
-  font-size: 1rem;
-  border-radius: 0.375rem;
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: none;
   cursor: pointer;
-  width: 150px;
-  height: 40px;
+  width: auto;
+  min-width: 120px;
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  height: 48px;
+  transition: all ${({ theme }) => theme.transitions.fast};
+  box-shadow: ${({ theme }) => theme.shadows.small};
+
   &:hover {
-    background-color: #7e839c;
+    background-color: ${({ theme }) => theme.colors.primary.light};
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadows.medium};
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const LandingPageContainer = styled.div`
   display: flex;
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin: ${({ theme }) => theme.spacing.xxl} auto;
+  max-width: 68rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: auto;
-  padding: 1rem;
-  background-color: var(--background);
+  padding: ${({ theme }) => theme.spacing.lg};
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.text.light};
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
   text-align: center;
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
 
 const FormField = styled.div`
   display: flex;
-  align-items: center;
-  margin: 0.5rem 0;
+  flex-direction: column;
+  margin: ${({ theme }) => theme.spacing.md} 0;
   width: 100%;
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      ${({ theme }) => theme.colors.border.dark}50,
+      transparent
+    );
+  }
+
+  &:last-of-type:after {
+    display: none;
+  }
 `;
 
 const Label = styled.label`
-  font-size: 1rem;
-  margin-right: 1rem;
-  width: 150px;
-  text-align: right;
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.text.light};
 `;
 
 const InputField = styled.input`
-  padding: 0.8rem;
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.md}`};
   width: 100%;
-  border-radius: 0.375rem;
-  border: 1px solid #ccc;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  background-color: ${({ theme }) => theme.colors.secondary.dark};
+  color: ${({ theme }) => theme.colors.text.light};
+  transition: border-color ${({ theme }) => theme.transitions.fast},
+    box-shadow ${({ theme }) => theme.transitions.fast};
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.primary.main};
+    box-shadow: 0 0 0 3px ${({ theme }) => `${theme.colors.primary.main}30`};
+    outline: none;
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.text.disabled};
+  }
 `;
+
 type User = {
   id: number;
   github_username: string;
@@ -93,6 +156,45 @@ type AuthContextType = {
   loading: boolean;
   logout: () => void;
 };
+
+const SuccessMessage = styled.div`
+  color: ${({ theme }) => theme.colors.primary.light};
+  margin-top: ${({ theme }) => theme.spacing.md};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  background-color: ${({ theme }) => `${theme.colors.primary.dark}30`};
+  padding: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  width: 100%;
+  justify-content: center;
+
+  &:before {
+    content: "✓";
+    font-weight: bold;
+  }
+`;
+
+const StyledFieldset = styled.fieldset`
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+`;
+
+const PageWrapper = styled.div`
+  background: linear-gradient(
+    to bottom,
+    ${({ theme }) => theme.colors.background.dark},
+    #151515
+  );
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+
 import { useState } from "react";
 import { postProject, postissuebyproject } from "@/app/api";
 import { useRouter } from "next/navigation";
@@ -142,15 +244,15 @@ export default function AddProject() {
   };
 
   return (
-    <div>
+    <PageWrapper>
       <NavBar />
       <LandingPageContainer>
-        <Title>Share your amazing project with the community below!</Title>
+        <Title>Share your amazing project with the community</Title>
         <FormContainer>
           <form onSubmit={handleSubmit}>
-            <fieldset>
+            <StyledFieldset>
               <FormField>
-                <Label htmlFor="projectName">Project Name:</Label>
+                <Label htmlFor="projectName">Project Name</Label>
                 <InputField
                   id="projectName"
                   type="text"
@@ -162,7 +264,7 @@ export default function AddProject() {
                 />
               </FormField>
               <FormField>
-                <Label htmlFor="githubUrl">GitHub URL:</Label>
+                <Label htmlFor="githubUrl">GitHub URL</Label>
                 <InputField
                   id="githubUrl"
                   type="text"
@@ -174,7 +276,7 @@ export default function AddProject() {
                 />
               </FormField>
               <FormField>
-                <Label htmlFor="projectDescription">Project Description:</Label>
+                <Label htmlFor="projectDescription">Project Description</Label>
                 <InputField
                   id="projectDescription"
                   type="text"
@@ -186,7 +288,7 @@ export default function AddProject() {
                 />
               </FormField>
               <FormField>
-                <Label htmlFor="projectImage">Project Image URL:</Label>
+                <Label htmlFor="projectImage">Project Image URL</Label>
                 <InputField
                   id="projectImage"
                   type="text"
@@ -197,14 +299,16 @@ export default function AddProject() {
                 />
               </FormField>
               <ButtonContainer>
-                <StyledButton type="submit">Submit</StyledButton>
+                <StyledButton type="submit">Submit Project</StyledButton>
               </ButtonContainer>
-            </fieldset>
+            </StyledFieldset>
           </form>
-          {isSubmitted && <>Project posted successfully!</>}
+          {isSubmitted && (
+            <SuccessMessage>Project posted successfully!</SuccessMessage>
+          )}
         </FormContainer>
       </LandingPageContainer>
       <Footer />
-    </div>
+    </PageWrapper>
   );
 }

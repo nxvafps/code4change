@@ -4,47 +4,63 @@ import GitHubLoginButton from "../components/login/GithubLoginButton";
 import styled from "styled-components";
 import Footer from "../components/Footer";
 
-// styled components
+const PageWrapper = styled.div`
+  background: linear-gradient(
+    to bottom,
+    ${({ theme }) => theme.colors.background.dark},
+    #151515
+  );
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 1rem;
-  background-color: var(--background);
+  flex: 1;
+  padding: ${({ theme }) => theme.spacing.lg};
 `;
 
 const LoginCard = styled.div`
   width: 100%;
   max-width: 28rem;
-  padding: 2rem;
+  padding: ${({ theme }) => theme.spacing.lg};
   margin: 0 auto;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: white;
-
-  @media (prefers-color-scheme: dark) {
-    background-color: #1f2937;
-  }
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  box-shadow: ${({ theme }) => theme.shadows.large};
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
 `;
 
 const LoginHeader = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--foreground);
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
 
 const LoginDescription = styled.p`
   text-align: center;
-  margin-bottom: 2rem;
-  color: #4b5563;
-
-  @media (prefers-color-scheme: dark) {
-    color: #9ca3af;
-  }
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
 `;
 
 const ButtonContainer = styled.div`
@@ -54,7 +70,7 @@ const ButtonContainer = styled.div`
 
 export default function Login() {
   return (
-    <>
+    <PageWrapper>
       <LoginContainer>
         <LoginCard>
           <LoginHeader>Sign In</LoginHeader>
@@ -67,6 +83,6 @@ export default function Login() {
         </LoginCard>
       </LoginContainer>
       <Footer />
-    </>
+    </PageWrapper>
   );
 }

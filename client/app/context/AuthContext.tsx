@@ -30,6 +30,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function checkAuthStatus() {
+      const savedUser = localStorage.getItem("code4change_user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+        setLoading(false);
+      }
+
       try {
         const response = await fetch("http://localhost:3001/api/auth/user", {
           credentials: "include",
@@ -37,7 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
+          localStorage.setItem("code4change_user", JSON.stringify(data.user));
           setUser(data.user);
+        } else {
+          localStorage.removeItem("code4change_user");
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
@@ -54,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await fetch("http://localhost:3001/api/auth/logout", {
         credentials: "include",
       });
+      localStorage.removeItem("code4change_user");
       setUser(null);
       if (response.ok) {
         window.location.href = "/";
