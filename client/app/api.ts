@@ -160,3 +160,13 @@ export const updateUserCategories = async (
     throw error;
   }
 };
+
+export const fetchProjectsByUsername = async (userName: string) => {
+  try {
+    const response = await code4changeApi(`/users/${userName}/projects`);
+    return response.data.projects;
+  } catch (error) {
+    console.log("Error fetching projects", error);
+    throw error;
+  }
+};
