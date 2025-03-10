@@ -65,15 +65,12 @@ export const postProject = async (projectData: {
   status: string;
 }) => {
   try {
-
+    const response = await code4changeApi.post("/projects", projectData);
     const response = await axios.post(
       `http://localhost:3001/api/projects`,
       projectData
     );
     // const username = projectData.owner_id
-
-
-    const response = await code4changeApi.post("/projects", projectData);
 
     return response.data.project;
   } catch (error) {
@@ -81,7 +78,6 @@ export const postProject = async (projectData: {
     throw error;
   }
 };
-
 
 export const postissuebyproject = async (projectIssues: {
   project_id: number;
@@ -103,12 +99,11 @@ export const postissuebyproject = async (projectIssues: {
     throw error;
   }
 };
-export const getIssesByProject = async () => {
-  const responseIssues = await axios.get(
-    `http://api.github.com/repos/Alsamri/proj-test/issues`
-  );
+export const getIssesByProject = async (githuburl: string) => {
+  const responseIssues = await axios.get(`${githuburl}/issues`);
 
   return responseIssues.data;
+};
 
 export const fetchContributionsByUsername = async (userName: string) => {
   try {
@@ -170,5 +165,4 @@ export const updateUserCategories = async (
     console.error("Error updating user categories:", error);
     throw error;
   }
-
 };
