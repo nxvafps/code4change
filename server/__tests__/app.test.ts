@@ -5,7 +5,7 @@ import runSeed from "../app/db/seeds/run-seed";
 import categories from "../app/db/data/development-data/categories";
 
 describe("End to End Tests", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     if (process.env.NODE_ENV !== "test") {
       throw new Error("Tests should only run in test environment");
     }
@@ -400,6 +400,147 @@ describe("End to End Tests", () => {
           expect(profileResponse.body.user.categories).toContain(category);
         });
       });
+
+      it("should return 400 when invalid category data is provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({ categories: "not an array" })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+
+        const responseNoCategories = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({})
+          .expect(400);
+
+        expect(responseNoCategories.body).toHaveProperty(
+          "message",
+          "Bad request: categories must be an array"
+        );
+      });
+
+      it("should return 404 when user does not exist", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist_" + Date.now();
+
+        const response = await request(app)
+          .post(`/api/users/${nonExistentUser}/categories`)
+          .send({ categories: ["Education", "Environment"] })
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when invalid category names are provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/categories`)
+          .send({
+            categories: ["NonexistentCategory1", "NonexistentCategory2"],
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid category names provided"
+        );
+      });
+    });
+
+    describe("POST api/users/:username/skills", () => {
+      it("should add a skill to user", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const skillResponse = await request(app).get("/api/skills");
+
+        const testSkills = skillResponse.body.skills
+          .slice(0, 2)
+          .map((sk: any) => sk.name);
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({ skills: testSkills })
+          .expect(201);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Skill is added successfully"
+        );
+        expect(response.body).toHaveProperty("skills");
+        expect(Array.isArray(response.body.skills)).toBe(true);
+
+        const profileResponse = await request(app)
+          .get(`/api/users/${testUser}/profile`)
+          .expect(200);
+
+        testSkills.forEach((skill: any) => {
+          expect(profileResponse.body.user.skills).toContain(skill);
+        });
+      });
+
+      it("should return 400 when invalid skill data is provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({ skills: "not an array" })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Bad request: skills must be an array"
+        );
+
+        const responseNoSkills = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({})
+          .expect(400);
+
+        expect(responseNoSkills.body).toHaveProperty(
+          "message",
+          "Bad request: skills must be an array"
+        );
+      });
+
+      it("should return 404 when user does not exist", async () => {
+        const nonExistentUser =
+          "this_user_definitely_doesnt_exist_" + Date.now();
+
+        const response = await request(app)
+          .post(`/api/users/${nonExistentUser}/skills`)
+          .send({ skills: ["JavaScript", "React"] })
+          .expect(404);
+
+        expect(response.body).toHaveProperty("message", "User not found");
+      });
+
+      it("should return 400 when invalid skill names are provided", async () => {
+        const allUsersResponse = await request(app).get("/api/users");
+        const testUser = allUsersResponse.body.users[0].github_username;
+
+        const response = await request(app)
+          .post(`/api/users/${testUser}/skills`)
+          .send({
+            skills: ["NonexistentSkill1", "NonexistentSkill2"],
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          "message",
+          "Invalid skill name provided"
+        );
+      });
     });
   });
 
@@ -558,6 +699,24 @@ describe("End to End Tests", () => {
           "message",
           "No issues found for this project."
         );
+      });
+    });
+    describe("DELETE /api/projects/:project_id", () => {
+      it("should successfully delete the requested project and all associated issues", async () => {
+        await request(app).delete("/api/projects/1").expect(204);
+      });
+      it("should return an error if the project does not exist", async () => {
+        const response = await request(app)
+          .delete("/api/projects/999")
+          .expect(404);
+        expect(response.body.error.message).toBe("Project not found");
+      });
+      it("should return a 404 if invalid data is given", async () => {
+        const response = await request(app)
+          .delete("/api/projects/eco")
+          .expect(400);
+
+        expect(response.body.error.message).toBe("Bad request");
       });
     });
   });
@@ -789,3 +948,43 @@ describe("End to End Tests", () => {
 
   describe("Leaderboard Routes", () => {});
 });
+
+// describe("DELETE /api/users/:username", () => {
+//   test("should respond with a 204 and delete the user, returning an empty body", () => {
+//     const username = "genericuser1";
+
+//     return request(app)
+//       .delete(`/api/users/${username}`)
+//       .expect(204)
+//       .then((response) => {
+//         expect(response.body).toEqual({});
+//       });
+//   });
+
+// test("should respond with a 404 when user does not exist, and return message 'user not found'", () => {
+//   const nonExistentGithubId = "999";
+
+//   return request(app)
+//     .delete(`/api/users/${nonExistentGithubId}`)
+//     .expect(404)
+//     .then((response) => {
+//       expect(response.body).toEqual({ error: "user not found" });
+//     });
+// });
+
+// test("should respond with a 204 and delete the user, and ensure the user no longer exists", () => {
+//   const github_id = "50117659";
+
+//   return request(app)
+//     .delete(`/api/users/${github_id}`)
+//     .expect(204)
+//     .then(() => {
+//       return pool.query("SELECT * FROM users WHERE github_id = $1", [
+//         github_id,
+//       ]);
+//     })
+//     .then(({ rows: userRows }) => {
+//       expect(userRows.length).toBe(0);
+//     });
+// });
+// });

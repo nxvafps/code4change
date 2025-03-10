@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import * as ProjectModel from "../models/project-models";
+import * as UserModel from "../models/user-models";
 
 export const getProjectById = async (
   req: Request,
@@ -103,9 +104,43 @@ export const postProject = async (
       owner_id,
       status
     );
+
+    await UserModel.updateUserRoleBasedOnProjects(owner_id);
     res.status(201).json({ project });
   } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteProjectAndIssuesByID = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const project_id = parseInt(req.params.project_id, 10);
+
+    if (isNaN(project_id)) {
+      throw new Error("Bad request");
+    }
+
+    const project = await ProjectModel.getProjectById(project_id.toString());
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    await ProjectModel.removeArticleAndIssuesByID(project_id);
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "Project not found") {
+        res.status(404).json({ error: { message: error.message } });
+      } else if (error.message === "Bad request") {
+        res.status(400).json({ error: { message: error.message } });
+      } else {
+        console.error("Error in deleteProjectAndIssues controller", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
   }
 };

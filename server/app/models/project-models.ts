@@ -7,7 +7,25 @@ export const getProjectById = async (
   try {
     const result = await pool.query(
       `SELECT p.id, p.name, p.description, p.github_repo_url, p.project_image_url, 
-              u.github_username AS owner_name, p.status, p.created_at, p.updated_at
+              u.github_username AS owner_name, p.status, p.created_at, p.updated_at,
+              (
+                SELECT COALESCE(
+                  array_agg(s.name),
+                  ARRAY[]::text[]
+                )
+                  FROM skills s
+                  JOIN project_skills ps ON s.id = ps.skill_id
+                  WHERE ps.project_id = p.id
+              ) as skills,
+               (
+                SELECT COALESCE(
+                  array_agg(c.category_name),
+                  ARRAY[]::text[]
+                )
+                  FROM categories c
+                  JOIN project_categories pc ON c.id = pc.category_id
+                  WHERE pc.project_id = p.id
+              ) as categories
        FROM projects p
        LEFT JOIN users u ON p.owner_id = u.id
        WHERE p.id = $1`,
@@ -35,7 +53,25 @@ export const getAllProjects = async (): Promise<Project[]> => {
         p.status,
         p.created_at,
         p.updated_at,
-        u.github_username AS owner_name
+        u.github_username AS owner_name,
+              (
+                SELECT COALESCE(
+                  array_agg(s.name),
+                  ARRAY[]::text[]
+                )
+                  FROM skills s
+                  JOIN project_skills ps ON s.id = ps.skill_id
+                  WHERE ps.project_id = p.id
+              ) as skills,
+               (
+                SELECT COALESCE(
+                  array_agg(c.category_name),
+                  ARRAY[]::text[]
+                )
+                  FROM categories c
+                  JOIN project_categories pc ON c.id = pc.category_id
+                  WHERE pc.project_id = p.id
+              ) as categories
       FROM
         projects p
       JOIN
@@ -113,5 +149,47 @@ export const postProject = async (
   } catch (error) {
     console.error("Error creating project:", error);
     throw error;
+  }
+};
+
+export const removeArticleAndIssuesByID = async (project_id: number) => {
+  const client = await pool.connect();
+  try {
+    const ownerResult = await client.query(
+      `SELECT owner_id FROM projects WHERE id = $1`,
+      [project_id]
+    );
+
+    if (ownerResult.rowCount === 0) {
+      throw new Error("Project not found");
+    }
+
+    const owner_id = ownerResult.rows[0].owner_id;
+
+    await client.query("BEGIN");
+
+    await client.query(`DELETE FROM issues WHERE project_id = $1`, [
+      project_id,
+    ]);
+    await client.query(`DELETE FROM projects WHERE id = $1`, [project_id]);
+
+    const projectCountResult = await client.query(
+      `SELECT COUNT(*) FROM projects WHERE owner_id = $1`,
+      [owner_id]
+    );
+
+    const projectCount = parseInt(projectCountResult.rows[0].count);
+    const role = projectCount > 0 ? "maintainer" : "developer";
+
+    await client.query(`UPDATE users SET role = $1 WHERE id = $2`, [
+      role,
+      owner_id,
+    ]);
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
 };
