@@ -73,15 +73,15 @@ export default function UserCard() {
             </InfoRow>
           )}
           <InfoRow>
-            <Label>Skills</Label>
+            <Label>Skills:</Label>
             <Value>{user?.skills?.join(", ") || "N/A"}</Value>
           </InfoRow>
           <InfoRow>
-            <Label>Categories</Label>
+            <Label>Categories:</Label>
             <Value>{user?.categories?.join(", ") || "N/A"}</Value>
           </InfoRow>
           <InfoRow>
-            <Label>XP</Label>
+            <Label>XP:</Label>
             <Value>{user?.xp}</Value>
           </InfoRow>
         </UsersInfo>
