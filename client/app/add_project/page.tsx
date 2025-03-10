@@ -143,6 +143,20 @@ const InputField = styled.input`
   }
 `;
 
+type User = {
+  id: number;
+  github_username: string;
+  email: string;
+  role: string;
+  profile_picture?: string;
+};
+
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  logout: () => void;
+};
+
 const SuccessMessage = styled.div`
   color: ${({ theme }) => theme.colors.primary.light};
   margin-top: ${({ theme }) => theme.spacing.md};
@@ -180,19 +194,27 @@ const PageWrapper = styled.div`
   flex-direction: column;
 `;
 
+
 import { useState } from "react";
-import { postProject } from "@/app/api";
+import { postProject, postissuebyproject } from "@/app/api";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import { IssuesMap } from "../issues_post/issuespost";
 export default function AddProject() {
+  const { user }: AuthContextType = useAuth();
+
+  const UserId = user?.id;
+
   const [projectData, setProjectData] = useState({
     name: "",
     description: "",
     github_repo_url: "",
     project_image_url: "",
-    owner_id: 1,
+    owner_id: 6,
     status: "active",
   });
   const router = useRouter();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectData({ ...projectData, [e.target.name]: e.target.value });
@@ -202,6 +224,7 @@ export default function AddProject() {
 
     try {
       const newProject = await postProject(projectData);
+      await IssuesMap();
       setIsSubmitted(true);
       setProjectData({
         name: "",
@@ -213,7 +236,7 @@ export default function AddProject() {
       });
       setTimeout(() => {
         router.push(`/projects/${newProject.id}`);
-      }, 2000);
+      }, 1200);
     } catch (error) {
       console.error("Error submitting project", error);
       alert("Failed to add project.");
