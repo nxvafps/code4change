@@ -142,9 +142,9 @@ const HomePage: React.FC = () => {
         <ProgressCard actualProgress={actualProgress} />
 
         <Card>
-          <Title>
+          <SectionTitle>
             Here are some projects that match your interests and skills:
-          </Title>
+          </SectionTitle>
 
           <ProjectsGrid>
             {filteredProjects.map((project, index) => (
@@ -217,7 +217,6 @@ const Card = styled.section`
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-top: ${({ theme }) => theme.spacing.lg}; /* Adjust spacing here */
   margin-bottom: ${({ theme }) => theme.spacing.md};
   color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
