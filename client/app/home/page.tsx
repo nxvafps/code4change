@@ -13,6 +13,7 @@ import UserBadge from "../components/Badges";
 import { useRouter } from "next/navigation";
 import { getAllProjects } from "../api";
 import ProjectCard from "../components/ProjectCard";
+import Link from "next/link";
 
 export interface Project {
   id?: number;
@@ -81,16 +82,36 @@ const HomePage: React.FC = () => {
     categories: string[],
     skills: string[]
   ): Project[] {
-    return projects.filter((project) => {
-      const matchesCategory =
-        categories.length === 0 ||
-        project.categories?.some((category) => categories.includes(category));
-      const matchesSkill =
-        skills.length === 0 ||
-        project.skills?.some((skill) => skills.includes(skill));
-      return matchesCategory && matchesSkill;
-    });
+    const calculateMatchScore = (project: Project): number => {
+      const categoryMatches =
+        project.categories?.filter((category) => categories.includes(category))
+          .length || 0;
+
+      const skillMatches =
+        project.skills?.filter((skill) => skills.includes(skill)).length || 0;
+
+      return categoryMatches + skillMatches;
+    };
+
+    return projects
+      .filter((project) => {
+        const matchesCategory =
+          categories.length === 0 ||
+          project.categories?.some((category) => categories.includes(category));
+        const matchesSkill =
+          skills.length === 0 ||
+          project.skills?.some((skill) => skills.includes(skill));
+
+        return matchesCategory && matchesSkill;
+      })
+      .sort((a, b) => {
+        const scoreA = calculateMatchScore(a);
+        const scoreB = calculateMatchScore(b);
+
+        return scoreB - scoreA;
+      });
   }
+
   const filteredProjects = filterProjects(
     projects,
     userInfo.categories || [],
@@ -120,29 +141,35 @@ const HomePage: React.FC = () => {
         <Title>Your Progress Dashboard</Title>
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
         <ProgressCard actualProgress={actualProgress} />
+
         <Card>
+          <SectionTitle>
+            Here are some projects that match your interests and skills:
+          </SectionTitle>
+
           <ProjectsGrid>
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project, index) => (
-                <ProjectCard
-                  key={project.id || index}
-                  project_id={project.id as number}
-                  owner={project.owner_name}
-                  name={project.name}
-                  description={project.description as string}
-                  github_repo_url={project.github_repo_url}
-                  project_image={project.project_image_url}
-                  status={project.status}
-                />
-              ))
-            ) : (
-              <SectionTitle>
-                No relevant projects found based on your categories of interest
-                and skills.
-              </SectionTitle>
-            )}
+            {filteredProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id || index}
+                project_id={project.id}
+                owner={project.owner_name}
+                name={project.name}
+                description={project.description}
+                github_repo_url={project.github_repo_url}
+                project_image={project.project_image_url}
+                status={project.status}
+              />
+            ))}
           </ProjectsGrid>
         </Card>
+        {filteredProjects.length === 0 && (
+          <SectionTitle>
+            Looks like there are no projects that match your interests and
+            skills. Why not have a look at the{" "}
+            <StyledLink href="/projects">projects page</StyledLink> for other
+            projects that may be of interest.
+          </SectionTitle>
+        )}
       </ContentWrapper>
       <Footer />
     </PageWrapper>
@@ -197,7 +224,7 @@ const SectionTitle = styled.h2`
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize.xxl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: 0; /* Remove or reduce the margin here */
   text-align: center;
   color: ${({ theme }) => theme.colors.text.light};
   position: relative;
@@ -247,6 +274,7 @@ interface ThemeProps {
 
 const ProjectsGrid = styled.div<ThemeProps>`
   display: grid;
+  text-align: center;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: ${({ theme }) => theme.spacing.xl};
   width: 100%;
@@ -255,5 +283,13 @@ const ProjectsGrid = styled.div<ThemeProps>`
   @media (max-width: 768px) {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: ${({ theme }) => theme.spacing.lg};
+  }
+`;
+const StyledLink = styled(Link)`
+  color: #1e90ff;
+  text-decoration: underline;
+  font-weight: bold;
+  &:hover {
+    color: #0c7cd5;
   }
 `;

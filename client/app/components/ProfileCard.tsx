@@ -14,9 +14,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, selectBadge }) => {
   return (
     <Card>
       <Header>
-        <Greeting>
-          Hi {userInfo.github_username}, time to make a difference!
-        </Greeting>
+        <Title>Hi {userInfo.github_username}, time to make a difference!</Title>
       </Header>
       <ProfileSection>
         <ProfileImage src={userInfo.profile_picture} alt="profile" />
@@ -44,12 +42,25 @@ const Header = styled.div`
   justify-content: center;
 `;
 
-const Greeting = styled.h3`
-  margin: 0;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.text.light};
+const Title = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
   text-align: center;
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
 `;
 
 const ProfileSection = styled.div`
