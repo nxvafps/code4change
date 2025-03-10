@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ParamValue } from "next/dist/server/request/params";
+import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 const code4changeApi = axios.create({
   baseURL: "http://localhost:3001/api",
@@ -70,6 +71,32 @@ export const postProject = async (projectData: {
     console.error("Error creating project:", error);
     throw error;
   }
+};
+
+export const postissuebyproject = async (projectIssues: {
+  project_id: number;
+  title: string;
+  description: string;
+  status: string;
+  created_by: number;
+  assigned_to: number | null;
+}) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:3001/api/issues`,
+      projectIssues
+    );
+
+    return response.data.issue;
+  } catch (error) {
+    console.error("Error posting issues", error);
+    throw error;
+  }
+};
+export const getIssesByProject = async (githuburl: string) => {
+  const responseIssues = await axios.get(`${githuburl}/issues`);
+
+  return responseIssues.data;
 };
 
 export const fetchContributionsByUsername = async (userName: string) => {
