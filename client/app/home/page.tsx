@@ -66,18 +66,16 @@ const HomePage: React.FC = () => {
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
-  function filterProjectsForCategory(
-    projects: ProjectWithCategories[],
   function filterProjectsByCategory(
-    projects: Project[],
-    categories: string[]
-  ) {
+    projects: ProjectWithCategories[],
+    categories: string[] | undefined
+  ): Project[] {
     if (!categories || categories.length === 0) {
       return [];
     }
-  ): Project[] {
+
     return projects.filter((project) =>
-      project.categories.some((category: any) => categories.includes(category))
+      project.categories.some((category) => categories.includes(category))
     );
   }
 
