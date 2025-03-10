@@ -3,6 +3,7 @@ import app from "../app/app";
 import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
 import categories from "../app/db/data/development-data/categories";
+import { log } from "console";
 
 describe("End to End Tests", () => {
   beforeAll(async () => {
@@ -502,6 +503,64 @@ describe("End to End Tests", () => {
           "Bad request: skills must be an array"
         );
       });
+    });
+  });
+
+  describe("PATCH api/users/:username/categories", () => {
+    it.skip("should update a category to user", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const categoryResponse = await request(app).get("/api/categories");
+      const testCategories = categoryResponse.body.categories
+        .slice(0, 2)
+        .map((cat: any) => cat.category_name);
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({ categories: testCategories })
+        .expect(200);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Category is updated successfully"
+      );
+
+      expect(response.body).toHaveProperty("categories");
+      expect(Array.isArray(response.body.categories)).toBe(true);
+
+      const profileResponse = await request(app)
+        .get(`/api/users/${testUser}/profile`)
+        .expect(200);
+
+      testCategories.forEach((category: any) => {
+        expect(profileResponse.body.user.categories).toContain(category);
+      });
+    });
+
+    it("should return 400 when invalid category data is provided", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({ categories: "not an array" })
+        .expect(400);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Bad request: categories must be an array"
+      );
+
+      const responseNoCategories = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({})
+        .expect(400);
+
+      expect(responseNoCategories.body).toHaveProperty(
+        "message",
+        "Bad request: categories must be an array"
+      );
     });
   });
 
