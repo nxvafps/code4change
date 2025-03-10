@@ -2,18 +2,21 @@
 import styled from "styled-components";
 
 const FooterContainer = styled.footer`
-  border: solid 1px;
-  height: 40px;
+  width: 100%;
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  padding: ${({ theme }) => theme.spacing.md} 0;
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
 `;
 
 const CopyrightText = styled.p`
-  font-size: 14px;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
 
 export default function Footer() {

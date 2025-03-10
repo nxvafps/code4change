@@ -37,7 +37,7 @@ export const postIssue = async (
   description: string,
   status: string,
   created_by: number,
-  assigned_to?: number
+  assigned_to?: number | null
 ) => {
   const result = await pool.query(
     `INSERT INTO issues (project_id, title, description, status, created_by, assigned_to)
