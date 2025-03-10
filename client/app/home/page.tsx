@@ -14,6 +14,10 @@ import { useRouter } from "next/navigation";
 import { Project } from "../../../server/app/types/table-data-types";
 import { getAllProjects } from "../api";
 
+interface ProjectWithCategories extends Project {
+  categories: string[];
+}
+
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -62,11 +66,14 @@ const HomePage: React.FC = () => {
   if (!userInfo) return <div>User not found.</div>;
 
   function filterProjectsForCategory(
-    projects: Project[],
+    projects: ProjectWithCategories[],
     categories: string[]
   ) {
+    if (!categories || categories.length === 0) {
+      return [];
+    }
     return projects.filter((project) =>
-      project.categories.some((category) => categories.includes(category))
+      project.categories.some((category: any) => categories.includes(category))
     );
   }
 
