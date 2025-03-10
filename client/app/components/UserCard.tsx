@@ -15,11 +15,8 @@ const LoadingState = styled.div`
 
 export default function UserCard() {
   const { username } = useParams<{ username: string }>();
-
   const { user: currentUser } = useAuth();
-
   const [user, setUser] = useState<User | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -72,14 +69,25 @@ export default function UserCard() {
               <Value>{user?.email}</Value>
             </InfoRow>
           )}
+
           <InfoRow>
             <Label>Skills:</Label>
-            <Value>{user?.skills?.join(", ") || "N/A"}</Value>
+            <SkillsContainer>
+              {user?.skills?.map((skill, index) => (
+                <Tag key={index}>{skill}</Tag>
+              )) || "N/A"}
+            </SkillsContainer>
           </InfoRow>
+
           <InfoRow>
             <Label>Categories:</Label>
-            <Value>{user?.categories?.join(", ") || "N/A"}</Value>
+            <CategoriesContainer>
+              {user?.categories?.map((category, index) => (
+                <Tag key={index}>{category}</Tag>
+              )) || "N/A"}
+            </CategoriesContainer>
           </InfoRow>
+
           <InfoRow>
             <Label>XP:</Label>
             <Value>{user?.xp}</Value>
@@ -152,4 +160,33 @@ const ProfileImage = styled.img`
   object-fit: cover;
   border-radius: 50%;
   border: 3px solid ${({ theme }) => theme.colors.primary.main};
+`;
+
+const SkillsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const CategoriesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const Tag = styled.span`
+  background-color: ${({ theme }) =>
+    theme.colors.primary.main}; // Set background to primary green color
+  color: ${({ theme }) =>
+    theme.colors.text.light}; // Light text color (adjust as needed)
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.colors.primary.light}; // Slightly lighter green on hover
+    color: ${({ theme }) => theme.colors.text.dark}; // Darker text on hover
+  }
 `;
