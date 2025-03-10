@@ -85,33 +85,43 @@ const SearchContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
+  width: 100%;
+  max-width: 400px;
+  background: ${({ theme }) => theme.colors.background.dark};
 `;
 
 const FilterLabel = styled.label`
   font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  color: ${({ theme }) => theme.colors.text.light};
+  width: 100%;
+  text-align: left;
 `;
 
 const Select = styled.select`
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: white;
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  background-color: ${({ theme }) => theme.colors.background.dark};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
   cursor: pointer;
+  appearance: none;
+  outline: none;
 `;
 
 const ApplyButton = styled.button`
   background-color: ${({ theme }) => theme.colors.primary.main};
   color: ${({ theme }) => theme.colors.text.light};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  text-decoration: none;
   font-size: ${({ theme }) => theme.typography.fontSize.md};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  transition: background-color 0.2s ease;
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary.dark};
-  }
-  width: 150px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 `;
