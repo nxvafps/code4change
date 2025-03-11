@@ -71,6 +71,11 @@ export default function UserCard() {
           )}
 
           <InfoRow>
+            <Label>Role</Label>
+            <Value>{user?.role}</Value>
+          </InfoRow>
+
+          <InfoRow>
             <Label>Skills:</Label>
             <SkillsContainer>
               {user?.skills?.map((skill, index) => (
