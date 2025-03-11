@@ -1,63 +1,28 @@
 import styled from "styled-components";
-import { Contribution as BaseContribution } from "../../../server/app/types/table-data-types";
 
-interface Contribution extends BaseContribution {
-  project_name: string;
-  github_username: string;
-}
-
-interface ContributionsCardProps {
-  contribution: Contribution;
-}
-
-export default function ContributionsCard({
-  contribution,
-}: ContributionsCardProps) {
-  const isProjectPage = Boolean(contribution.project_name);
+export default function IssuesCard({ issue }) {
   return (
-    <ContributionsContainer>
-      <Title>Contribution Details</Title>
-      <ContributionInfo>
+    <IssueContainer>
+      <Title>{issue.title}</Title>
+      <IssueInfo>
         <InfoRow>
-          <Label>{isProjectPage ? "Project Name:" : "Contributer:"}</Label>
-          <Value>
-            {isProjectPage
-              ? contribution.project_name
-              : contribution.github_username}
-          </Value>
-        </InfoRow>
-        <InfoRow>
-          <Label>Total Changes:</Label>
-          <Value>{contribution.total_changes}</Value>
-        </InfoRow>
-        <InfoRow>
-          <Label>Additions:</Label>
-          <Value>{contribution.additions}</Value>
-        </InfoRow>
-        <InfoRow>
-          <Label>Deletions:</Label>
-          <Value>{contribution.deletions}</Value>
+          <Label>Description:</Label>
+          <Value>{issue.description}</Value>
         </InfoRow>
         <InfoRow>
           <Label>Status:</Label>
-          <Value>{contribution.status}</Value>
+          <Value>{issue.status}</Value>
         </InfoRow>
         <InfoRow>
-          <Label>Pull Request:</Label>
-          <ContributionLink
-            href={contribution.pull_request_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Pull Request
-          </ContributionLink>
+          <Label>Created_at:</Label>
+          <Value>{new Date(issue.created_at).toLocaleString()}</Value>
         </InfoRow>
-      </ContributionInfo>
-    </ContributionsContainer>
+      </IssueInfo>
+    </IssueContainer>
   );
 }
 
-const ContributionsContainer = styled.section`
+const IssueContainer = styled.section`
   background-color: ${({ theme }) => theme.colors.secondary.main};
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.borderRadius.large};
@@ -89,7 +54,7 @@ const Title = styled.h1`
   }
 `;
 
-const ContributionInfo = styled.div`
+const IssueInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
@@ -119,7 +84,7 @@ const Value = styled.span`
   color: ${({ theme }) => theme.colors.text.light};
 `;
 
-const ContributionLink = styled.a`
+const IssueLink = styled.a`
   color: ${({ theme }) => theme.colors.primary.main};
   text-decoration: none;
   transition: color ${({ theme }) => theme.transitions.fast};

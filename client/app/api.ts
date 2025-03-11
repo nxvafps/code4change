@@ -36,6 +36,18 @@ export const getIssuesByProjectId = async (project_Id: ParamValue) => {
   }
 };
 
+export const getContributionsByProjectId = async (project_Id: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(
+      `/projects/${project_Id}/contributions`
+    );
+    return response.data.contributions;
+  } catch (error) {
+    console.error("Error fetching contributions:", error);
+    throw error;
+  }
+};
+
 export const getAllProjects = async () => {
   try {
     const response = await code4changeApi.get("/projects");
@@ -55,7 +67,15 @@ export const fetchUserByUsername = async (userName: string) => {
     throw error;
   }
 };
-
+export const getProjectSkills = async (projectId: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(`/projects/${projectId}/skills`);
+    return response.data.skills;
+  } catch (error) {
+    console.error("Error fetching project skills", error);
+    throw error;
+  }
+};
 export const postProject = async (projectData: {
   name: string;
   description: string;
@@ -93,10 +113,24 @@ export const postissuebyproject = async (projectIssues: {
     throw error;
   }
 };
-export const getIssesByProject = async (githuburl: string) => {
-  const responseIssues = await axios.get(`${githuburl}/issues`);
+export const getIssesByProject = async (githubUrl: string) => {
+  try {
+    const urlParts = githubUrl.split("/");
+    const owner = urlParts[urlParts.length - 2];
+    const repo = urlParts[urlParts.length - 1].replace(".git", "");
 
-  return responseIssues.data;
+    const responseIssues = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}/issues`
+    );
+
+    console.log(
+      `Successfully fetched ${responseIssues.data.length} issues from GitHub API`
+    );
+    return responseIssues.data;
+  } catch (error) {
+    console.error("Error fetching GitHub issues:", error);
+    return [];
+  }
 };
 
 export const fetchContributionsByUsername = async (userName: string) => {

@@ -71,6 +71,11 @@ export default function UserCard() {
           )}
 
           <InfoRow>
+            <Label>Role</Label>
+            <Value>{user?.role}</Value>
+          </InfoRow>
+
+          <InfoRow>
             <Label>Skills:</Label>
             <SkillsContainer>
               {user?.skills?.map((skill, index) => (
@@ -175,18 +180,15 @@ const CategoriesContainer = styled.div`
 `;
 
 const Tag = styled.span`
-  background-color: ${({ theme }) =>
-    theme.colors.primary.main}; // Set background to primary green color
-  color: ${({ theme }) =>
-    theme.colors.text.light}; // Light text color (adjust as needed)
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  color: ${({ theme }) => theme.colors.text.light};
   padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   cursor: pointer;
 
   &:hover {
-    background-color: ${({ theme }) =>
-      theme.colors.primary.light}; // Slightly lighter green on hover
-    color: ${({ theme }) => theme.colors.text.dark}; // Darker text on hover
+    background-color: ${({ theme }) => theme.colors.primary.light};
+    color: ${({ theme }) => theme.colors.text.dark};
   }
 `;

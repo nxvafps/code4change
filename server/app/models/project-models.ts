@@ -101,7 +101,36 @@ export const getIssuesByProjectId = async (projectId: number) => {
         FROM issues i
         LEFT JOIN users u1 ON i.created_by = u1.id
         LEFT JOIN users u2 ON i.assigned_to = u2.id
-        WHERE i.id = $1
+        WHERE i.project_id = $1
+        `,
+      [projectId]
+    );
+
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching issues by project id", error);
+    throw error;
+  }
+};
+
+export const getContributionsByProjectId = async (projectId: number) => {
+  try {
+    const result = await pool.query(
+      `
+          SELECT 
+          c.id, 
+          c.user_id, 
+          c.project_id, 
+          c.pull_request_url, 
+          c.additions, 
+          c.deletions, 
+          c.total_changes, 
+          c.status, 
+          c.created_at,
+          u.github_username
+        FROM contributions c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.project_id = $1
         `,
       [projectId]
     );

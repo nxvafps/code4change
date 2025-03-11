@@ -179,7 +179,88 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+const MultiSelect = ({
+  options,
+  placeholder,
+  onChange,
+  isLoading = false,
+}: {
+  options: Option[];
+  placeholder: string;
+  onChange: (
+    newValue: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
+  ) => void;
+  isLoading?: boolean;
+}) => {
+  return (
+    <Select
+      isMulti
+      name="multi-select"
+      options={options}
+      className="multi-select"
+      placeholder={placeholder}
+      onChange={onChange}
+      styles={selectStyles}
+      isLoading={isLoading}
+    />
+  );
+};
 
+const selectStyles: StylesConfig<Option, true> = {
+  control: (base: any, state: any) => ({
+    ...base,
+    background: "#2a2a2a",
+    borderColor: state.isFocused ? "#6C5CE7" : "#444",
+    boxShadow: state.isFocused ? "0 0 0 1px #6C5CE7" : "none",
+    "&:hover": {
+      borderColor: "#6C5CE7",
+    },
+    borderRadius: "0.375rem",
+    padding: "0.25rem",
+  }),
+  menu: (base: any) => ({
+    ...base,
+    background: "#2a2a2a",
+    border: "1px solid #444",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.4)",
+    borderRadius: "0.375rem",
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    background: state.isFocused ? "#3a3a3a" : "#2a2a2a",
+    color: state.isSelected ? "#6C5CE7" : "#fff",
+    "&:hover": {
+      background: "#3a3a3a",
+    },
+    cursor: "pointer",
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    background: "#6C5CE780",
+    borderRadius: "0.25rem",
+  }),
+  multiValueLabel: (base: any) => ({
+    ...base,
+    color: "#fff",
+  }),
+  multiValueRemove: (base: any) => ({
+    ...base,
+    color: "#fff",
+    "&:hover": {
+      background: "#6C5CE7",
+      color: "#fff",
+    },
+  }),
+  input: (base: any) => ({
+    ...base,
+    color: "#fff",
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    color: "#aaa",
+  }),
+};
 type User = {
   id: number;
   github_username: string;
@@ -193,15 +274,24 @@ type AuthContextType = {
   loading: boolean;
   logout: () => void;
 };
-import { useState } from "react";
-import { postProject, postissuebyproject } from "@/app/api";
+interface Option {
+  value: string;
+  label: string;
+}
+import { useState, useEffect } from "react";
+import { postProject, fetchCategories, fetchSkills } from "@/app/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { IssuesMap } from "../issues_post/issuespost";
+import Select, { MultiValue, ActionMeta, StylesConfig } from "react-select";
 export default function AddProject() {
   const { user }: AuthContextType = useAuth();
   const userId = user?.id;
-
+  const [selectedCategories, setSelectedCategories] = useState<Option[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<Option[]>([]);
+  const [categories, setCategories] = useState<Option[]>([]);
+  const [skills, setSkills] = useState<Option[]>([]);
+  const [loading, setLoading] = useState(true);
   const [projectData, setProjectData] = useState({
     name: "",
     description: "",
@@ -213,30 +303,110 @@ export default function AddProject() {
   const router = useRouter();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [categoriesData, skillsData] = await Promise.all([
+          fetchCategories(),
+          fetchSkills(),
+        ]);
+
+        const categoryOptions = categoriesData.map((category: any) => ({
+          value: category.category_name,
+          label: formatCategoryName(category.category_name),
+        }));
+
+        const skillOptions = skillsData.map((skill: any) => ({
+          value: skill.name,
+          label: formatSkillName(skill.name),
+        }));
+
+        setCategories(categoryOptions);
+        setSkills(skillOptions);
+      } catch (err) {
+        console.error("Failed to load categories and skills:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const formatCategoryName = (name: string) => {
+    return name
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str: string) => str.toUpperCase());
+  };
+
+  const formatSkillName = (name: string) => {
+    if (name.toLowerCase() === "reactjs") return "ReactJS";
+    if (name.toLowerCase() === "nextjs") return "NextJS";
+    if (name.toLowerCase() === "nodejs") return "NodeJS";
+    return name.replace(/^./, (str) => str.toUpperCase());
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectData({ ...projectData, [e.target.name]: e.target.value });
+  };
+
+  const handleCategoryChange = (
+    newValue: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    setSelectedCategories([...newValue]);
+  };
+
+  const handleSkillChange = (
+    newValue: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    setSelectedSkills([...newValue]);
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("Submitting project data:", projectData);
+
     try {
+      console.log("About to call postProject with:", projectData);
       const newProject = await postProject(projectData);
-      await IssuesMap(projectData.github_repo_url, newProject.id, userId || 1);
+      console.log("Project created successfully:", newProject);
+
+      try {
+        console.log("Attempting to map GitHub issues...");
+        await IssuesMap(
+          projectData.github_repo_url,
+          userId || 1,
+          newProject.id
+        );
+        console.log("Issues mapped successfully");
+      } catch (issueError) {
+        console.error("Error importing GitHub issues:", issueError);
+      }
+
       setIsSubmitted(true);
       setProjectData({
         name: "",
         description: "",
         github_repo_url: "",
         project_image_url: "",
-        owner_id: 1,
+        owner_id: userId || 1,
         status: "active",
       });
+
       setTimeout(() => {
         router.push(`/projects/${newProject.id}`);
       }, 1200);
-    } catch (error) {
-      console.error("Error submitting project", error);
-      alert("Failed to add project.");
+    } catch (error: any) {
+      console.error("Error submitting project:", error);
+      console.error("Error details:", error.message);
+      if (error.response) {
+        console.error("Server response:", error.response.data);
+        console.error("Status code:", error.response.status);
+      }
+      alert(`Failed to add project: ${error.message}`);
     }
   };
 
@@ -293,6 +463,24 @@ export default function AddProject() {
                   placeholder="https://example.com/image.jpg"
                   value={projectData.project_image_url}
                   onChange={handleChange}
+                />
+              </FormField>
+              <FormField>
+                <Label>Categories</Label>
+                <MultiSelect
+                  options={categories}
+                  placeholder="Search and select categories..."
+                  onChange={handleCategoryChange}
+                  isLoading={loading}
+                />
+              </FormField>
+              <FormField>
+                <Label>Skills</Label>
+                <MultiSelect
+                  options={skills}
+                  placeholder="Search and select skills..."
+                  onChange={handleSkillChange}
+                  isLoading={loading}
                 />
               </FormField>
               <ButtonContainer>

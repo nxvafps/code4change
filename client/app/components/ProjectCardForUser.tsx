@@ -1,21 +1,29 @@
 import styled from "styled-components";
 import { Project } from "../../../server/app/types/table-data-types";
 
+interface ExtendedProject extends Project {
+  skills: string[];
+  categories: string[];
+}
+
 interface ProjectCardForUserProps {
-  project: Project;
+  project: ExtendedProject;
 }
 const ProjectCardForUser = ({ project }: ProjectCardForUserProps) => {
+  const timeCreated = project.created_at
+    ? new Date(project.created_at).toLocaleDateString()
+    : "unknown";
   return (
     <ProjectsContainer>
-      <Title>Your Project</Title>
+      <Title>{project.name}</Title>
       <ProjectInfo>
-        <InfoRow>
-          <Label>Project Name:</Label>
-          <Value>{project.name}</Value>
-        </InfoRow>
         <InfoRow>
           <Label>Description:</Label>
           <Value>{project.description}</Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Created:</Label>
+          <Value>{timeCreated}</Value>
         </InfoRow>
         <InfoRow>
           <Label>Status:</Label>
@@ -30,6 +38,16 @@ const ProjectCardForUser = ({ project }: ProjectCardForUserProps) => {
           >
             View Project
           </ContributionLink>
+        </InfoRow>
+        <InfoRow>
+          <Label>Categories:</Label>
+          <Value>
+            {project.categories.length > 0 ? project.categories : "N/A"}
+          </Value>
+        </InfoRow>
+        <InfoRow>
+          <Label>Skills:</Label>
+          <Value>{project.skills.length > 0 ? project.skills : "N/A"}</Value>
         </InfoRow>
       </ProjectInfo>
     </ProjectsContainer>
