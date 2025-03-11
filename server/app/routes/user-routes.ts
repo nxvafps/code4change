@@ -21,4 +21,6 @@ router.post("/:username/skills", UserController.postUserSkills);
 router.delete("/:username", UserController.removeUserByUsername);
 
 router.patch("/:username/categories", UserController.patchUserCategories);
+router.patch("/:username/skills", UserController.patchUserSkills);
+
 export default router;

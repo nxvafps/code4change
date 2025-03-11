@@ -484,7 +484,6 @@ JOIN user_categories uc ON c.id = uc.category_id
 WHERE uc.user_id=$1;`,
         [user_id]
       );
-      console.log(categoryResults, "categoryResults");
 
       return categoryResults.rows.map((row) => row.category_name);
     } finally {
@@ -492,6 +491,70 @@ WHERE uc.user_id=$1;`,
     }
   } catch (err) {
     console.error("err adding user categories", err);
+    throw err;
+  }
+};
+
+export const updateUserSkills = async (
+  username: string,
+  skillNames: string[]
+): Promise<string[] | null | false> => {
+  try {
+    const client = await pool.connect();
+    try {
+      const userResult = await client.query(
+        `SELECT id FROM users WHERE github_username = $1;`,
+        [username]
+      );
+
+      if (userResult.rows.length === 0) return null;
+      const user_id = userResult.rows[0].id;
+
+      const validSkills = await Promise.all(
+        skillNames.map(async (skillName) => {
+          const skillCheck = await client.query(
+            `SELECT id FROM skills WHERE name = $1;`,
+            [skillName]
+          );
+
+          return skillCheck.rows.length > 0;
+        })
+      );
+
+      if (validSkills.some((valid) => !valid)) {
+        return false;
+      }
+
+      await client.query(`DELETE FROM user_skills WHERE user_id = $1`, [
+        user_id,
+      ]);
+
+      await Promise.all(
+        skillNames.map(async (skillName) => {
+          await client.query(
+            `INSERT INTO user_skills (user_id, skill_id) 
+             SELECT $1, id FROM skills WHERE name = $2
+             ON CONFLICT (user_id, skill_id) DO NOTHING`,
+            [user_id, skillName]
+          );
+        })
+      );
+
+      const skillResults = await client.query(
+        `SELECT s.name
+FROM skills s
+JOIN user_skills us ON s.id = us.skill_id
+WHERE us.user_id=$1;`,
+        [user_id]
+      );
+      console.log(skillResults, "skillResults");
+
+      return skillResults.rows.map((row) => row.category_name);
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    console.error("err adding user skills", err);
     throw err;
   }
 };

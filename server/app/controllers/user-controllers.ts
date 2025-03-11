@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as UserModel from "../models/user-models";
+import { log } from "console";
 
 export const getUserByUsername = async (
   req: Request,
@@ -259,7 +260,6 @@ export const patchUserCategories = async (
       return;
     }
     const result = await UserModel.updateUserCategories(username, categories);
-    console.log(result, "result");
 
     if (result === null) {
       res.status(404).json({ message: "User not found" });
@@ -273,6 +273,39 @@ export const patchUserCategories = async (
       .json({ message: "Category updated successfully", categories: result });
   } catch (err) {
     console.error("Err in updating user category controller", err);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "internal server error" });
+    }
+  }
+};
+
+export const patchUserSkills = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username } = req.params;
+    const { skills } = req.body;
+
+    if (!skills || !Array.isArray(skills)) {
+      res.status(400).json({ message: "Bad request: skills must be an array" });
+      return;
+    }
+
+    const result = await UserModel.updateUserSkills(username, skills);
+
+    if (result === null) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    if (result === false) {
+      res.status(400).json({ message: "Invalid skill names provided" });
+    }
+    res
+      .status(200)
+      .json({ message: "Skills updated successfully", skills: result });
+  } catch (err) {
+    console.error("Err in updating user skills controller", err);
     if (!res.headersSent) {
       res.status(500).json({ message: "internal server error" });
     }

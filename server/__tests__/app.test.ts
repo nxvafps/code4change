@@ -603,6 +603,64 @@ describe("End to End Tests", () => {
     });
   });
 
+  describe("PATCH api/users/:username/skills", () => {
+    it("should update a skill to user", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const skillResponse = await request(app).get("/api/skills");
+      const testSkills = skillResponse.body.skills
+        .slice(0, 2)
+        .map((cat: any) => cat.name);
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({ skills: testSkills })
+        .expect(200);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Skills updated successfully"
+      );
+
+      expect(response.body).toHaveProperty("skills");
+      expect(Array.isArray(response.body.skills)).toBe(true);
+
+      const profileResponse = await request(app)
+        .get(`/api/users/${testUser}/profile`)
+        .expect(200);
+
+      testSkills.forEach((skill: any) => {
+        expect(profileResponse.body.user.skills).toContain(skill);
+      });
+    });
+
+    it("should return 400 when invalid skill data is provided", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({ categories: "not an array" })
+        .expect(400);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Bad request: skills must be an array"
+      );
+
+      const responseNoSkills = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({})
+        .expect(400);
+
+      expect(responseNoSkills.body).toHaveProperty(
+        "message",
+        "Bad request: skills must be an array"
+      );
+    });
+  });
+
   describe("Project Routes", () => {
     describe("GET /api/projects", () => {
       it("should return all projects", async () => {
