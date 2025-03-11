@@ -119,16 +119,33 @@ const HomePage: React.FC = () => {
   );
 
   const selectBadge = (xp: number): ReactElement | null => {
-    if (xp >= 1000) return <UserBadge color="diamond" />;
-    if (xp >= 500) return <UserBadge color="platinum" />;
-    if (xp >= 250) return <UserBadge color="gold" />;
-    if (xp >= 50) return <UserBadge color="silver" />;
-    if (xp >= 0) return <UserBadge color="bronze" />;
+    const badgeColor =
+      xp >= 1000
+        ? "diamond"
+        : xp >= 500
+        ? "platinum"
+        : xp >= 250
+        ? "gold"
+        : xp >= 50
+        ? "silver"
+        : xp >= 0
+        ? "bronze"
+        : null;
+
+    if (badgeColor) {
+      return (
+        <BadgeWrapper>
+          <UserBadge color={badgeColor} />
+          <p>Achievement badge</p>
+        </BadgeWrapper>
+      );
+    }
+
     return null;
   };
 
   const adjustProgress = (xp: number): number => {
-    const maxXP = 1500;
+    const maxXP = 1000;
     return Math.min(xp, maxXP);
   };
 
@@ -239,6 +256,17 @@ const Title = styled.h1`
     height: 3px;
     background-color: ${({ theme }) => theme.colors.primary.main};
     border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
+`;
+const BadgeWrapper = styled.div`
+  text-align: center; /* Centers the text and the badge */
+  margin-top: 10px;
+  p {
+    margin: 0; /* Removes default margin on paragraphs */
+    font-size: 16px; /* Customize text size */
+  }
+  br {
+    margin: 5px 0; /* Adjust the space between the two lines of text */
   }
 `;
 
