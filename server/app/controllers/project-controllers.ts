@@ -1,7 +1,10 @@
 import { Request, Response, RequestHandler } from "express";
 import * as ProjectModel from "../models/project-models";
 import * as UserModel from "../models/user-models";
-
+import {
+  insertProjectCategories,
+  insertProjectSkills,
+} from "../db/seeds/utils/insert-data";
 export const getProjectById = async (
   req: Request,
   res: Response
@@ -154,5 +157,26 @@ export const deleteProjectAndIssuesByID = async (
         res.status(500).json({ message: "Internal server error" });
       }
     }
+  }
+};
+export const addProjectCategories = async (req: Request, res: Response) => {
+  try {
+    const projectRelations = req.body;
+    await insertProjectCategories(projectRelations);
+    res.status(201).json({ message: "Project categories added successfully" });
+  } catch (error) {
+    console.error("Error adding project categories", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const addProjectSkills = async (req: Request, res: Response) => {
+  try {
+    const projectSkills = req.body;
+    await insertProjectSkills(projectSkills);
+    res.status(201).json({ message: "Project skills added successfully" });
+  } catch (error) {
+    console.error("Error adding project skills", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
