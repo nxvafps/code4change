@@ -14,7 +14,6 @@ const LEVELS = [
 ];
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
-  actualProgress = 100;
   const currentLevel = LEVELS.find((level) => actualProgress >= level.xp);
 
   const nextLevel = LEVELS.find((level) => actualProgress < level.xp);
