@@ -10,6 +10,11 @@ const colorMap: Record<string, string> = {
   bronze: "#cd7f32",
   platinum: "#e5e4e2",
   diamond: "#b9f2ff",
+  ruby: "#d10000",
+  emerald: "#50c878",
+  sapphire: "#0f52ba",
+  topaz: "#ffc87c",
+  amethyst: "#9966cc",
 };
 
 const BadgeIcon = styled.div`

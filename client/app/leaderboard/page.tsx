@@ -47,6 +47,9 @@ export default function Leaderboard() {
             <UserBadge color="gold" />
             <UserBadge color="silver" />
             <UserBadge color="bronze" />
+            <UserBadge color="emerald" />
+            <UserBadge color="sapphire" />
+            <UserBadge color="amethyst" />
           </BadgeContainer>
         </Card>
       </ContentWrapper>
