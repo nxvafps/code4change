@@ -395,7 +395,7 @@ export const updateUserCategories = async (
     const client = await pool.connect();
     try {
       const userResult = await client.query(
-        `SELECT id FROM users WHERE github_username = $1`,
+        `SELECT id FROM users WHERE github_username = $1;`,
         [username]
       );
       if (userResult.rows.length === 0) return null;
@@ -404,7 +404,7 @@ export const updateUserCategories = async (
       const validCategories = await Promise.all(
         categoryNames.map(async (categoryName) => {
           const categoryCheck = await client.query(
-            `SELECT id FROM categories WHERE  category_name = $1`,
+            `SELECT id FROM categories WHERE  category_name = $1;`,
             [categoryName]
           );
 
@@ -422,7 +422,7 @@ export const updateUserCategories = async (
 
           await client.query(
             `UPDATE user_categories SET user_id = $1, category_id = (SELECT id FROM categories WHERE category_name = $2)
-            WHERE NOT EXISTS (SELECT 1 FROM user_categories WHERE user_id = $1 AND category_id = (SELECT id FROM categories WHERE category_name = $2)`,
+            WHERE NOT EXISTS (SELECT 1 FROM user_categories WHERE user_id = $1 AND category_id = (SELECT id FROM categories WHERE category_name = $2);`,
             [user_id, categoryName]
           );
         })
@@ -432,7 +432,7 @@ export const updateUserCategories = async (
         `SELECT c.category_name
 FROM categories c
 JOIN user_categories uc ON c.id = uc.category_id
-WHERE uc.user_id=$1`,
+WHERE uc.user_id=$1;`,
         [user_id]
       );
       console.log(categoryResults, "categoryResults");
