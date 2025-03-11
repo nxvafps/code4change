@@ -67,7 +67,15 @@ export const fetchUserByUsername = async (userName: string) => {
     throw error;
   }
 };
-
+export const getProjectSkills = async (projectId: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(`/projects/${projectId}/skills`);
+    return response.data.skills;
+  } catch (error) {
+    console.error("Error fetching project skills", error);
+    throw error;
+  }
+};
 export const postProject = async (projectData: {
   name: string;
   description: string;

@@ -1,7 +1,7 @@
 "use client";
 import Footer from "@/app/components/Footer";
 import NavBar from "@/app/components/Navbar";
-import { getProjectById } from "@/app/api";
+import { getProjectById, getProjectSkills } from "@/app/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IssuesBox } from "@/app/components/projectIssues";
@@ -117,13 +117,14 @@ export default function ProjectDetails() {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [skills, setSkills] = useState<Skill[]>([]);
   useEffect(() => {
     const getProject = async () => {
       try {
         const projectData = await getProjectById(project_id);
-
         setProject(projectData);
+        const skillsData = await getProjectSkills(project_id);
+        setSkills(skillsData);
       } catch (err) {
         setError("Failed to load project details. Please try again.");
       } finally {
@@ -178,6 +179,18 @@ export default function ProjectDetails() {
                 <strong>Last updated:</strong>{" "}
                 {new Date(project.updated_at).toLocaleString()}
               </ProjectDetail>
+              <ProjectDetail>
+                <strong>Skills:</strong>
+                {skills.length > 0 ? (
+                  <SkillsList>
+                    {skills.map((skill) => (
+                      <SkillItem key={skill.id}>{skill.name}</SkillItem>
+                    ))}
+                  </SkillsList>
+                ) : (
+                  <p>No skills listed for this project.</p>
+                )}
+              </ProjectDetail>
             </ProjectCard>
 
             <IssuesSection>
@@ -202,3 +215,23 @@ interface Project {
   created_at: string;
   updated_at: string;
 }
+interface Skill {
+  id: number;
+  name: string;
+}
+
+const SkillsList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const SkillItem = styled.li`
+  display: inline-block;
+  background: #6c5ce780;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+`;
