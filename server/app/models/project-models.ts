@@ -158,6 +158,22 @@ export const getProjectSkills = async (project_id: number) => {
     throw error;
   }
 };
+export const getProjectCategories = async (project_id: number) => {
+  try {
+    const result = await pool.query(
+      `SELECT categories.id, categories.category_name 
+         FROM project_categories
+         JOIN categories ON project_categories.category_id = categories.id
+         WHERE project_categories.project_id = $1`,
+      [project_id]
+    );
+
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching project categories:", error);
+    throw error;
+  }
+};
 export const postProject = async (
   name: string,
   description: string,
@@ -217,6 +233,60 @@ export const removeArticleAndIssuesByID = async (project_id: number) => {
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+export const addProjectSkills = async (
+  project_id: number,
+  skill_ids: number[]
+) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const insertQuery = `
+      INSERT INTO project_skills (project_id, skill_id)
+      VALUES ($1, $2)
+      ON CONFLICT (project_id, skill_id) DO NOTHING
+    `;
+
+    for (const skill_id of skill_ids) {
+      await client.query(insertQuery, [project_id, skill_id]);
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting project skills:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+export const addProjectCategories = async (
+  project_id: number,
+  category_ids: number[]
+) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const insertQuery = `
+      INSERT INTO project_categories (project_id, category_id)
+      VALUES ($1, $2)
+      ON CONFLICT (project_id, category_id) DO NOTHING
+    `;
+
+    for (const category_id of category_ids) {
+      await client.query(insertQuery, [project_id, category_id]);
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error inserting project categories:", error);
     throw error;
   } finally {
     client.release();

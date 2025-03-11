@@ -76,6 +76,17 @@ export const getProjectSkills = async (projectId: ParamValue) => {
     throw error;
   }
 };
+export const getProjectCategories = async (projectId: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(
+      `/projects/${projectId}/categories`
+    );
+    return response.data.categories;
+  } catch (error) {
+    console.error("Error fetching project categories", error);
+    throw error;
+  }
+};
 export const postProject = async (projectData: {
   name: string;
   description: string;
