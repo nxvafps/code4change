@@ -98,7 +98,11 @@ const ToggleContainer = styled.div`
   gap: 1rem;
 `;
 
-const ToggleButton = styled.button`
+interface ToggleButtonProps {
+  active: boolean;
+}
+
+const ToggleButton = styled.button<ToggleButtonProps>`
   background: none;
   border: none;
   font-size: 1rem;

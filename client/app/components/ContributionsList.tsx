@@ -23,6 +23,7 @@ interface ToggleButtonProps {
 export default function ContributionsList() {
   interface Contribution extends BaseContribution {
     project_name: string;
+    github_username: string;
   }
 
   const { username } = useParams<{ username: string }>();
@@ -206,7 +207,7 @@ const ToggleContainer = styled.div`
   gap: 1rem;
 `;
 
-const ToggleButton = styled.button`
+const ToggleButton = styled.button<ToggleButtonProps>`
   background: none;
   border: none;
   font-size: 1rem;
