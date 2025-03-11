@@ -15,7 +15,7 @@ export default function IssuesCard({ issue }) {
         </InfoRow>
         <InfoRow>
           <Label>Created_at:</Label>
-          <Value>{issue.created_at}</Value>
+          <Value>{new Date(issue.created_at).toLocaleString()}</Value>
         </InfoRow>
       </IssueInfo>
     </IssueContainer>
