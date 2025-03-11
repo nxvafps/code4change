@@ -73,7 +73,7 @@ const HomePage: React.FC = () => {
     fetchProjects();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
   if (!userInfo) return <div>User not found.</div>;
 
@@ -319,5 +319,24 @@ const StyledLink = styled(Link)`
   font-weight: bold;
   &:hover {
     color: #0c7cd5;
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid ${({ theme }) => theme.colors.primary.main};
+  border-top: 5px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 100px auto;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
