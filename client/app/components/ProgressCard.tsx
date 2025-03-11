@@ -25,6 +25,7 @@ const levels: Level[] = [
 ];
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
+  actualProgress = 20;
   const currentLevel = levels
     .filter((level) => actualProgress >= level.xp_required)
     .pop();
@@ -33,8 +34,17 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
 
   const xpToNextLevel = nextLevel ? nextLevel.xp_required - actualProgress : 0;
 
+  const xpAtCurrentLevel = currentLevel
+    ? actualProgress - currentLevel.xp_required
+    : 0;
+  const xpRequiredForCurrentLevel = currentLevel
+    ? nextLevel
+      ? nextLevel.xp_required - currentLevel.xp_required
+      : 0
+    : 0;
+
   const progress = Math.min(
-    (actualProgress / (nextLevel?.xp_required || 1)) * 100,
+    (xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100,
     100
   );
 
@@ -47,7 +57,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
 
       <SectionTitle>
         <ProgressText>
-          {actualProgress} / {levels[levels.length - 1].xp_required} XP
+          {actualProgress} / {nextLevel?.xp_required} XP
         </ProgressText>
         {currentLevel && (
           <CurrentLevel>
