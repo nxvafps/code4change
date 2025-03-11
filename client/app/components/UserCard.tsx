@@ -6,100 +6,6 @@ import { fetchUserByUsername } from "../api";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
-const ProfileCard = styled.section`
-  width: 100%;
-  background-color: ${({ theme }) => theme.colors.secondary.main};
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  border: 1px solid ${({ theme }) => theme.colors.border.dark};
-  box-shadow: ${({ theme }) => theme.shadows.large};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const ImageContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const ProfileImage = styled.img`
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid ${({ theme }) => theme.colors.primary.main};
-`;
-
-const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  color: ${({ theme }) => theme.colors.text.light};
-  position: relative;
-
-  &:after {
-    content: "";
-    position: absolute;
-    bottom: -${({ theme }) => theme.spacing.sm};
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background-color: ${({ theme }) => theme.colors.primary.main};
-    border-radius: ${({ theme }) => theme.borderRadius.small};
-  }
-`;
-
-const InfoText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.md};
-  margin: ${({ theme }) => theme.spacing.sm} 0;
-  color: ${({ theme }) => theme.colors.text.light};
-
-  strong {
-    color: ${({ theme }) => theme.colors.primary.light};
-  }
-
-  a {
-    color: ${({ theme }) => theme.colors.primary.main};
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.sm};
-  margin: ${({ theme }) => theme.spacing.md} 0;
-  justify-content: center;
-`;
-
-const Tag = styled.span`
-  background-color: ${({ theme }) => theme.colors.primary.main};
-  color: ${({ theme }) => theme.colors.text.light};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: 20px;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary.dark};
-  }
-`;
-
-const SectionTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-top: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  color: ${({ theme }) => theme.colors.text.light};
-`;
-
 const LoadingState = styled.div`
   color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
@@ -109,11 +15,8 @@ const LoadingState = styled.div`
 
 export default function UserCard() {
   const { username } = useParams<{ username: string }>();
-
   const { user: currentUser } = useAuth();
-
   const [user, setUser] = useState<User | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -139,55 +42,151 @@ export default function UserCard() {
   if (!user) return <LoadingState>User not found.</LoadingState>;
 
   return (
-    <ProfileCard>
+    <UsersContainer>
       <ImageContainer>
         <ProfileImage
           src={user.profile_picture}
           alt={`Profile of ${user.github_username}`}
         />
+        <UsersInfo>
+          <InfoRow>
+            <Label>Username:</Label>
+            <Value>{user?.github_username}</Value>
+          </InfoRow>
+          <InfoRow>
+            <Label>GitHub:</Label>
+            <StyledLink
+              href={`https://github.com/${user.github_username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Github Account
+            </StyledLink>
+          </InfoRow>
+          {isOwnProfile && (
+            <InfoRow>
+              <Label>Email:</Label>
+              <Value>{user?.email}</Value>
+            </InfoRow>
+          )}
+
+          <InfoRow>
+            <Label>Skills:</Label>
+            <SkillsContainer>
+              {user?.skills?.map((skill, index) => (
+                <Tag key={index}>{skill}</Tag>
+              )) || "N/A"}
+            </SkillsContainer>
+          </InfoRow>
+
+          <InfoRow>
+            <Label>Categories:</Label>
+            <CategoriesContainer>
+              {user?.categories?.map((category, index) => (
+                <Tag key={index}>{category}</Tag>
+              )) || "N/A"}
+            </CategoriesContainer>
+          </InfoRow>
+
+          <InfoRow>
+            <Label>XP:</Label>
+            <Value>{user?.xp}</Value>
+          </InfoRow>
+        </UsersInfo>
       </ImageContainer>
-      <Title>{user.github_username}</Title>
-
-      <Link href={`https://github.com/${user.github_username}`} passHref>
-        <InfoText>
-          <strong>GitHub: </strong>
-          {`https://github.com/${user.github_username}`}
-        </InfoText>
-      </Link>
-
-      {isOwnProfile && (
-        <InfoText>
-          <strong>Email: </strong>
-          {user.email}
-        </InfoText>
-      )}
-
-      <InfoText>
-        <strong>XP: </strong>
-        {user.xp}
-      </InfoText>
-
-      <InfoText>
-        <strong>Role: </strong>
-        {user.role}
-      </InfoText>
-      <SectionTitle>
-        <strong>Skills</strong>
-      </SectionTitle>
-      <TagList>
-        {user.skills?.map((skill, index) => (
-          <Tag key={index}>{skill}</Tag>
-        ))}
-      </TagList>
-
-      <SectionTitle>
-        <strong>Categories</strong>
-      </SectionTitle>
-      <TagList>
-        {user.categories?.map((category, index) => (
-          <Tag key={index}>{category}</Tag>
-        ))}
-      </TagList>
-    </ProfileCard>
+    </UsersContainer>
   );
 }
+
+const UsersContainer = styled.section`
+  background-color: ${({ theme }) => theme.colors.secondary.main};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border: 1px solid ${({ theme }) => theme.colors.border.dark};
+  box-shadow: ${({ theme }) => theme.shadows.large};
+  max-width: 800px;
+  width: 100%;
+  margin: ${({ theme }) => theme.spacing.lg} auto;
+`;
+
+const UsersInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.background.dark}40;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.dark}40;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const Label = styled.span`
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.accent.main};
+  margin-right: ${({ theme }) => theme.spacing.sm};
+  min-width: 100px;
+`;
+
+const Value = styled.span`
+  color: ${({ theme }) => theme.colors.text.light};
+`;
+
+const StyledLink = styled.a`
+  color: ${({ theme }) => theme.colors.primary.main};
+  text-decoration: none;
+  transition: color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.primary.light};
+  }
+`;
+
+const ImageContainer = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ProfileImage = styled.img`
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid ${({ theme }) => theme.colors.primary.main};
+`;
+
+const SkillsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const CategoriesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const Tag = styled.span`
+  background-color: ${({ theme }) =>
+    theme.colors.primary.main}; // Set background to primary green color
+  color: ${({ theme }) =>
+    theme.colors.text.light}; // Light text color (adjust as needed)
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.colors.primary.light}; // Slightly lighter green on hover
+    color: ${({ theme }) => theme.colors.text.dark}; // Darker text on hover
+  }
+`;

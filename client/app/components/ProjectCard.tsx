@@ -6,10 +6,10 @@ import StatusBadge from "./StatusBadge";
 import defaultProjectImage from "../../public/default-project.jpg";
 
 interface ProjectCardProps {
-  project_id: string | number;
+  project_id?: number;
   owner?: string;
   name: string;
-  description: string;
+  description?: string;
   github_repo_url?: string;
   project_image?: string;
   status: string;

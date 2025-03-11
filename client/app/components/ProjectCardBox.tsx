@@ -5,7 +5,6 @@ import ProjectCard from "./ProjectCard";
 import { getAllProjects } from "../api";
 import { ReactElement, useEffect, useState } from "react";
 
-// Define interface for project data structure
 interface Project {
   id: number | string;
   owner_name: string;
@@ -14,9 +13,14 @@ interface Project {
   github_repo_url: string;
   project_image_url: string;
   status: string;
+  skills: string[];
+  categories: string[];
 }
 
-// Define theme props for styled components (assumes your theme has this structure)
+interface ProjectCardBoxProps {
+  selectedCategory: string;
+  selectedSkill: string;
+}
 interface ThemeProps {
   theme: {
     spacing: {
@@ -47,16 +51,33 @@ interface ThemeProps {
   };
 }
 
-export default function ProjectCardBox(): ReactElement {
+export default function ProjectCardBox({
+  selectedCategory,
+  selectedSkill,
+}: ProjectCardBoxProps): ReactElement {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProjects = async (): Promise<void> => {
+    const fetchAndFilterProjects = async (): Promise<void> => {
       try {
         const projectData = await getAllProjects();
         setProjects(projectData);
+        const filtered = projectData.filter((proj: Project) => {
+          const matchesCategory =
+            selectedCategory && selectedCategory !== "All Categories"
+              ? proj.categories.includes(selectedCategory)
+              : true;
+
+          const matchesSkill =
+            selectedSkill && selectedSkill !== "All skills"
+              ? proj.skills.includes(selectedSkill)
+              : true;
+          return matchesCategory && matchesSkill;
+        });
+        setFilteredProjects(filtered);
       } catch (err) {
         setError("Failed to load projects, please try again");
       } finally {
@@ -64,8 +85,8 @@ export default function ProjectCardBox(): ReactElement {
       }
     };
 
-    fetchProjects();
-  }, []);
+    fetchAndFilterProjects();
+  }, [selectedCategory, selectedSkill]);
 
   return (
     <ProjectsContainer>
@@ -77,7 +98,7 @@ export default function ProjectCardBox(): ReactElement {
         <EmptyMessage>No projects available</EmptyMessage>
       ) : (
         <ProjectsGrid>
-          {projects.map((project, index) => (
+          {filteredProjects.map((project, index) => (
             <ProjectCard
               key={project.id || index}
               project_id={project.id}

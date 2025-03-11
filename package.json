@@ -10,6 +10,7 @@
     "client": "cd client && npm run dev",
     "server": "cd server && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "setup": "npm run install:all && cd server && npm run setup-db && npm run seed",
     "prepare": "husky"
   },
   "repository": {

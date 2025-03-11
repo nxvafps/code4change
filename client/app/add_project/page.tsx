@@ -180,19 +180,38 @@ const PageWrapper = styled.div`
   flex-direction: column;
 `;
 
+type User = {
+  id: number;
+  github_username: string;
+  email: string;
+  role: string;
+  profile_picture?: string;
+};
+
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  logout: () => void;
+};
 import { useState } from "react";
-import { postProject } from "@/app/api";
+import { postProject, postissuebyproject } from "@/app/api";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import { IssuesMap } from "../issues_post/issuespost";
 export default function AddProject() {
+  const { user }: AuthContextType = useAuth();
+  const userId = user?.id;
+
   const [projectData, setProjectData] = useState({
     name: "",
     description: "",
     github_repo_url: "",
     project_image_url: "",
-    owner_id: 1,
+    owner_id: userId || 1,
     status: "active",
   });
   const router = useRouter();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectData({ ...projectData, [e.target.name]: e.target.value });
@@ -200,23 +219,46 @@ export default function AddProject() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("Submitting project data:", projectData);
+
     try {
+      console.log("About to call postProject with:", projectData);
       const newProject = await postProject(projectData);
+      console.log("Project created successfully:", newProject);
+
+      try {
+        console.log("Attempting to map GitHub issues...");
+        await IssuesMap(
+          projectData.github_repo_url,
+          userId || 1,
+          newProject.id
+        );
+        console.log("Issues mapped successfully");
+      } catch (issueError) {
+        console.error("Error importing GitHub issues:", issueError);
+      }
+
       setIsSubmitted(true);
       setProjectData({
         name: "",
         description: "",
         github_repo_url: "",
         project_image_url: "",
-        owner_id: 1,
+        owner_id: userId || 1,
         status: "active",
       });
+
       setTimeout(() => {
         router.push(`/projects/${newProject.id}`);
-      }, 2000);
-    } catch (error) {
-      console.error("Error submitting project", error);
-      alert("Failed to add project.");
+      }, 1200);
+    } catch (error: any) {
+      console.error("Error submitting project:", error);
+      console.error("Error details:", error.message);
+      if (error.response) {
+        console.error("Server response:", error.response.data);
+        console.error("Status code:", error.response.status);
+      }
+      alert(`Failed to add project: ${error.message}`);
     }
   };
 
