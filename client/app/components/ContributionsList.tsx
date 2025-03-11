@@ -1,14 +1,20 @@
 import ContributionsCard from "./ContributionsCard";
 import ProjectCardForUser from "./ProjectCardForUser";
 import styled from "styled-components";
+import { useAuth } from "../context/AuthContext";
 import {
   Contribution as BaseContribution,
   Project,
 } from "../../../server/app/types/table-data-types";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { fetchContributionsByUsername, fetchProjectsByUsername } from "../api";
+import {
+  fetchContributionsByUsername,
+  fetchProjectsByUsername,
+  fetchUserByUsername,
+} from "../api";
 import Link from "next/link";
+import { User } from "../../../server/app/types/table-data-types";
 
 interface ToggleButtonProps {
   active: boolean;
@@ -20,6 +26,12 @@ export default function ContributionsList() {
   }
 
   const { username } = useParams<{ username: string }>();
+  const { user: currentUser } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const isOwnProfile =
+    currentUser &&
+    user &&
+    currentUser.github_username === user?.github_username;
 
   const [contributions, setContributions] = useState<Contribution[] | null>(
     null
@@ -33,10 +45,12 @@ export default function ContributionsList() {
     Promise.all([
       fetchContributionsByUsername(username),
       fetchProjectsByUsername(username),
+      fetchUserByUsername(username),
     ])
-      .then(([contributionsFromApi, projectFromApi]) => {
+      .then(([contributionsFromApi, projectFromApi, userFromApi]) => {
         setContributions(contributionsFromApi);
         setProjects(projectFromApi);
+        setUser(userFromApi);
         setLoading(false);
       })
       .catch((error) => {
@@ -78,9 +92,16 @@ export default function ContributionsList() {
             </ListContainer>
           ) : (
             <EmptyMessage>
-              Looks like you don't have any contributions yet. Why not head over
-              to our <StyledLink href="/projects">projects page</StyledLink> and
-              find a cause worth contributing to!
+              {isOwnProfile ? (
+                <>
+                  Looks like you don't have any contributions yet. Why not head
+                  over to our{" "}
+                  <StyledLink href="/projects">projects page</StyledLink> and
+                  find a cause worth contributing to!
+                </>
+              ) : (
+                <>This user doesn't have any contributions yet!</>
+              )}
             </EmptyMessage>
           )
         ) : projects && projects.length > 0 ? (
@@ -91,9 +112,16 @@ export default function ContributionsList() {
           </ListContainer>
         ) : (
           <EmptyMessage>
-            Looks like you dont have any projects yet. Why not head over to our{" "}
-            <StyledLink href="/add_project"> add projects page </StyledLink>and
-            upload your first project!
+            {isOwnProfile ? (
+              <>
+                Looks like you dont have any projects yet. Why not head over to
+                our{" "}
+                <StyledLink href="/add_project"> add projects page </StyledLink>
+                and upload your first project!
+              </>
+            ) : (
+              <>This user hasn't uploaded any projects yet!</>
+            )}
           </EmptyMessage>
         )}
       </StyledSection>

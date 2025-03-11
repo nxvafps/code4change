@@ -3,6 +3,7 @@ import { Contribution as BaseContribution } from "../../../server/app/types/tabl
 
 interface Contribution extends BaseContribution {
   project_name: string;
+  github_username: string;
 }
 
 interface ContributionsCardProps {
@@ -12,13 +13,18 @@ interface ContributionsCardProps {
 export default function ContributionsCard({
   contribution,
 }: ContributionsCardProps) {
+  const isProjectPage = Boolean(contribution.project_name);
   return (
     <ContributionsContainer>
       <Title>Contribution Details</Title>
       <ContributionInfo>
         <InfoRow>
-          <Label>Project Name:</Label>
-          <Value>{contribution.project_name}</Value>
+          <Label>{isProjectPage ? "Project Name:" : "Contributer:"}</Label>
+          <Value>
+            {isProjectPage
+              ? contribution.project_name
+              : contribution.github_username}
+          </Value>
         </InfoRow>
         <InfoRow>
           <Label>Total Changes:</Label>
