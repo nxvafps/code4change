@@ -387,6 +387,52 @@ export const addUserSkills = async (
   }
 };
 
+export const deleteUserByUsername = async (username: string): Promise<void> => {
+  console.log("model", username);
+  try {
+    const result = await pool.query(
+      "DELETE FROM users WHERE username = $1 RETURNING *",
+      [username]
+    );
+
+    if (result.rowCount === 0) {
+      throw new Error(`User with username ${username} not found`);
+    }
+  } catch (err) {
+    throw new Error("Error deleting user");
+  }
+};
+
+export const updateUserRoleBasedOnProjects = async (
+  userId: number
+): Promise<void> => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const projectCountResult = await client.query(
+      `SELECT COUNT(*) FROM projects WHERE owner_id = $1`,
+      [userId]
+    );
+
+    const projectCount = parseInt(projectCountResult.rows[0].count);
+    const role = projectCount > 0 ? "maintainer" : "developer";
+
+    await client.query(`UPDATE users SET role = $1 WHERE id = $2`, [
+      role,
+      userId,
+    ]);
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error updating user role:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 export const updateUserCategories = async (
   username: string,
   categoryNames: string[]
@@ -416,13 +462,16 @@ export const updateUserCategories = async (
         return false;
       }
 
+      await client.query(`DELETE FROM user_categories WHERE user_id = $1`, [
+        user_id,
+      ]);
+
       await Promise.all(
         categoryNames.map(async (categoryName) => {
-          console.log(categoryName, "categoryName");
-
           await client.query(
-            `UPDATE user_categories SET user_id = $1, category_id = (SELECT id FROM categories WHERE category_name = $2)
-            WHERE NOT EXISTS (SELECT 1 FROM user_categories WHERE user_id = $1 AND category_id = (SELECT id FROM categories WHERE category_name = $2);`,
+            `INSERT INTO user_categories (user_id, category_id) 
+             SELECT $1, id FROM categories WHERE category_name = $2
+             ON CONFLICT (user_id, category_id) DO NOTHING`,
             [user_id, categoryName]
           );
         })

@@ -1,57 +1,42 @@
 import styled from "styled-components";
-import { Contribution as BaseContribution } from "../../../server/app/types/table-data-types";
+import { Project } from "../../../server/app/types/table-data-types";
 
-interface Contribution extends BaseContribution {
-  project_name: string;
+interface ProjectCardForUserProps {
+  project: Project;
 }
-
-interface ContributionsCardProps {
-  contribution: Contribution;
-}
-
-export default function ContributionsCard({
-  contribution,
-}: ContributionsCardProps) {
+const ProjectCardForUser = ({ project }: ProjectCardForUserProps) => {
   return (
-    <ContributionsContainer>
-      <Title>Contribution Details</Title>
-      <ContributionInfo>
+    <ProjectsContainer>
+      <Title>Your Project</Title>
+      <ProjectInfo>
         <InfoRow>
           <Label>Project Name:</Label>
-          <Value>{contribution.project_name}</Value>
+          <Value>{project.name}</Value>
         </InfoRow>
         <InfoRow>
-          <Label>Total Changes:</Label>
-          <Value>{contribution.total_changes}</Value>
-        </InfoRow>
-        <InfoRow>
-          <Label>Additions:</Label>
-          <Value>{contribution.additions}</Value>
-        </InfoRow>
-        <InfoRow>
-          <Label>Deletions:</Label>
-          <Value>{contribution.deletions}</Value>
+          <Label>Description:</Label>
+          <Value>{project.description}</Value>
         </InfoRow>
         <InfoRow>
           <Label>Status:</Label>
-          <Value>{contribution.status}</Value>
+          <Value>{project.status}</Value>
         </InfoRow>
         <InfoRow>
-          <Label>Pull Request:</Label>
+          <Label>Github repo:</Label>
           <ContributionLink
-            href={contribution.pull_request_url}
+            href={project.github_repo_url}
             target="_blank"
             rel="noopener noreferrer"
           >
-            View Pull Request
+            View Project
           </ContributionLink>
         </InfoRow>
-      </ContributionInfo>
-    </ContributionsContainer>
+      </ProjectInfo>
+    </ProjectsContainer>
   );
-}
+};
 
-const ContributionsContainer = styled.section`
+const ProjectsContainer = styled.section`
   background-color: ${({ theme }) => theme.colors.secondary.main};
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.borderRadius.large};
@@ -83,7 +68,7 @@ const Title = styled.h1`
   }
 `;
 
-const ContributionInfo = styled.div`
+const ProjectInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
@@ -123,3 +108,5 @@ const ContributionLink = styled.a`
     color: ${({ theme }) => theme.colors.primary.light};
   }
 `;
+
+export default ProjectCardForUser;

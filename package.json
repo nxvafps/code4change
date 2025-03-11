@@ -10,6 +10,7 @@
     "client": "cd client && npm run dev",
     "server": "cd server && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "setup": "npm run install:all && npm run setup-db && npm run seed",
     "prepare": "husky"
   },
   "repository": {
@@ -33,6 +34,7 @@
     "supertest": "^7.0.0"
   },
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.7.2"
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "react-select": "^5.10.1"
   }
 }
