@@ -14,7 +14,9 @@ const LEVELS = [
 ];
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
-  const currentLevel = LEVELS.find((level) => actualProgress >= level.xp);
+  const currentLevel = LEVELS.filter(
+    (level) => actualProgress >= level.xp
+  ).pop();
 
   const nextLevel = LEVELS.find((level) => actualProgress < level.xp);
 
@@ -24,7 +26,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
 
   return (
     <Card>
-      <SectionTitle>Your XP Progress and Current Level </SectionTitle>
+      <SectionTitle>Your XP Progress and Current Level</SectionTitle>
       <ProgressWrapper>
         <ProgressBar $progress={progress}></ProgressBar>
       </ProgressWrapper>
@@ -48,6 +50,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
 };
 
 export default ProgressCard;
+
 const Card = styled.section`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.secondary.main};
