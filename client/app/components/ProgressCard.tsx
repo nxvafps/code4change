@@ -25,7 +25,6 @@ const levels: Level[] = [
 ];
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
-  actualProgress = 20;
   const currentLevel = levels
     .filter((level) => actualProgress >= level.xp_required)
     .pop();
