@@ -5,24 +5,38 @@ interface ProgressCardProps {
   actualProgress: number;
 }
 
-const LEVELS = [
-  { level: "Contributor", xp: 1 },
-  { level: "Active Contributor", xp: 50 },
-  { level: "Top Contributor", xp: 250 },
-  { level: "Open Source Champion", xp: 500 },
-  { level: "Code4Change Legend", xp: 1000 },
+interface Level {
+  level: number;
+  name: string;
+  xp_required: number;
+}
+
+const levels: Level[] = [
+  { level: 1, name: "Beginner", xp_required: 0 },
+  { level: 2, name: "Explorer", xp_required: 20 },
+  { level: 3, name: "Developer", xp_required: 50 },
+  { level: 4, name: "Contributor", xp_required: 100 },
+  { level: 5, name: "Champion", xp_required: 200 },
+  { level: 6, name: "Expert", xp_required: 350 },
+  { level: 7, name: "Master", xp_required: 500 },
+  { level: 8, name: "Guru", xp_required: 750 },
+  { level: 9, name: "Legend", xp_required: 1000 },
+  { level: 10, name: "Visionary", xp_required: 1500 },
 ];
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
-  const currentLevel = LEVELS.filter(
-    (level) => actualProgress >= level.xp
-  ).pop();
+  const currentLevel = levels
+    .filter((level) => actualProgress >= level.xp_required)
+    .pop();
 
-  const nextLevel = LEVELS.find((level) => actualProgress < level.xp);
+  const nextLevel = levels.find((level) => actualProgress < level.xp_required);
 
-  const xpToNextLevel = nextLevel ? nextLevel.xp - actualProgress : 0;
+  const xpToNextLevel = nextLevel ? nextLevel.xp_required - actualProgress : 0;
 
-  const progress = Math.min(actualProgress * 0.1, 100);
+  const progress = Math.min(
+    (actualProgress / (nextLevel?.xp_required || 1)) * 100,
+    100
+  );
 
   return (
     <Card>
@@ -32,15 +46,19 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
       </ProgressWrapper>
 
       <SectionTitle>
-        <ProgressText>{actualProgress} / 1000 XP</ProgressText>
+        <ProgressText>
+          {actualProgress} / {levels[levels.length - 1].xp_required} XP
+        </ProgressText>
         {currentLevel && (
-          <CurrentLevel>Level: {currentLevel.level}</CurrentLevel>
+          <CurrentLevel>
+            Level: {currentLevel.level} ({currentLevel.name})
+          </CurrentLevel>
         )}
 
         {nextLevel && (
           <NextLevel>
             {xpToNextLevel > 0
-              ? `You need ${xpToNextLevel} more XP to reach ${nextLevel.level}`
+              ? `You need ${xpToNextLevel} more XP to reach ${nextLevel.level} (${nextLevel.name})`
               : `You have reached the highest level! Congratulations`}
           </NextLevel>
         )}
