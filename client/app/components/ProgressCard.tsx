@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 interface ProgressCardProps {
-  actualProgress: number;
+  userXP: number;
 }
 
 interface Level {
@@ -24,28 +24,27 @@ const levels: Level[] = [
   { level: 10, name: "Visionary", xp_required: 1500 },
 ];
 
-const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
+const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
   const currentLevel = levels
-    .filter((level) => actualProgress >= level.xp_required)
+    .filter((level) => userXP >= level.xp_required)
     .pop();
 
-  const nextLevel = levels.find((level) => actualProgress < level.xp_required);
+  const nextLevel = levels.find((level) => userXP < level.xp_required);
 
-  const xpToNextLevel = nextLevel ? nextLevel.xp_required - actualProgress : 0;
+  const xpToNextLevel = nextLevel ? nextLevel.xp_required - userXP : 0;
 
-  const xpAtCurrentLevel = currentLevel
-    ? actualProgress - currentLevel.xp_required
-    : 0;
+  const xpAtCurrentLevel = currentLevel ? userXP - currentLevel.xp_required : 0;
+
   const xpRequiredForCurrentLevel = currentLevel
     ? nextLevel
       ? nextLevel.xp_required - currentLevel.xp_required
       : 0
     : 0;
 
-  const progress = Math.min(
-    (xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100,
-    100
-  );
+  const progress =
+    xpRequiredForCurrentLevel === 0
+      ? 100
+      : Math.min((xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100, 100);
 
   return (
     <Card>
@@ -56,7 +55,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
 
       <SectionTitle>
         <ProgressText>
-          {actualProgress} / {nextLevel?.xp_required} XP
+          {userXP} / {nextLevel?.xp_required} XP
         </ProgressText>
         {currentLevel && (
           <CurrentLevel>
@@ -67,7 +66,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ actualProgress }) => {
         {nextLevel && (
           <NextLevel>
             {xpToNextLevel > 0
-              ? `You need ${xpToNextLevel} more XP to reach ${nextLevel.level} (${nextLevel.name})`
+              ? `You need ${xpToNextLevel} more XP to reach level ${nextLevel.level} (${nextLevel.name})`
               : `You have reached the highest level! Congratulations`}
           </NextLevel>
         )}
@@ -102,10 +101,11 @@ const ProgressWrapper = styled.div`
   overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: ${({ theme }) => theme.spacing.md};
+  height: 40px; /* Ensure wrapper has a height */
 `;
 
 const ProgressBar = styled.div<{ $progress: number }>`
-  height: 40px;
+  height: 100%;
   background: linear-gradient(
     90deg,
     ${({ theme }) => theme.colors.primary.main},
@@ -113,9 +113,6 @@ const ProgressBar = styled.div<{ $progress: number }>`
   );
   width: ${(props) => props.$progress}%;
   transition: width ${({ theme }) => theme.transitions.fast};
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 const ProgressText = styled.span`

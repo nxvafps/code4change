@@ -118,33 +118,27 @@ const HomePage: React.FC = () => {
     userInfo.skills || []
   );
 
-  const levels: Level[] = [
-    { level: 1, name: "Beginner", xp_required: 0 },
-    { level: 2, name: "Explorer", xp_required: 20 },
-    { level: 3, name: "Developer", xp_required: 50 },
-    { level: 4, name: "Contributor", xp_required: 100 },
-    { level: 5, name: "Champion", xp_required: 200 },
-    { level: 6, name: "Expert", xp_required: 350 },
-    { level: 7, name: "Master", xp_required: 500 },
-    { level: 8, name: "Guru", xp_required: 750 },
-    { level: 9, name: "Legend", xp_required: 1000 },
-    { level: 10, name: "Visionary", xp_required: 1500 },
-  ];
-
   const selectBadge = (xp: number): ReactElement | null => {
-    const badgeColor =
-      xp >= 1000
-        ? "diamond"
-        : xp >= 500
-        ? "platinum"
-        : xp >= 250
-        ? "gold"
-        : xp >= 50
-        ? "silver"
-        : xp >= 0
-        ? "bronze"
-        : null;
+    let badgeColor = "";
 
+    if (xp >= 1500) {
+      badgeColor = "diamond";
+    } else if (xp >= 1000) {
+      badgeColor = "platinum";
+    } else if (xp >= 750) {
+      badgeColor = "gold";
+    } else if (xp >= 500) {
+      badgeColor = "silver";
+    } else if (xp >= 200) {
+      badgeColor = "bronze";
+    } else if (xp >= 50) {
+      badgeColor = "emerald";
+    } else if (xp >= 20) {
+      badgeColor = "sapphire";
+    } else {
+      badgeColor = "amethyst";
+    }
+    5;
     if (badgeColor) {
       return (
         <BadgeWrapper>
@@ -157,20 +151,13 @@ const HomePage: React.FC = () => {
     return null;
   };
 
-  const adjustProgress = (xp: number): number => {
-    const maxXP = 1000;
-    return Math.min(xp, maxXP);
-  };
-
-  const actualProgress = adjustProgress(userInfo.xp);
-
   return (
     <PageWrapper>
       <NavBar />
       <ContentWrapper>
         <Title>Your Progress Dashboard</Title>
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
-        <ProgressCard actualProgress={actualProgress} />
+        <ProgressCard userXP={userInfo.xp} />
 
         <Card>
           <SectionTitle>
