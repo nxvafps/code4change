@@ -94,6 +94,31 @@ export const getProjectSkills = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const getProjectCategories = async (req: Request, res: Response) => {
+  try {
+    const { project_id } = req.params;
+
+    if (isNaN(Number(project_id))) {
+      res.status(400).json({ message: "Bad request" });
+      return;
+    }
+
+    const categories = await ProjectModel.getProjectCategories(
+      Number(project_id)
+    );
+
+    if (!categories.length) {
+      res.status(404).json({ message: "No categories found for this project" });
+      return;
+    }
+
+    res.status(200).json({ categories });
+  } catch (error) {
+    console.error("Error in getProjectCategories controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const postProject = async (
   req: Request,
   res: Response
@@ -159,24 +184,43 @@ export const deleteProjectAndIssuesByID = async (
     }
   }
 };
-export const addProjectCategories = async (req: Request, res: Response) => {
-  try {
-    const projectRelations = req.body;
-    await insertProjectCategories(projectRelations);
-    res.status(201).json({ message: "Project categories added successfully" });
-  } catch (error) {
-    console.error("Error adding project categories", error);
-    res.status(500).json({ error: "Internal Server Error" });
+export const postProjectSkills = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { skill_ids } = req.body;
+  const { project_id } = req.params;
+  if (!project_id || !Array.isArray(skill_ids) || skill_ids.length === 0) {
+    res.status(400).json({ message: "Bad request: missing or invalid fields" });
+    return;
   }
-};
-
-export const addProjectSkills = async (req: Request, res: Response) => {
+  const projectIdNumber = Number(project_id);
   try {
-    const projectSkills = req.body;
-    await insertProjectSkills(projectSkills);
+    await ProjectModel.addProjectSkills(projectIdNumber, skill_ids);
     res.status(201).json({ message: "Project skills added successfully" });
   } catch (error) {
-    console.error("Error adding project skills", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const postProjectCategories = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { category_ids } = req.body;
+  const { project_id } = req.params;
+  if (
+    !project_id ||
+    !Array.isArray(category_ids) ||
+    category_ids.length === 0
+  ) {
+    res.status(400).json({ message: "Bad request: missing or invalid fields" });
+    return;
+  }
+  const projectIdNumber = Number(project_id);
+  try {
+    await ProjectModel.addProjectCategories(projectIdNumber, category_ids);
+    res.status(201).json({ message: "Project categories added successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
   }
 };

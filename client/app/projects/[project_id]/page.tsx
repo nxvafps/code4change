@@ -1,7 +1,11 @@
 "use client";
 import Footer from "@/app/components/Footer";
 import NavBar from "@/app/components/Navbar";
-import { getProjectById, getProjectSkills } from "@/app/api";
+import {
+  getProjectById,
+  getProjectSkills,
+  getProjectCategories,
+} from "@/app/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IssuesBox } from "@/app/components/projectIssues";
@@ -118,6 +122,7 @@ export default function ProjectDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [categories, setCategories] = useState<CategoryProject[]>([]);
   useEffect(() => {
     const getProject = async () => {
       try {
@@ -125,6 +130,11 @@ export default function ProjectDetails() {
         setProject(projectData);
         const skillsData = await getProjectSkills(project_id);
         setSkills(skillsData);
+        const categoriesData = await getProjectCategories(project_id);
+        console.log(getProjectCategories(project_id));
+
+        setCategories(categoriesData);
+        console.log(categoriesData);
       } catch (err) {
         setError("Failed to load project details. Please try again.");
       } finally {
@@ -191,6 +201,20 @@ export default function ProjectDetails() {
                   <p>No skills listed for this project.</p>
                 )}
               </ProjectDetail>
+              <ProjectDetail>
+                <strong>Categories:</strong>
+                {categories.length > 0 ? (
+                  <CategoriesList>
+                    {categories.map((category) => (
+                      <CategoryItem key={category.id}>
+                        {category.category_name}
+                      </CategoryItem>
+                    ))}
+                  </CategoriesList>
+                ) : (
+                  <p>No categories listed for this project.</p>
+                )}
+              </ProjectDetail>
             </ProjectCard>
 
             <IssuesSection>
@@ -219,7 +243,10 @@ interface Skill {
   id: number;
   name: string;
 }
-
+export interface CategoryProject {
+  id: number;
+  category_name: string;
+}
 const SkillsList = styled.ul`
   list-style: none;
   padding: 0;
@@ -229,6 +256,21 @@ const SkillsList = styled.ul`
 const SkillItem = styled.li`
   display: inline-block;
   background: #6c5ce780;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+`;
+const CategoriesList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const CategoryItem = styled.li`
+  display: inline-block;
+  background: rgb(113, 63, 205); /* Coral color, you can change it */
   color: white;
   padding: 5px 10px;
   border-radius: 4px;
