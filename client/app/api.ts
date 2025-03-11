@@ -36,6 +36,18 @@ export const getIssuesByProjectId = async (project_Id: ParamValue) => {
   }
 };
 
+export const getContributionsByProjectId = async (project_Id: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(
+      `/projects/${project_Id}/contributions`
+    );
+    return response.data.contributions;
+  } catch (error) {
+    console.error("Error fetching contributions:", error);
+    throw error;
+  }
+};
+
 export const getAllProjects = async () => {
   try {
     const response = await code4changeApi.get("/projects");

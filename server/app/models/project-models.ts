@@ -113,6 +113,35 @@ export const getIssuesByProjectId = async (projectId: number) => {
   }
 };
 
+export const getContributionsByProjectId = async (projectId: number) => {
+  try {
+    const result = await pool.query(
+      `
+          SELECT 
+          c.id, 
+          c.user_id, 
+          c.project_id, 
+          c.pull_request_url, 
+          c.additions, 
+          c.deletions, 
+          c.total_changes, 
+          c.status, 
+          c.created_at,
+          u.github_username
+        FROM contributions c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.project_id = $1
+        `,
+      [projectId]
+    );
+
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching issues by project id", error);
+    throw error;
+  }
+};
+
 export const getProjectSkills = async (project_id: number) => {
   try {
     const result = await pool.query(

@@ -700,6 +700,16 @@ describe("End to End Tests", () => {
         expect(response.body.issues.length).toBe(0);
       });
     });
+    describe("GET /projects/:project_id/contributions", () => {
+      it("should return all contributions for a project", async () => {
+        const projectId = 1;
+        const response = await request(app)
+          .get(`/api/projects/${projectId}/contributions`)
+          .expect(200);
+        expect(response.body).toHaveProperty("contributions");
+        expect(Array.isArray(response.body.contributions)).toBe(true);
+      });
+    });
     describe("DELETE /api/projects/:project_id", () => {
       it("should successfully delete the requested project and all associated issues", async () => {
         await request(app).delete("/api/projects/1").expect(204);

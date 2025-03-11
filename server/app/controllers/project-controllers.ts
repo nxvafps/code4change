@@ -52,6 +52,23 @@ export const getProjectIssues = async (
   }
 };
 
+export const getProjectContributions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { project_id } = req.params;
+  try {
+    const contributions = await ProjectModel.getContributionsByProjectId(
+      parseInt(project_id)
+    );
+
+    res.status(200).json({ contributions });
+  } catch (error) {
+    console.error("Error sending contributions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getProjectSkills = async (req: Request, res: Response) => {
   try {
     const { project_id } = req.params;
