@@ -26,11 +26,16 @@ export default function Leaderboard() {
               <RulesBox>
                 <ul>
                   <li>1XP is awarded for each contribution change</li>
-                  <li>1XP - Contributor Level</li>
-                  <li>50XP - Active Contributor</li>
-                  <li>250XP Top Contributor</li>
-                  <li>500XP Open Source Champion</li>
-                  <li>1000XP Code4Change Legend</li>
+                  <li>Earn the following XP to Level Up</li>
+                  <li>20XP - Explorer</li>
+                  <li>50XP - Developer</li>
+                  <li>100XP - Contributor</li>
+                  <li>250XP Champion</li>
+                  <li>350XP Expert</li>
+                  <li>500XP Master</li>
+                  <li>750XP Guru</li>
+                  <li>1000XP Legend</li>
+                  <li>1500XP Visionary</li>
                 </ul>
               </RulesBox>
             ) : null}
