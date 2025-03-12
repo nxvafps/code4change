@@ -192,11 +192,11 @@ export default function ProjectDetails() {
               <ProjectDetail>
                 <strong>Skills:</strong>
                 {skills.length > 0 ? (
-                  <SkillsList>
+                  <TagContainer>
                     {skills.map((skill) => (
-                      <SkillItem key={skill.id}>{skill.name}</SkillItem>
+                      <Tag key={skill.id}>{skill.name}</Tag>
                     ))}
-                  </SkillsList>
+                  </TagContainer>
                 ) : (
                   <p>No skills listed for this project.</p>
                 )}
@@ -204,13 +204,11 @@ export default function ProjectDetails() {
               <ProjectDetail>
                 <strong>Categories:</strong>
                 {categories.length > 0 ? (
-                  <CategoriesList>
+                  <TagContainer>
                     {categories.map((category) => (
-                      <CategoryItem key={category.id}>
-                        {category.category_name}
-                      </CategoryItem>
+                      <Tag key={category.id}>{category.category_name}</Tag>
                     ))}
-                  </CategoriesList>
+                  </TagContainer>
                 ) : (
                   <p>No categories listed for this project.</p>
                 )}
@@ -247,33 +245,23 @@ export interface CategoryProject {
   id: number;
   category_name: string;
 }
-const SkillsList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
+
+const Tag = styled.span`
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  color: ${({ theme }) => theme.colors.text.light};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary.light};
+    color: ${({ theme }) => theme.colors.text.secondary};
+  }
 `;
 
-const SkillItem = styled.li`
-  display: inline-block;
-  background: #6c5ce780;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-`;
-const CategoriesList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const CategoryItem = styled.li`
-  display: inline-block;
-  background: rgb(113, 63, 205); /* Coral color, you can change it */
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+const TagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
