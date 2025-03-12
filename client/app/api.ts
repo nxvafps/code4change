@@ -76,6 +76,17 @@ export const getProjectSkills = async (projectId: ParamValue) => {
     throw error;
   }
 };
+export const getProjectCategories = async (projectId: ParamValue) => {
+  try {
+    const response = await code4changeApi.get(
+      `/projects/${projectId}/categories`
+    );
+    return response.data.categories;
+  } catch (error) {
+    console.error("Error fetching project categories", error);
+    throw error;
+  }
+};
 export const postProject = async (projectData: {
   name: string;
   description: string;
@@ -194,7 +205,40 @@ export const updateUserCategories = async (
     throw error;
   }
 };
-
+export const addSkillsToProject = async (
+  projectName: string,
+  skillNames: string[]
+) => {
+  try {
+    const response = await code4changeApi.post(
+      `/projects/${projectName}/skills`,
+      {
+        skill_names: skillNames,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding skills to project:", error);
+    throw error;
+  }
+};
+export const addCategoriesToProject = async (
+  projectName: string,
+  categoryNames: string[]
+) => {
+  try {
+    const response = await code4changeApi.post(
+      `/projects/${projectName}/categories`,
+      {
+        category_names: categoryNames,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding categories to project:", error);
+    throw error;
+  }
+};
 export const fetchProjectsByUsername = async (userName: string) => {
   try {
     const response = await code4changeApi(`/users/${userName}/projects`);

@@ -6,7 +6,7 @@ import { getAllProjects } from "../api";
 import { ReactElement, useEffect, useState } from "react";
 
 interface Project {
-  id: number | string;
+  id: number;
   owner_name: string;
   name: string;
   description: string;
@@ -94,8 +94,11 @@ export default function ProjectCardBox({
 
       {error && <ErrorText>{error}</ErrorText>}
 
-      {!loading && projects.length === 0 ? (
-        <EmptyMessage>No projects available</EmptyMessage>
+      {!loading && filteredProjects.length === 0 ? (
+        <EmptyMessage>
+          Sorry, unfortunately no projects match your search criteria. Please
+          try again!
+        </EmptyMessage>
       ) : (
         <ProjectsGrid>
           {filteredProjects.map((project, index) => (

@@ -3,6 +3,7 @@ import app from "../app/app";
 import pool from "../app/db";
 import runSeed from "../app/db/seeds/run-seed";
 import categories from "../app/db/data/development-data/categories";
+import { log } from "console";
 
 describe("End to End Tests", () => {
   beforeEach(async () => {
@@ -544,6 +545,122 @@ describe("End to End Tests", () => {
     });
   });
 
+  describe("PATCH api/users/:username/categories", () => {
+    it("should update a category to user", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const categoryResponse = await request(app).get("/api/categories");
+      const testCategories = categoryResponse.body.categories
+        .slice(0, 2)
+        .map((cat: any) => cat.category_name);
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({ categories: testCategories })
+        .expect(200);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Category updated successfully"
+      );
+
+      expect(response.body).toHaveProperty("categories");
+      expect(Array.isArray(response.body.categories)).toBe(true);
+
+      const profileResponse = await request(app)
+        .get(`/api/users/${testUser}/profile`)
+        .expect(200);
+
+      testCategories.forEach((category: any) => {
+        expect(profileResponse.body.user.categories).toContain(category);
+      });
+    });
+
+    it("should return 400 when invalid category data is provided", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({ categories: "not an array" })
+        .expect(400);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Bad request: categories must be an array"
+      );
+
+      const responseNoCategories = await request(app)
+        .patch(`/api/users/${testUser}/categories`)
+        .send({})
+        .expect(400);
+
+      expect(responseNoCategories.body).toHaveProperty(
+        "message",
+        "Bad request: categories must be an array"
+      );
+    });
+  });
+
+  describe("PATCH api/users/:username/skills", () => {
+    it("should update a skill to user", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const skillResponse = await request(app).get("/api/skills");
+      const testSkills = skillResponse.body.skills
+        .slice(0, 2)
+        .map((cat: any) => cat.name);
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({ skills: testSkills })
+        .expect(200);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Skills updated successfully"
+      );
+
+      expect(response.body).toHaveProperty("skills");
+      expect(Array.isArray(response.body.skills)).toBe(true);
+
+      const profileResponse = await request(app)
+        .get(`/api/users/${testUser}/profile`)
+        .expect(200);
+
+      testSkills.forEach((skill: any) => {
+        expect(profileResponse.body.user.skills).toContain(skill);
+      });
+    });
+
+    it("should return 400 when invalid skill data is provided", async () => {
+      const allUsersResponse = await request(app).get("/api/users");
+      const testUser = allUsersResponse.body.users[0].github_username;
+
+      const response = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({ categories: "not an array" })
+        .expect(400);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Bad request: skills must be an array"
+      );
+
+      const responseNoSkills = await request(app)
+        .patch(`/api/users/${testUser}/skills`)
+        .send({})
+        .expect(400);
+
+      expect(responseNoSkills.body).toHaveProperty(
+        "message",
+        "Bad request: skills must be an array"
+      );
+    });
+  });
+
   describe("Project Routes", () => {
     describe("GET /api/projects", () => {
       it("should return all projects", async () => {
@@ -729,7 +846,40 @@ describe("End to End Tests", () => {
       });
     });
   });
+  describe("POST /api/projects/:projectName/skills", () => {
+    it("should add skills to a project successfully and return the added skills", async () => {
+      const projectName = "EcoTracker";
+      const skillData = {
+        skill_names: ["javascript", "typescript", "nodejs"],
+      };
 
+      const response = await request(app)
+        .post(`/api/projects/${projectName}/skills`)
+        .send(skillData)
+        .expect(201);
+
+      // Assert the response
+      expect(response.body).toHaveProperty("skills");
+      expect(response.body.skills).toEqual(skillData.skill_names);
+    });
+
+    it("should return 400 if skill_names is not an array", async () => {
+      const projectName = "EcoTracker";
+      const invalidSkillData = {
+        skill_names: "javascript",
+      };
+
+      const response = await request(app)
+        .post(`/api/projects/${projectName}/skills`)
+        .send(invalidSkillData)
+        .expect(400);
+
+      expect(response.body).toHaveProperty("message");
+      expect(response.body.message).toBe(
+        "skill_names must be an array of skill names"
+      );
+    });
+  });
   describe("Issues Routes", () => {
     describe("GET /api/issues", () => {
       it("should return an array of all issue objects", async () => {

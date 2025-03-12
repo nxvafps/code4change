@@ -41,13 +41,24 @@ const ProjectCardForUser = ({ project }: ProjectCardForUserProps) => {
         </InfoRow>
         <InfoRow>
           <Label>Categories:</Label>
-          <Value>
-            {project.categories.length > 0 ? project.categories : "N/A"}
-          </Value>
+          <TagContainer>
+            {project.categories.length > 0
+              ? project.categories.map((category, index) => (
+                  <Tag key={index}>{category}</Tag>
+                ))
+              : "N/A"}
+          </TagContainer>
         </InfoRow>
+
         <InfoRow>
           <Label>Skills:</Label>
-          <Value>{project.skills.length > 0 ? project.skills : "N/A"}</Value>
+          <TagContainer>
+            {project.skills.length > 0
+              ? project.skills.map((skill, index) => (
+                  <Tag key={index}>{skill}</Tag>
+                ))
+              : "N/A"}
+          </TagContainer>
         </InfoRow>
       </ProjectInfo>
     </ProjectsContainer>
@@ -125,6 +136,26 @@ const ContributionLink = styled.a`
     text-decoration: underline;
     color: ${({ theme }) => theme.colors.primary.light};
   }
+`;
+
+const Tag = styled.span`
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  color: ${({ theme }) => theme.colors.text.light};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary.light};
+    color: ${({ theme }) => theme.colors.text.secondary};
+  }
+`;
+
+const TagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 export default ProjectCardForUser;
