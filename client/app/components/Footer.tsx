@@ -3,10 +3,10 @@ import styled from "styled-components";
 
 const FooterContainer = styled.footer`
   width: 100%;
-  background-color: ${({ theme }) => theme.colors.secondary.main};
-  border-top: 1px solid ${({ theme }) => theme.colors.border.dark};
-  box-shadow: ${({ theme }) => theme.shadows.medium};
-  padding: ${({ theme }) => theme.spacing.md} 0;
+  background: linear-gradient(to right, #000000, #1c1c1c); /* Black gradient */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+  padding: 1rem 0;
   margin-top: auto;
   display: flex;
   align-items: center;
@@ -14,9 +14,9 @@ const FooterContainer = styled.footer`
 `;
 
 const CopyrightText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.text.light};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-size: 0.875rem;
+  color: #ffffff;
+  font-weight: 500;
 `;
 
 export default function Footer() {

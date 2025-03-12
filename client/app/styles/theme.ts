@@ -18,6 +18,7 @@ const theme: DefaultTheme = {
       main: "#0070f3",
       hover: "#005bb5",
     },
+
     status: {
       success: "#28a745",
       warning: "#ffc107",
@@ -43,9 +44,9 @@ const theme: DefaultTheme = {
       light: "#ffffff",
     },
     border: {
-      light: "#cccccc",
-      medium: "#dddddd",
-      dark: "#aaaaaa",
+      light: "#e5e7eb",
+      medium: "#d1d5db",
+      dark: "#6b7280",
     },
   },
   spacing: {
@@ -65,8 +66,8 @@ const theme: DefaultTheme = {
   },
   typography: {
     fontFamily: {
-      sans: "var(--font-geist-sans), Arial, sans-serif",
-      mono: "var(--font-geist-mono), monospace",
+      sans: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      mono: "Menlo, Monaco, Consolas, 'Courier New', monospace",
     },
     fontSize: {
       xs: "0.75rem",
@@ -86,10 +87,10 @@ const theme: DefaultTheme = {
     },
   },
   shadows: {
-    small: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    medium: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    large: "0 4px 12px rgba(0, 0, 0, 0.1)",
-    xl: "0 8px 16px rgba(0, 0, 0, 0.1)",
+    small: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    medium: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    large: "0 10px 15px rgba(0, 0, 0, 0.1)",
+    xl: "0 20px 25px rgba(0, 0, 0, 0.1)",
   },
   transitions: {
     fast: "0.2s ease",
