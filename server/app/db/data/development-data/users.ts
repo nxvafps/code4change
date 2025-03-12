@@ -71,6 +71,19 @@ const users = [
     skills: ["html", "css", "javascript", "python"],
     categories: ["education", "healthcare"],
   },
+  {
+    github_id: "202996147",
+    github_username: "refactor-ninja",
+    email: "refactor_ninja@example.com",
+    xp: 0,
+    password_hash: hashPassword("generic1243"),
+    role: "maintainer",
+    profile_picture: "https://avatars.githubusercontent.com/u/202996147?v=4",
+    access_token: "gho_refactor-ninja_token123456789",
+    refresh_token: "ghr_refactor-ninja_refresh123456789",
+    skills: ["javascript", "c++", "reactjs", "express"],
+    categories: ["climateChange", "education", "lgbtqia"],
+  },
 ];
 
 export default users;
