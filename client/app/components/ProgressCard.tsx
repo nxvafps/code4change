@@ -28,10 +28,13 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
   const currentLevel = levels
     .filter((level) => userXP >= level.xp_required)
     .pop();
+
   const nextLevel = levels.find((level) => userXP < level.xp_required);
 
   const xpToNextLevel = nextLevel ? nextLevel.xp_required - userXP : 0;
+
   const xpAtCurrentLevel = currentLevel ? userXP - currentLevel.xp_required : 0;
+
   const xpRequiredForCurrentLevel = nextLevel
     ? nextLevel.xp_required - (currentLevel?.xp_required || 0)
     : 0;
@@ -40,31 +43,47 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
     ? Math.min((xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100, 100)
     : 100;
 
+  const totalProgress = (userXP / 1500) * 100;
+
   return (
     <Card>
-      <SectionTitle>Your XP Progress and Current Level</SectionTitle>
+      <Title>Your XP Progress and Current Level</Title>
+
+      <Spacer />
+      <Spacer />
+
+      <ProgressTextWrapper>
+        <ProgressText>Total: {userXP} / 1500 XP</ProgressText>
+      </ProgressTextWrapper>
+
+      <ProgressWrapper>
+        <ProgressBar $progress={totalProgress}></ProgressBar>
+      </ProgressWrapper>
+
+      <Spacer />
+
+      {currentLevel && (
+        <ProgressTextWrapper>
+          <ProgressText>
+            Level {currentLevel.level} ({currentLevel.name}): {xpAtCurrentLevel}{" "}
+            / {xpRequiredForCurrentLevel} XP
+          </ProgressText>
+        </ProgressTextWrapper>
+      )}
+
       <ProgressWrapper>
         <ProgressBar $progress={progress}></ProgressBar>
       </ProgressWrapper>
 
-      <SectionTitle>
-        <ProgressText>
-          {userXP} / {nextLevel?.xp_required} XP
-        </ProgressText>
-        {currentLevel && (
-          <CurrentLevel>
-            Level: {currentLevel.level} ({currentLevel.name})
-          </CurrentLevel>
-        )}
-
-        {nextLevel && (
+      {nextLevel && (
+        <ProgressTextWrapper>
           <NextLevel>
             {xpToNextLevel > 0
               ? `You need ${xpToNextLevel} more XP to reach level ${nextLevel.level} (${nextLevel.name})`
               : `You have reached the highest level! Congratulations`}
           </NextLevel>
-        )}
-      </SectionTitle>
+        </ProgressTextWrapper>
+      )}
     </Card>
   );
 };
@@ -80,12 +99,39 @@ const Card = styled.section`
   box-shadow: ${({ theme }) => theme.shadows.large};
 `;
 
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  color: ${({ theme }) => theme.colors.text.light};
+const Title = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: 0; /* Remove or reduce the margin here */
   text-align: center;
+  color: ${({ theme }) => theme.colors.text.light};
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -${({ theme }) => theme.spacing.sm};
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.colors.primary.main};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+  }
+`;
+
+const ProgressTextWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ProgressText = styled.span`
+  color: ${({ theme }) => theme.colors.text.light};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  padding: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ProgressWrapper = styled.div`
@@ -95,7 +141,7 @@ const ProgressWrapper = styled.div`
   overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: ${({ theme }) => theme.spacing.md};
-  height: 40px; /* Ensure wrapper has a height */
+  height: 40px;
 `;
 
 const ProgressBar = styled.div<{ $progress: number }>`
@@ -109,22 +155,14 @@ const ProgressBar = styled.div<{ $progress: number }>`
   transition: width ${({ theme }) => theme.transitions.fast};
 `;
 
-const ProgressText = styled.span`
-  color: ${({ theme }) => theme.colors.text.light};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.md};
-`;
-
-const CurrentLevel = styled.p`
-  padding: ${({ theme }) => theme.spacing.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.md};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-`;
-
 const NextLevel = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: white;
   align-items: center;
   justify-content: center;
   text-align: center;
+`;
+
+const Spacer = styled.div`
+  height: ${({ theme }) => theme.spacing.md};
 `;

@@ -84,3 +84,11 @@ const BadgeSection = styled.div`
   display: flex;
   align-items: center;
 `;
+
+const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.text.light};
+  text-align: center;
+`;

@@ -143,7 +143,6 @@ const HomePage: React.FC = () => {
       return (
         <BadgeWrapper>
           <UserBadge color={badgeColor} />
-          <p>Achievement badge</p>
         </BadgeWrapper>
       );
     }
@@ -156,7 +155,9 @@ const HomePage: React.FC = () => {
       <NavBar />
       <ContentWrapper>
         <Title>Your Progress Dashboard</Title>
+
         <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
+
         <ProgressCard userXP={userInfo.xp} />
 
         <Card>
