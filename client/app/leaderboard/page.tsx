@@ -20,7 +20,7 @@ export default function Leaderboard() {
         <Card>
           <CollpseBox>
             <CollapseButton onClick={toggleBox}>
-              {isOpen ? "Hide Leaderboard Rules" : "Show Leaderboard Rules"}
+              {isOpen ? "Hide Level Rules" : "Show Level Rules"}
             </CollapseButton>
             {isOpen ? (
               <RulesBox>
