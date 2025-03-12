@@ -22,12 +22,14 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: ${({ theme }) => theme.colors.background};
   }
 `;
 
@@ -69,7 +71,6 @@ const ProjectDescription = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing.md};
   flex-grow: 1;
 
-  /* Handle text overflow */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -109,9 +110,10 @@ const GithubLink = styled.a`
   transition: color 0.2s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.text.primary};
+    color: ${({ theme }) => theme.colors.primary.main};
   }
 `;
+
 export default function ProjectCard({
   project_id,
   owner,
@@ -125,10 +127,13 @@ export default function ProjectCard({
     <Card>
       <ImageContainer>
         <ProjectImage
-          src={project_image || defaultProjectImage}
+          src={
+            project_image && project_image.startsWith("http")
+              ? project_image
+              : defaultProjectImage
+          }
           alt={name}
           fill
-          priority
         />
       </ImageContainer>
       <CardContent>

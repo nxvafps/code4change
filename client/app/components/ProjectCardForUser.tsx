@@ -137,19 +137,16 @@ const ContributionLink = styled.a`
     color: ${({ theme }) => theme.colors.primary.light};
   }
 `;
-
 const Tag = styled.span`
-  background-color: ${({ theme }) => theme.colors.primary.main};
-  color: ${({ theme }) => theme.colors.text.light};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary.light};
-    color: ${({ theme }) => theme.colors.text.secondary};
-  }
+  display: inline-block;
+  background-color: #7e57c2; /* Purple shade */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 4px;
+  text-transform: capitalize;
 `;
 
 const TagContainer = styled.div`

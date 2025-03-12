@@ -133,8 +133,6 @@ export default function ProjectDetails() {
         setSkills(skillsData);
         const categoriesData = await getProjectCategories(project_id);
         setCategories(categoriesData);
-
-        console.log(categoriesData);
       } catch (err) {
         setError("Failed to load project details. Please try again.");
       } finally {
@@ -155,13 +153,13 @@ export default function ProjectDetails() {
         {error && <p>{error}</p>}
         {project && (
           <>
-            <Title>{project.name}</Title>
             <ProjectCard>
-              <Description>{project.description}</Description>
               <ProjectImage
                 src={project.project_image_url || "/default-project.jpg"}
                 alt={project.name}
               />
+              <Title>{project.name}</Title>
+              <Description>{project.description}</Description>
 
               <ProjectDetail>
                 <strong>Owner:</strong> {project.owner_name}
@@ -189,6 +187,7 @@ export default function ProjectDetails() {
                 <strong>Last updated:</strong>{" "}
                 {new Date(project.updated_at).toLocaleString()}
               </ProjectDetail>
+
               <ProjectDetail>
                 <strong>Skills:</strong>
                 {skills.length > 0 ? (
@@ -201,6 +200,7 @@ export default function ProjectDetails() {
                   <p>No skills listed for this project.</p>
                 )}
               </ProjectDetail>
+
               <ProjectDetail>
                 <strong>Categories:</strong>
                 {categories.length > 0 ? (
@@ -247,17 +247,15 @@ export interface CategoryProject {
 }
 
 const Tag = styled.span`
-  background-color: ${({ theme }) => theme.colors.primary.main};
-  color: ${({ theme }) => theme.colors.text.light};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary.light};
-    color: ${({ theme }) => theme.colors.text.secondary};
-  }
+  display: inline-block;
+  background-color: #7e57c2; /* Purple shade */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 4px;
+  text-transform: capitalize;
 `;
 
 const TagContainer = styled.div`

@@ -6,7 +6,7 @@ import styled from "styled-components";
 const FormContainer = styled.div`
   width: 100%;
   height: auto;
-  max-width: 54rem;
+  max-width: 60rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,7 +35,7 @@ const StyledButton = styled.button`
   border: none;
   cursor: pointer;
   width: auto;
-  min-width: 120px;
+  min-width: 150px;
   padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
   height: 48px;
   transition: all ${({ theme }) => theme.transitions.fast};
@@ -56,7 +56,7 @@ const LandingPageContainer = styled.div`
   display: flex;
   position: relative;
   margin: ${({ theme }) => theme.spacing.xxl} auto;
-  max-width: 68rem;
+  max-width: 70rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -73,6 +73,7 @@ const Title = styled.h1`
   text-align: center;
   color: ${({ theme }) => theme.colors.text.light};
   position: relative;
+  text-transform: uppercase;
 
   &:after {
     content: "";
@@ -155,6 +156,7 @@ const SuccessMessage = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   width: 100%;
   justify-content: center;
+  box-shadow: ${({ theme }) => theme.shadows.small};
 
   &:before {
     content: "✓";
@@ -179,6 +181,7 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const MultiSelect = ({
   options,
   placeholder,

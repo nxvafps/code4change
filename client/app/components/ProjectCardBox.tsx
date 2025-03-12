@@ -21,6 +21,7 @@ interface ProjectCardBoxProps {
   selectedCategory: string;
   selectedSkill: string;
 }
+
 interface ThemeProps {
   theme: {
     spacing: {
