@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Issue } from "./projectIssues";
 
 export default function IssuesCard({ issue }) {
   return (

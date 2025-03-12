@@ -236,7 +236,6 @@ export default function Register() {
   };
 
   const formatSkillName = (name: string) => {
-    // Special case for common technologies
     if (name.toLowerCase() === "reactjs") return "ReactJS";
     if (name.toLowerCase() === "nextjs") return "NextJS";
     if (name.toLowerCase() === "nodejs") return "NodeJS";
