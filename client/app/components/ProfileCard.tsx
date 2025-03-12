@@ -20,6 +20,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, selectBadge }) => {
         <ProfileImage src={userInfo.profile_picture} alt="profile" />
         <BadgeSection>{selectBadge(userInfo.xp)}</BadgeSection>
       </ProfileSection>
+      <ProgressTextWrapper>
+        <ProgressText>Total XP: {userInfo.xp} </ProgressText>
+      </ProgressTextWrapper>
     </Card>
   );
 };
@@ -91,4 +94,18 @@ const SectionTitle = styled.h2`
   margin-bottom: ${({ theme }) => theme.spacing.md};
   color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
+`;
+
+const ProgressTextWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ProgressText = styled.span`
+  color: ${({ theme }) => theme.colors.text.light};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  padding: ${({ theme }) => theme.spacing.sm};
 `;
