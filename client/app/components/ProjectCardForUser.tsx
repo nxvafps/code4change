@@ -148,7 +148,7 @@ const Tag = styled.span`
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.primary.light};
-    color: ${({ theme }) => theme.colors.text.dark};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
