@@ -279,7 +279,13 @@ interface Option {
   label: string;
 }
 import { useState, useEffect } from "react";
-import { postProject, fetchCategories, fetchSkills } from "@/app/api";
+import {
+  postProject,
+  fetchCategories,
+  fetchSkills,
+  addSkillsToProject,
+  addCategoriesToProject,
+} from "@/app/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { IssuesMap } from "../issues_post/issuespost";
@@ -322,7 +328,6 @@ export default function AddProject() {
           value: skill.name,
           label: formatSkillName(skill.name),
         }));
-
         setCategories(categoryOptions);
         setSkills(skillOptions);
       } catch (err) {
@@ -367,25 +372,36 @@ export default function AddProject() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Submitting project data:", projectData);
-
     try {
-      console.log("About to call postProject with:", projectData);
       const newProject = await postProject(projectData);
-      console.log("Project created successfully:", newProject);
 
       try {
-        console.log("Attempting to map GitHub issues...");
         await IssuesMap(
           projectData.github_repo_url,
           userId || 1,
           newProject.id
         );
-        console.log("Issues mapped successfully");
       } catch (issueError) {
         console.error("Error importing GitHub issues:", issueError);
       }
+      if (selectedSkills.length > 0) {
+        const skillNames = selectedSkills.map((skill) => skill.value);
 
+        try {
+          await addSkillsToProject(newProject.name, skillNames);
+        } catch (skillError) {}
+      }
+      if (selectedCategories.length > 0) {
+        const categoryNames = selectedCategories.map(
+          (category) => category.value
+        );
+
+        try {
+          await addCategoriesToProject(newProject.name, categoryNames);
+        } catch (categoryError) {
+          console.error("Error adding categories to project:", categoryError);
+        }
+      }
       setIsSubmitted(true);
       setProjectData({
         name: "",

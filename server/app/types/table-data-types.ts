@@ -130,7 +130,10 @@ export interface ProjectRelation {
     categories: string[];
   };
 }
-
+export interface ProjectCategoryRelation {
+  project_name: string;
+  category_names: string[];
+}
 export interface ProjectSkillRelation {
   project_name: string;
   skill_names: string[];

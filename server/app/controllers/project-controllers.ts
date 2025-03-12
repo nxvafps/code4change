@@ -1,10 +1,8 @@
 import { Request, Response, RequestHandler } from "express";
 import * as ProjectModel from "../models/project-models";
 import * as UserModel from "../models/user-models";
-import {
-  insertProjectCategories,
-  insertProjectSkills,
-} from "../db/seeds/utils/insert-data";
+
+import { ProjectCategoryRelation } from "../types/table-data-types";
 export const getProjectById = async (
   req: Request,
   res: Response
@@ -184,43 +182,76 @@ export const deleteProjectAndIssuesByID = async (
     }
   }
 };
-export const postProjectSkills = async (
+
+export const addSkillsToProject = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { skill_ids } = req.body;
-  const { project_id } = req.params;
-  if (!project_id || !Array.isArray(skill_ids) || skill_ids.length === 0) {
-    res.status(400).json({ message: "Bad request: missing or invalid fields" });
+  const { projectName } = req.params;
+  const { skill_names } = req.body;
+
+  if (!skill_names || !Array.isArray(skill_names)) {
+    res
+      .status(400)
+      .json({ message: "skill_names must be an array of skill names" });
     return;
   }
-  const projectIdNumber = Number(project_id);
+
+  const projectSkills = [
+    {
+      project_name: projectName,
+      skill_names,
+    },
+  ];
+
   try {
-    await ProjectModel.addProjectSkills(projectIdNumber, skill_ids);
-    res.status(201).json({ message: "Project skills added successfully" });
+    const newSkills = await ProjectModel.addProjectSkills(projectSkills);
+    console.log(newSkills);
+    res.status(201).json({ skills: newSkills });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error adding skills to project:", error);
+    res.status(500).json({ message: "Failed to add skills to project" });
   }
 };
-export const postProjectCategories = async (
+export const addCategoriesToProject = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { category_ids } = req.body;
-  const { project_id } = req.params;
-  if (
-    !project_id ||
-    !Array.isArray(category_ids) ||
-    category_ids.length === 0
-  ) {
-    res.status(400).json({ message: "Bad request: missing or invalid fields" });
+  const { projectName } = req.params;
+  const { category_names } = req.body;
+
+  if (!category_names || !Array.isArray(category_names)) {
+    res
+      .status(400)
+      .json({ message: "category_names must be an array of category names" });
     return;
   }
-  const projectIdNumber = Number(project_id);
+
+  const projectCategories: ProjectCategoryRelation[] = [
+    {
+      project_name: projectName,
+      category_names,
+    },
+  ];
+
   try {
-    await ProjectModel.addProjectCategories(projectIdNumber, category_ids);
-    res.status(201).json({ message: "Project categories added successfully" });
+    const addedCategories = await ProjectModel.insertProjectCategories(
+      projectCategories
+    );
+    res.status(201).json({ categories: addedCategories });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    if (error instanceof Error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ message: error.message });
+      } else {
+        console.error("Error adding categories to project:", error);
+        res
+          .status(500)
+          .json({ message: "Failed to add categories to project" });
+      }
+    } else {
+      console.error("Unknown error:", error);
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
   }
 };

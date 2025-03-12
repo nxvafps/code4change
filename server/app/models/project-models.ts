@@ -1,5 +1,9 @@
 import pool from "../db";
-import { Project } from "../types/table-data-types";
+import {
+  Project,
+  ProjectSkillRelation,
+  ProjectCategoryRelation,
+} from "../types/table-data-types";
 
 export const getProjectById = async (
   projectId: string
@@ -238,56 +242,118 @@ export const removeArticleAndIssuesByID = async (project_id: number) => {
     client.release();
   }
 };
+
 export const addProjectSkills = async (
-  project_id: number,
-  skill_ids: number[]
-) => {
+  projectSkills: ProjectSkillRelation[]
+): Promise<string[]> => {
   const client = await pool.connect();
+  const addedSkills: string[] = [];
+
   try {
     await client.query("BEGIN");
 
-    const insertQuery = `
-      INSERT INTO project_skills (project_id, skill_id)
-      VALUES ($1, $2)
-      ON CONFLICT (project_id, skill_id) DO NOTHING
-    `;
+    await Promise.all(
+      projectSkills.map(
+        async ({ project_name, skill_names }: ProjectSkillRelation) => {
+          const projectNameQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectNameQuery.rows[0]?.id;
+          if (!project_id) {
+            console.warn(
+              `Project named "${project_name}" not found, skipping relation`
+            );
+            return;
+          }
 
-    for (const skill_id of skill_ids) {
-      await client.query(insertQuery, [project_id, skill_id]);
-    }
+          await Promise.all(
+            skill_names.map(async (skill_name) => {
+              const skillNameQuery = await client.query(
+                `SELECT id FROM skills WHERE name = $1`,
+                [skill_name]
+              );
+              const skill_id = skillNameQuery.rows[0]?.id;
+
+              await client.query(
+                `INSERT INTO project_skills (project_id, skill_id)
+                 VALUES ($1, $2)
+                 ON CONFLICT (project_id, skill_id) DO NOTHING`,
+                [project_id, skill_id]
+              );
+
+              addedSkills.push(skill_name);
+            })
+          );
+        }
+      )
+    );
 
     await client.query("COMMIT");
-  } catch (error) {
+    return addedSkills;
+  } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting project skills:", error);
-    throw error;
+    console.error("Error inserting project skills", err);
+    throw err;
   } finally {
     client.release();
   }
 };
-export const addProjectCategories = async (
-  project_id: number,
-  category_ids: number[]
-) => {
+
+export const insertProjectCategories = async (
+  projectCategories: ProjectCategoryRelation[]
+): Promise<string[]> => {
   const client = await pool.connect();
+  const addedCategories: string[] = [];
+
   try {
     await client.query("BEGIN");
 
-    const insertQuery = `
-      INSERT INTO project_categories (project_id, category_id)
-      VALUES ($1, $2)
-      ON CONFLICT (project_id, category_id) DO NOTHING
-    `;
+    await Promise.all(
+      projectCategories.map(
+        async ({ project_name, category_names }: ProjectCategoryRelation) => {
+          const projectQuery = await client.query(
+            `SELECT id FROM projects WHERE name = $1`,
+            [project_name]
+          );
+          const project_id = projectQuery.rows[0]?.id;
 
-    for (const category_id of category_ids) {
-      await client.query(insertQuery, [project_id, category_id]);
-    }
+          if (!project_id) {
+            throw new Error(`Project named "${project_name}" not found`);
+          }
+
+          await Promise.all(
+            category_names.map(async (category_name) => {
+              const categoryQuery = await client.query(
+                `SELECT id FROM categories WHERE category_name = $1`,
+                [category_name]
+              );
+              const category_id = categoryQuery.rows[0]?.id;
+
+              if (!category_id) {
+                throw new Error(`Category named "${category_name}" not found`);
+              }
+
+              await client.query(
+                `INSERT INTO project_categories (project_id, category_id)
+                 VALUES ($1, $2)
+                 ON CONFLICT (project_id, category_id) DO NOTHING`,
+                [project_id, category_id]
+              );
+
+              addedCategories.push(category_name);
+            })
+          );
+        }
+      )
+    );
 
     await client.query("COMMIT");
-  } catch (error) {
+    return addedCategories;
+  } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error inserting project categories:", error);
-    throw error;
+    console.error("Error inserting project categories:", err);
+    throw err;
   } finally {
     client.release();
   }
