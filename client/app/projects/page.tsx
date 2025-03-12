@@ -45,7 +45,6 @@ const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  border: solid 1px white;
 `;
 
 const ContentWrapper = styled.main`
@@ -67,7 +66,6 @@ const Sidebar = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 4px solid ${({ theme }) => theme.colors.primary.main};
 `;
 
 const MainContent = styled.div`
