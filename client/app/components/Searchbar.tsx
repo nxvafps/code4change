@@ -89,8 +89,9 @@ const SearchContainer = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   padding: ${({ theme }) => theme.spacing.md};
   width: 100%;
-  max-width: 400px;
+  max-width: 250px;
   background: ${({ theme }) => theme.colors.background.dark};
+  margin-top: 165px;
 `;
 
 const FilterLabel = styled.label`

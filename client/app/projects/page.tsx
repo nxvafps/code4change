@@ -15,17 +15,19 @@ export default function Projects() {
   return (
     <PageWrapper>
       <NavBar />
-      <ContentWrapper>
-        <Title>Available Projects</Title>
+      <SearchBarWrapper>
         <SearchBar
           setSelectedCategory={setSelectedCategory}
           setSelectedSkill={setSelectedSkill}
         />
-        <ProjectCardBox
-          selectedCategory={selectedCategory}
-          selectedSkill={selectedSkill}
-        />
-      </ContentWrapper>
+        <ContentWrapper>
+          <Title>Available Projects</Title>
+          <ProjectCardBox
+            selectedCategory={selectedCategory}
+            selectedSkill={selectedSkill}
+          />
+        </ContentWrapper>
+      </SearchBarWrapper>
       <Footer />
     </PageWrapper>
   );
@@ -56,6 +58,11 @@ const ContentWrapper = styled.main`
   background-color: transparent;
   color: ${({ theme }) => theme.colors.text.light};
   gap: ${({ theme }) => theme.spacing.xl};
+`;
+
+const SearchBarWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
 `;
 
 const Title = styled.h1`
