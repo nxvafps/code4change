@@ -205,7 +205,40 @@ export const updateUserCategories = async (
     throw error;
   }
 };
-
+export const addSkillsToProject = async (
+  projectName: string,
+  skillNames: string[]
+) => {
+  try {
+    const response = await code4changeApi.post(
+      `/projects/${projectName}/skills`,
+      {
+        skill_names: skillNames,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding skills to project:", error);
+    throw error;
+  }
+};
+export const addCategoriesToProject = async (
+  projectName: string,
+  categoryNames: string[]
+) => {
+  try {
+    const response = await code4changeApi.post(
+      `/projects/${projectName}/categories`,
+      {
+        category_names: categoryNames,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding categories to project:", error);
+    throw error;
+  }
+};
 export const fetchProjectsByUsername = async (userName: string) => {
   try {
     const response = await code4changeApi(`/users/${userName}/projects`);

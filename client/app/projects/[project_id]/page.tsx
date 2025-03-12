@@ -5,6 +5,7 @@ import {
   getProjectById,
   getProjectSkills,
   getProjectCategories,
+  addSkillsToProject,
 } from "@/app/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -131,9 +132,8 @@ export default function ProjectDetails() {
         const skillsData = await getProjectSkills(project_id);
         setSkills(skillsData);
         const categoriesData = await getProjectCategories(project_id);
-        console.log(getProjectCategories(project_id));
-
         setCategories(categoriesData);
+
         console.log(categoriesData);
       } catch (err) {
         setError("Failed to load project details. Please try again.");

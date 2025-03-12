@@ -15,8 +15,11 @@ router.get(
 router.post("/", ProjectController.postProject);
 router.delete("/:project_id", ProjectController.deleteProjectAndIssuesByID);
 
-router.post("/:project_id/skills", ProjectController.postProjectSkills);
+router.post("/:projectName/skills", ProjectController.addSkillsToProject);
 
-router.post("/:project_id/categories", ProjectController.postProjectCategories);
+router.post(
+  "/:projectName/categories",
+  ProjectController.addCategoriesToProject
+);
 
 export default router;

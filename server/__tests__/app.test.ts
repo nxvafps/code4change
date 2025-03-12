@@ -729,7 +729,40 @@ describe("End to End Tests", () => {
       });
     });
   });
+  describe("POST /api/projects/:projectName/skills", () => {
+    it("should add skills to a project successfully and return the added skills", async () => {
+      const projectName = "EcoTracker";
+      const skillData = {
+        skill_names: ["javascript", "typescript", "nodejs"],
+      };
 
+      const response = await request(app)
+        .post(`/api/projects/${projectName}/skills`)
+        .send(skillData)
+        .expect(201);
+
+      // Assert the response
+      expect(response.body).toHaveProperty("skills");
+      expect(response.body.skills).toEqual(skillData.skill_names);
+    });
+
+    it("should return 400 if skill_names is not an array", async () => {
+      const projectName = "EcoTracker";
+      const invalidSkillData = {
+        skill_names: "javascript",
+      };
+
+      const response = await request(app)
+        .post(`/api/projects/${projectName}/skills`)
+        .send(invalidSkillData)
+        .expect(400);
+
+      expect(response.body).toHaveProperty("message");
+      expect(response.body.message).toBe(
+        "skill_names must be an array of skill names"
+      );
+    });
+  });
   describe("Issues Routes", () => {
     describe("GET /api/issues", () => {
       it("should return an array of all issue objects", async () => {
