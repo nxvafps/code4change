@@ -43,23 +43,13 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
     ? Math.min((xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100, 100)
     : 100;
 
-  const totalProgress = (userXP / 1500) * 100;
+  // const totalProgress = (userXP / 1500) * 100;
 
   return (
     <Card>
       <Title>Your XP Progress and Current Level</Title>
 
       <Spacer />
-      <Spacer />
-
-      <ProgressTextWrapper>
-        <ProgressText>Total: {userXP} / 1500 XP</ProgressText>
-      </ProgressTextWrapper>
-
-      <ProgressWrapper>
-        <ProgressBar $progress={totalProgress}></ProgressBar>
-      </ProgressWrapper>
-
       <Spacer />
 
       {currentLevel && (
