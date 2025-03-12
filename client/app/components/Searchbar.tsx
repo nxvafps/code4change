@@ -83,14 +83,13 @@ export default function SearchBar({
 const SearchContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   padding: ${({ theme }) => theme.spacing.md};
   width: 100%;
   max-width: 250px;
-  background: ${({ theme }) => theme.colors.background.dark};
   margin-top: 165px;
 `;
 
@@ -99,7 +98,8 @@ const FilterLabel = styled.label`
   font-size: ${({ theme }) => theme.typography.fontSize.md};
   color: ${({ theme }) => theme.colors.text.light};
   width: 100%;
-  text-align: left;
+  text-align: center;
+  margin-bottom: 10px;
 `;
 
 const Select = styled.select`
@@ -113,6 +113,7 @@ const Select = styled.select`
   cursor: pointer;
   appearance: none;
   outline: none;
+  margin-bottom: 10px;
 `;
 
 const ApplyButton = styled.button`

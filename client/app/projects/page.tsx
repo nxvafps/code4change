@@ -15,19 +15,22 @@ export default function Projects() {
   return (
     <PageWrapper>
       <NavBar />
-      <SearchBarWrapper>
-        <SearchBar
-          setSelectedCategory={setSelectedCategory}
-          setSelectedSkill={setSelectedSkill}
-        />
-        <ContentWrapper>
+      <ContentWrapper>
+        <Sidebar>
+          <SearchBar
+            setSelectedCategory={setSelectedCategory}
+            setSelectedSkill={setSelectedSkill}
+          />
+        </Sidebar>
+        <MainContent>
           <Title>Available Projects</Title>
           <ProjectCardBox
             selectedCategory={selectedCategory}
             selectedSkill={selectedSkill}
           />
-        </ContentWrapper>
-      </SearchBarWrapper>
+        </MainContent>
+      </ContentWrapper>
+
       <Footer />
     </PageWrapper>
   );
@@ -42,27 +45,41 @@ const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  border: solid 1px white;
 `;
 
 const ContentWrapper = styled.main`
   display: flex;
-  position: relative;
-  margin: ${({ theme }) => theme.spacing.xxl} auto;
-  max-width: 68rem;
-  flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   width: 100%;
-  height: auto;
+  margin: ${({ theme }) => theme.spacing.xxl} auto;
   padding: ${({ theme }) => theme.spacing.lg};
   background-color: transparent;
   color: ${({ theme }) => theme.colors.text.light};
   gap: ${({ theme }) => theme.spacing.xl};
+  flex-grow: 1;
 `;
 
-const SearchBarWrapper = styled.div`
+const Sidebar = styled.div`
+  width: 20%;
+  min-width: 250px;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  border-right: 4px solid ${({ theme }) => theme.colors.primary.main};
+`;
+
+const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: ${({ theme }) => theme.spacing.lg};
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.text.light};
+  gap: ${({ theme }) => theme.spacing.xl};
 `;
 
 const Title = styled.h1`
