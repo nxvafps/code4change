@@ -43,7 +43,6 @@ const HomePage: React.FC = () => {
       fetchUserByUsername(user.github_username)
         .then((userFromAPI) => {
           setUserInfo(userFromAPI);
-          setLoading(false);
           if (
             (!userFromAPI.skills || userFromAPI.skills.length === 0) &&
             (!userFromAPI.categories || userFromAPI.categories.length === 0)
@@ -52,11 +51,13 @@ const HomePage: React.FC = () => {
           }
         })
         .catch(() => {
-          setError("Failed to load, please try again");
-          setLoading(false);
-        });
+          setError("Failed to load user, please try again");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-  }, [user]);
+  }, [user, router]);
 
   useEffect(() => {
     const fetchProjects = async (): Promise<void> => {
@@ -66,16 +67,16 @@ const HomePage: React.FC = () => {
       } catch (err) {
         setError("Failed to load projects, please try again");
       } finally {
-        setLoading(false);
+        if (!user) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchProjects();
-  }, []);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <div>{error}</div>;
-  if (!userInfo) return <div>User not found.</div>;
+    if (user) {
+      fetchProjects();
+    }
+  }, [user]);
 
   function filterProjects(
     projects: Project[],
@@ -112,11 +113,9 @@ const HomePage: React.FC = () => {
       });
   }
 
-  const filteredProjects = filterProjects(
-    projects,
-    userInfo.categories || [],
-    userInfo.skills || []
-  );
+  const filteredProjects = userInfo
+    ? filterProjects(projects, userInfo.categories || [], userInfo.skills || [])
+    : [];
 
   const selectBadge = (xp: number): ReactElement | null => {
     let badgeColor = "";
@@ -138,7 +137,7 @@ const HomePage: React.FC = () => {
     } else {
       badgeColor = "amethyst";
     }
-    5;
+
     if (badgeColor) {
       return (
         <BadgeWrapper>
@@ -154,40 +153,49 @@ const HomePage: React.FC = () => {
     <PageWrapper>
       <NavBar />
       <ContentWrapper>
-        <Title>Your Progress Dashboard</Title>
+        {loading && <LoadingText>Loading user...</LoadingText>}
 
-        <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
+        {!loading && !error && userInfo ? (
+          <>
+            <Title>Your Progress Dashboard</Title>
 
-        <ProgressCard userXP={userInfo.xp} />
+            <ProfileCard userInfo={userInfo} selectBadge={selectBadge} />
 
-        <Card>
-          <SectionTitle>
-            Here are some projects that match your interests and skills:
-          </SectionTitle>
+            <ProgressCard userXP={userInfo.xp} />
 
-          <ProjectsGrid>
-            {filteredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id || index}
-                project_id={project.id}
-                owner={project.owner_name}
-                name={project.name}
-                description={project.description}
-                github_repo_url={project.github_repo_url}
-                project_image={project.project_image_url}
-                status={project.status}
-              />
-            ))}
-          </ProjectsGrid>
-        </Card>
-        {filteredProjects.length === 0 && (
-          <SectionTitle>
-            Looks like there are no projects that match your interests and
-            skills. Why not have a look at the{" "}
-            <StyledLink href="/projects">projects page</StyledLink> for other
-            projects that may be of interest.
-          </SectionTitle>
-        )}
+            <Card>
+              <SectionTitle>
+                Here are some projects that match your interests and skills:
+              </SectionTitle>
+
+              <ProjectsGrid>
+                {filteredProjects.map((project, index) => (
+                  <ProjectCard
+                    key={project.id || index}
+                    project_id={project.id}
+                    owner={project.owner_name}
+                    name={project.name}
+                    description={project.description}
+                    github_repo_url={project.github_repo_url}
+                    project_image={project.project_image_url}
+                    status={project.status}
+                  />
+                ))}
+              </ProjectsGrid>
+            </Card>
+
+            {filteredProjects.length === 0 && (
+              <SectionTitle>
+                Looks like there are no projects that match your interests and
+                skills. Why not have a look at the{" "}
+                <StyledLink href="/projects">projects page</StyledLink> for
+                other projects that may be of interest.
+              </SectionTitle>
+            )}
+          </>
+        ) : !loading && !error && !userInfo ? (
+          <ErrorText>User not found.</ErrorText>
+        ) : null}
       </ContentWrapper>
       <Footer />
     </PageWrapper>
@@ -238,7 +246,6 @@ const SectionTitle = styled.h2`
   color: ${({ theme }) => theme.colors.text.light};
   text-align: center;
 `;
-
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize.xxl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
@@ -323,21 +330,16 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const LoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 5px solid ${({ theme }) => theme.colors.primary.main};
-  border-top: 5px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 100px auto;
+const LoadingText = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl};
+  color: ${({ theme }) => theme.colors.text.light};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+`;
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+const ErrorText = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl};
+  color: ${({ theme }) => theme.colors.status.error};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
 `;
