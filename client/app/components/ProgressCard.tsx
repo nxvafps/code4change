@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Link from "next/link";
 
 interface ProgressCardProps {
   userXP: number;
@@ -43,8 +44,6 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
     ? Math.min((xpAtCurrentLevel / xpRequiredForCurrentLevel) * 100, 100)
     : 100;
 
-  // const totalProgress = (userXP / 1500) * 100;
-
   return (
     <Card>
       <Title>Your XP Progress and Current Level</Title>
@@ -71,6 +70,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ userXP }) => {
             {xpToNextLevel > 0
               ? `You need ${xpToNextLevel} more XP to reach level ${nextLevel.level} (${nextLevel.name})`
               : `You have reached the highest level! Congratulations`}
+            <Spacer></Spacer>
+            Learn more about levels on the{" "}
+            <StyledLink href="/leaderboard"> leaderboard page</StyledLink>
           </NextLevel>
         </ProgressTextWrapper>
       )}
@@ -155,4 +157,13 @@ const NextLevel = styled.p`
 
 const Spacer = styled.div`
   height: ${({ theme }) => theme.spacing.md};
+`;
+
+const StyledLink = styled(Link)`
+  color: #1e90ff;
+  text-decoration: underline;
+  font-weight: bold;
+  &:hover {
+    color: #0c7cd5;
+  }
 `;

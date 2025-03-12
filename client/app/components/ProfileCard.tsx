@@ -21,7 +21,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userInfo, selectBadge }) => {
         <BadgeSection>{selectBadge(userInfo.xp)}</BadgeSection>
       </ProfileSection>
       <ProgressTextWrapper>
-        <ProgressText>Total: {userInfo.xp} / 1500 XP</ProgressText>
+        <ProgressText>Total XP: {userInfo.xp} </ProgressText>
       </ProgressTextWrapper>
     </Card>
   );
