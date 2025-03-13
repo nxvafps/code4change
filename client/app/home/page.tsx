@@ -193,7 +193,7 @@ const HomePage: React.FC = () => {
               </SectionTitle>
             )}
           </>
-        ) : !loading && !error && !userInfo ? (
+        ) : !loading && error ? (
           <ErrorText>User not found.</ErrorText>
         ) : null}
       </ContentWrapper>
