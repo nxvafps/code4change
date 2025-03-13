@@ -68,13 +68,13 @@ export default function ContributionsList() {
     <>
       <ToggleContainer>
         <ToggleButton
-          active={view === "contributions"}
+          $active={view === "contributions"}
           onClick={() => setView("contributions")}
         >
           Contributions
         </ToggleButton>
         <ToggleButton
-          active={view === "projects"}
+          $active={view === "projects"}
           onClick={() => setView("projects")}
         >
           Projects
