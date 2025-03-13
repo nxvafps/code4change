@@ -147,7 +147,7 @@ const ProgressBar = styled.div<{ $progress: number }>`
   transition: width ${({ theme }) => theme.transitions.fast};
 `;
 
-const NextLevel = styled.p`
+const NextLevel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: white;
   align-items: center;
