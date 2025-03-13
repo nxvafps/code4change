@@ -187,14 +187,14 @@ const HomePage: React.FC = () => {
             {filteredProjects.length === 0 && (
               <SectionTitle>
                 Looks like there are no projects that match your interests and
-                skills. Why not have a look at the{" "}
-                <StyledLink href="/projects">projects page</StyledLink> for
+                skills. Why not have a look at the
+                <StyledLink href="/projects"> projects page</StyledLink> for
                 other projects that may be of interest.
               </SectionTitle>
             )}
           </>
-        ) : !loading && !error && !userInfo ? (
-          <ErrorText>User not found.</ErrorText>
+        ) : !loading && error ? (
+          <ErrorText>{error}</ErrorText>
         ) : null}
       </ContentWrapper>
       <Footer />
