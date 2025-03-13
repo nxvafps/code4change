@@ -17,7 +17,7 @@ import Link from "next/link";
 import { User } from "../../../server/app/types/table-data-types";
 
 interface ToggleButtonProps {
-  active: boolean;
+  $active: boolean;
 }
 
 export default function ContributionsList() {
@@ -68,13 +68,13 @@ export default function ContributionsList() {
     <>
       <ToggleContainer>
         <ToggleButton
-          active={view === "contributions"}
+          $active={view === "contributions"}
           onClick={() => setView("contributions")}
         >
           Contributions
         </ToggleButton>
         <ToggleButton
-          active={view === "projects"}
+          $active={view === "projects"}
           onClick={() => setView("projects")}
         >
           Projects
@@ -224,10 +224,10 @@ const ToggleButton = styled.button<ToggleButtonProps>`
   font-size: 1rem;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  color: ${({ active, theme }) =>
-    active ? theme.colors.primary.main : theme.colors.text.light};
-  border-bottom: ${({ active, theme }) =>
-    active ? `2px solid ${theme.colors.primary.main}` : "none"};
+  color: ${({ $active, theme }) =>
+    $active ? theme.colors.primary.main : theme.colors.text.light};
+  border-bottom: ${({ $active, theme }) =>
+    $active ? `2px solid ${theme.colors.primary.main}` : "none"};
   transition: color 0.3s, border-bottom 0.3s;
 
   &:hover {
