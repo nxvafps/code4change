@@ -107,9 +107,20 @@ export default function ContributionsList() {
           )
         ) : projects && projects.length > 0 ? (
           <ListContainer>
-            {projects.map((project: Project) => (
-              <ProjectCardForUser key={project.id} project={project} />
-            ))}
+            {projects.map((project) => {
+              const extendedProject = {
+                ...project,
+                skills: [],
+                categories: [],
+              };
+
+              return (
+                <ProjectCardForUser
+                  key={project.id}
+                  project={extendedProject}
+                />
+              );
+            })}
           </ListContainer>
         ) : (
           <EmptyMessage>

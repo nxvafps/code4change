@@ -7,8 +7,8 @@ import ContributionsCard from "./ContributionsCard";
 import IssuesCard from "./IssuesCard";
 
 export function IssuesBox({ projectId }: any) {
-  const [issues, setIssues] = useState([]);
-  const [contributions, setContributions] = useState([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState("issues");
@@ -89,6 +89,21 @@ export interface Issue {
   assigned_to?: number;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface Contribution {
+  id?: number;
+  user_id?: number;
+  project_id?: number;
+  pull_request_url: string;
+  additions: number;
+  deletions: number;
+  total_changes: number;
+  status: string;
+  created_at?: Date;
+  updated_at?: Date;
+  project_name: string;
+  github_username: string;
 }
 
 const ToggleContainer = styled.div`
