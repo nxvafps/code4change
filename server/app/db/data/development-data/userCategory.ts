@@ -18,6 +18,10 @@ const userCategoriesRelations = [
     category_names: ["climateChange", "animalWelfare"],
   },
   { user_github_username: "newbie_coder", category_names: ["education"] },
+  {
+    user_github_username: "refactor-ninja",
+    category_names: ["climateChange", "education", "lgbtqia"],
+  },
 ];
 
 export default userCategoriesRelations;

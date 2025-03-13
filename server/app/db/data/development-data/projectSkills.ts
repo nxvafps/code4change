@@ -11,7 +11,19 @@ const projectSkillRelations = [
   },
   {
     project_name: "RefugeeConnect",
+    skill_names: ["typescript", "nextjs", "express", "css"],
+  },
+  {
+    project_name: "PawHelp",
+    skill_names: ["javascript", "dart", "express", "postgresql"],
+  },
+  {
+    project_name: "EduBridge",
     skill_names: ["typescript", "nodejs", "express", "postgresql"],
+  },
+  {
+    project_name: "ReliefNet",
+    skill_names: ["javascript", "reactjs", "mongodb", "postgresql"],
   },
 ];
 

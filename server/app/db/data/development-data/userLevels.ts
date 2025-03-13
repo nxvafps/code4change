@@ -21,6 +21,10 @@ const userLevelRelations = [
     user_github_username: "genericuser1",
     level: 3,
   },
+  {
+    user_github_username: "refactor-ninja",
+    level: 1,
+  },
 ];
 
 export default userLevelRelations;

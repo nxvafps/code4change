@@ -34,6 +34,10 @@ const userSkillsRelations = [
     user_github_username: "newbie_coder",
     skill_names: ["javascript", "html", "css"],
   },
+  {
+    user_github_username: "refactor-ninja",
+    skill_names: ["javascript", "c++", "reactjs", "express"],
+  },
 ];
 
 export default userSkillsRelations;
